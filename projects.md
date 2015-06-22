@@ -8,7 +8,7 @@ permalink: /projects/
 
 #### 2014 - present: Data warehouse developer at [Blendle](https://blendle.com) (Utrecht, NL)
 
-I took a break from studying and worked full-time at Blendle from March 2014 to April 2015. My primary job is designing and building the data warehouse, although I started as a workflow developer. I switched to working part-time as a freelancer in April 2015, when I returned to university.
+I worked full-time at Blendle from March 2014 to April 2015 and took a break from studying. My primary job is designing and building the data warehouse, although I started as a workflow developer. I switched to working part-time as a freelancer in April 2015, when I returned to university.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
