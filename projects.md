@@ -8,7 +8,7 @@ permalink: /projects/
 
 #### 2014 - present: Data warehouse developer at [Blendle](https://blendle.com) (Utrecht, NL)
 
-I worked full-time at Blendle from March 2014 to April 2015 and took a break from studying. My primary job is designing and building the data warehouse, although I started as a workflow developer. I switched to working part-time as a freelancer in April 2015, when I returned to university.
+I worked full-time at Blendle from March 2014 to April 2015 and took a break from studying. My primary job was  designing and building the data warehouse, although I started as a workflow developer. I switched to working part-time as a freelancer in April 2015, when I returned to university.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
@@ -70,3 +70,8 @@ Connecting an empty car2go (<30% battery at the time) to a charging pole tops up
 Before I met Marlon and Hasher, I had not really worked with businessmen my age. They approached me because StudySquare, a company that provides extra lessons for students, needed a technological revamp. We completely rebuilt the website and backend system, which is still used by and for a lot of students as of today. Although the day-to-day development is now in the hands of my friends at [AJ ICT](http://www.ajict.nl), we still do various projects together from time to time.
 
 [![StudySquare website screenshot](/images/studysquare.png)](https://www.studysquare.nl)
+
+#### 2008 - present: Invoicing system for Henry de Rijk Elektrotechniek
+To get paid legally for this project was the reason I officialy started my own company. Henry is an electrician and likes to specify all of the materials he used for a job on his invoices. Because the prices of the thousands of possible products vary over time, we thought out a way to save Henry time while creating the invoices. The system automatically updates the prices from the wholesaler's system, and is equipped with a fuzzy search mechanism that dramatically speeds up the price finding.
+
+![Henry de Rijk system screenshot](/images/henry_de_rijk_system_screenshot.png)
