@@ -15,7 +15,7 @@ I took a break from studying and worked full-time at Blendle from March 2014 to 
 
 #### 2013: Full-stack dev at [Medisas](http://medisas.com) (Mountain View, CA)
 
-I approached Gautam Sivakumar from Medisas after reading [his inspiring blog post](http://gs.posthaven.com/why-i-quit-medicine). About a year later Medisas got into Y Combinator and Gautam invited me to visit Silicon Valley. I made two weekly visits and worked on the prototype for the product, a fantastic and very educational experience. When university and Medisas became more demanding, I had to make a hard decision. In the end, I stopped working for Medisas and focused on university.
+I approached Gautam Sivakumar from Medisas after reading [his inspiring blog post](http://gs.posthaven.com/why-i-quit-medicine). About a year later Medisas got into Y Combinator and Gautam invited me to visit Silicon Valley. I made two weekly visits and worked on the prototype for the product, a fantastic and very educational experience. When university and Medisas became more demanding, I had to make a decision. In the end, I stopped working for Medisas and focused on university.
 
 [![Medisas website screenshot](/images/medisas_website.png)](http://medisas.com)
 
@@ -36,7 +36,7 @@ At the start of the 3rd year of medicine, fellow medicine student Hassina Bahadu
 
 #### 2012 - present: [Anatomy cramming tool](https://anatomie.plict.nl)
 
-Learning the names of many anatomical structures by heart is a daunting task. This is why I created a website that gives students a method of testing their knowledge. It is still used by a lot of students every year; especially during the 1.5 (core) and 3.1 (orthopaedic) anatomy dissection courses in the AMC Amsterdam. All submitted answers have been recorded since October 2013, and I am currently analyzing this data. I will release a blog post with my findings soon.
+Learning the names of many anatomical structures by heart is a daunting task. This is why I created a website that gives students a method of testing their knowledge. It is still used by a lot of students every year; especially during the 1.5 (core) and 3.1 (orthopaedic) anatomy dissection courses in the AMC Amsterdam. All submitted answers have been recorded since October 2013, and I am currently analyzing this dataset. I will release a blog post with my findings soon.
 
 ![Anatomy cramming website screenshot](/images/anatomy_website_screenshot.png)
 
@@ -55,7 +55,7 @@ Festivals in The Netherlands are soaring in popularity, so it can be hard to obt
 
 [![Parool Ticketswap article](/images/parool_ticketswap.png)](http://www.parool.nl/parool/nl/12/CULTUUR/article/detail/3816986/2014/12/23/Slim-bedacht-computerprogramma-scoort-kaartjes-op-Ticketswap.dhtml)
 
-Ticketswap has improved their security so the script doesn't work anymore, but you can still [check it out on GitHub](https://gist.github.com/pepijn/c683c3b26da66846dbcc).
+Although TicketSwap has improved their security so the script doesn't work anymore, you can still [check it out on GitHub](https://gist.github.com/pepijn/c683c3b26da66846dbcc).
 
 
 #### 2013: [Empty car2go spotter](http://plict.nl/car2go)
