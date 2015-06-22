@@ -1,10 +1,10 @@
 # Site settings
-title:       Pixyll
-email:       your_email@example.com
-author:      John Otander
+title:       Pepijn Looije
+email:       p@epij.nl
+author:      Pepijn Looije
 description: "A simple, beautiful theme for Jekyll that emphasizes content rather than aesthetic fluff."
 baseurl:     ""
-url:         "http://pixyll.com"
+url:         "http://p.epij.nl"
 
 # Google analytics
 google_analytics:
@@ -20,11 +20,11 @@ disqus_shortname:
 
 # Social icons
 show_social_icons: false
-github_username:
+github_username: pepijn
 stackoverflow_id:
-twitter_username:
+twitter_username: pepachino
 google_plus_id:
-linkedin_username:
+linkedin_username: pepijnl
 angellist_username:
 bitcoin_url:
 paypal_url:
