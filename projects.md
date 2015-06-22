@@ -67,8 +67,6 @@ Connecting an empty car2go (<30% battery at the time) to a charging pole tops up
 
 #### 2012 - 2013: Full-stack dev at [StudySquare](https://www.studysquare.nl) (Amsterdam, NL)
 
-I had not really worked with businessmen of my age before I met Marlon and Hasher, who approached me for their project StudySquare. We completely rebuilt the website and backend system, which is still used by and for a lot of students as of today. Although the day-to-day development is now in the hands of my friends at [AJ ICT](http://www.ajict.nl), we still do various projects together from time to time.
+Before I met Marlon and Hasher, I had not really worked with businessmen my age. They approached me because StudySquare, a company that provides extra lessons for students, needed a technological revamp. We completely rebuilt the website and backend system, which is still used by and for a lot of students as of today. Although the day-to-day development is now in the hands of my friends at [AJ ICT](http://www.ajict.nl), we still do various projects together from time to time.
 
 [![StudySquare website screenshot](/images/studysquare.png)](https://www.studysquare.nl)
-
-
