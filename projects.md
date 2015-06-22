@@ -53,7 +53,7 @@ During the metabolism course in the first year of medicine, I had the idea to in
 
 Festivals in The Netherlands are soaring in popularity, so it can be hard to obtain a ticket. This Bash script continuously checks the [TicketSwap website](https://ticketswap.nl) for second-hand tickets. It was initially used for the 2014 Dekmantel Festival, but later proved valuable in securing access to the final Trouw parties. Especially the NYE party, which led to an article in the local Amsterdam newspaper Parool.
 
-[![Parool Ticketswap article](/images/parool_ticketswap.png)](http://streamingmedia.uva.nl/asset/player/X2VWfTSK8HW8DOCcTlav1lkD)
+[![Parool Ticketswap article](/images/parool_ticketswap.png)](http://www.parool.nl/parool/nl/12/CULTUUR/article/detail/3816986/2014/12/23/Slim-bedacht-computerprogramma-scoort-kaartjes-op-Ticketswap.dhtml)
 
 Ticketswap has improved their security so the script doesn't work anymore, but you can still [check it out on GitHub](https://gist.github.com/pepijn/c683c3b26da66846dbcc).
 
