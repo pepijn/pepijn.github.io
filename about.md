@@ -10,4 +10,4 @@ permalink: /about/
 * Studies Medicine at the [AMC](http://amc.nl) of the [Universiteit van Amsterdam](http://uva.nl) since September 2011
 * Is a programmer and likes to work on [all sorts of projects](/projects), primarily using Ruby with PostgreSQL, and sometimes Python or Clojure
 
-When I'm not working or studying (or slacking off...), and the wind is up, I like to be on the water windsurfing or kiteboarding. I have been a windsurfing instructor for five years at [Surfcenter IJburg](http://surfcenterijburg.nl), where my windsurfing gear is still located. 
+I like to be on the water windsurfing or kiteboarding when the wind is up. I have been a windsurfing instructor for five years at [Surfcenter IJburg](http://surfcenterijburg.nl), where my windsurfing gear is still located. 
