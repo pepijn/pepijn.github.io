@@ -4,11 +4,13 @@ title: Projects
 permalink: /projects/
 ---
 
+This is a selection of projects that I worked on or founded myself during the last 4 years. 
+
 ### Employee/freelancer
 
 #### 2014 - present: Data warehouse developer at [Blendle](https://blendle.com) (Utrecht, NL)
 
-In March 2014 I started working full-time at the promising Dutch start-up Blendle. I decided to take break from studying to gain experience with working in a small team and a high-pressure environment. This was especially true because I joined a month before the official launch in The Netherlands. Designing and building our dimensionally modeled data warehouse is now my primary task, although I started as a 'workflow developer' (PDF/XML conversion). After my first year I returned to university in April 2015. I still work part-time as a freelancer.
+In March 2014 I started working full-time at the promising Dutch start-up Blendle. I took a break from studying to gain experience with working in a small team and a high-pressure environment. This was especially true because I joined a month before the official launch in the Netherlands. Designing and building our data warehouse is now my primary task, although I started as a 'workflow developer' (PDF/XML conversion). After my first year I returned to university in April 2015. I still work part-time as a freelancer.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
@@ -72,6 +74,6 @@ Before I met Marlon and Hasher, I had not really worked with businessmen my age.
 [![StudySquare website screenshot](/images/studysquare.png)](https://www.studysquare.nl)
 
 #### 2008 - present: Invoicing system for Henry de Rijk Elektrotechniek
-To get paid legally for this project was the reason I officialy started my own company. Henry is an electrician and likes to specify all of the materials he used for a job on his invoices. Because the prices of the thousands of possible products vary over time, we thought out a way to save Henry time while creating the invoices. The system automatically updates the prices from the wholesaler's system, and is equipped with a fuzzy search mechanism that dramatically speeds up the price finding.
+To get paid legally for this project was the reason I officially started my own company. Henry is an electrician and likes to specify all of the materials he used for a job on his invoices. Because the prices of the thousands of possible products vary over time, we thought out a way to save Henry time while creating the invoices. The system automatically updates the prices from the wholesaler's system, and is equipped with a fuzzy search mechanism that dramatically speeds up the price finding.
 
 ![Henry de Rijk system screenshot](/images/henry_de_rijk_system_screenshot.png)
