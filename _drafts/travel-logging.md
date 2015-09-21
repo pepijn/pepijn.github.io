@@ -5,66 +5,83 @@ summary:
 categories: emacs org-mode git geojson
 ---
 
-tl;dr: I played around with Emacs' org-mode and mapped my road trip from this
-summer to the geoJSON format and this is the result:
-
-<script
-src="https://embed.github.com/view/geojson/pepijn/travel_log/master/my_summer_2015.geojson?width=719"></script>
+tl;dr: I played around with Emacs' org-mode and mapped my summer holiday to the
+geoJSON format. [This is the result](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson), [rendered by GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/):
+[![](https://raw.githubusercontent.com/pepijn/travel_log/03c34c500a0251dbbaa2430eb7a643de2b4ab6f0/media/geojson_github_2.png)](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson)
 
 ## Why
 
-A variety of stuff intersected last summer that led me to building this
-thing. That was:
+A couple of months ago, I came across [this post on the GitHub blog](
+https://github.com/blog/1541-geojson-rendering-improvements) about geoJSON
+rendering improvements. The rendering of this format looked great and the desire
+to built something with it was stored in my head. The idea stayed there, until
+me and my friends came back from a road trip through South-Eastern
+Europe. Finally I had an excuse to build my geoJSON-based travel
+map. Furthermore, it has been my wish for a longer time to keep a log of my
+travels, so why not take this opportunity to kill two birds with one stone.
 
-1. Reading the GitHub blog post
-2. Wanting to make a travel log that saves all my travels
-3. Coming back from this road trip and showing people where we went
+Why would anyone build *yet another* online travel log solution? The existing
+solutions, such as the famous Dutch [WaarBenJij.nu](http://waarbenjij.nu)
+(translation: WhereAreYou.now), work fine. Besides having fingerlicking visual
+appeal, they must have a great user experience–judging by the amount of users
+they have... Anyhow, disregarding user experience and whatnot, the matter that
+interested me the most is where and how your data are stored. If I take the hard
+effort to type out my journeys, I want to make sure that the data are accessible
+and transparent in case the travel log internet company buys a metaphorical
+one-way ticket to a deserted island and never returns (with my data).
 
 ## What
 
-After I came back from the road trip I wanted to map the it and also for other
-trips I have done and will do in the future. Or just because I like maps and I
-wanted to play with the geoJSON format (insert GH blog link). There are various
-websites that let you do this, but they all have a pretty bad interface and are
-online services. When they stop you lose your data. Just like everyone carefully
-keeps their own backups of all the photos they have and it wouldn't cross their
-mind just storing it on Facebook to keep it eternally, I wanted to do
-thi son my own. So I set out to built it my own and created a list of
+In other words, my plan was worth building if it adhered to the following
 specifications:
 
 
-1. Always look back at the places I have been This log will persist, unlike an
-2. online cloud based log that shuts down when the company goes bankrupt It is. A Google search for 'online travel log' yields about 500 million results. I'm gonna add one to it
-3. easy to generate a nice map. Piggybacking on GitHub for this.  Easy adding of
-4. destinations by command line or other interface
+1. ✔ Effortless visualization: [GitHub geoJSON rendering](https://help.github.com/articles/mapping-geojson-files-on-github/)
+2. ✔ (hopefully) Future-proof standards-compliant data format: [geoJSON](http://geojson.org/)
+3. ✔ Transparent and reliable data storage: [Git](https://git-scm.com/)
+4. Human-friendly interface
 
 ## How
 
-Somewhere in the back of my head I had this [blog post on the GitHub blog](
-https://github.com/blog/1541-geojson-rendering-improvements) I knew that if i
-wanted to built this I wanted to do it in geoJSON. If GitHub supports the format
-it must means it's good right?
+Unfortunately, the fact that three quarters of the specifications had been
+fulfilled before beginning any work turned out to be deceiving. The first
+attempt was a command-line app. I found out that command-line apps are not the
+best user experience for repetitive data entry. The insertion of dates and
+geolocations must be much easier when executed in a web browser. What followed
+was an impatient and pathetic attempt of building a new Sinatra app that was
+halted almost as soon as it was started. I lost interest.
 
-I played around with a CLI app, tried it in Sinatra but it all quite sucked and
-I lost interest. And I did not want to spend any time on it because I had more
-important work to do. Through
-[the excellent resource top list of Reddit Emacs](https://www.reddit.com/r/emacs/top/)
-I stumbled upon this video. mind= blown
+A few weeks later, while browsing
+[the excellent Emacs Reddit top list](https://www.reddit.com/r/emacs/top/), a
+post called
+'[Literate Devops](https://www.reddit.com/r/emacs/comments/3jx6bx/literate_devops_with_emacs/)'
+caught my attention. The link was clicked,
+[the video](https://www.youtube.com/watch?v=dljNabciEGg) seen, and my
+[mind blown](http://giphy.com/gifs/reaction-adult-swim-mind-blown-jCMq0p94fgBIk). Howard
+Abrams is executing code in various languages (in his example Shell and Python)
+in one `org-mode` file, using
+[Babel](http://orgmode.org/worg/org-contrib/babel/). Moreover, the results of
+the code blocks are outputted as `org-mode` tables, that consequentely get
+passed as input to other code blocks. Together with the 'comments as first-class
+citizen',
+[literate programming](https://en.wikipedia.org/wiki/Literate_programming)
+seemed like an intriguing way to build software.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/dljNabciEGg" frameborder="0" allowfullscreen></iframe>
+[![](/images/howard_abrams.png)](https://www.youtube.com/watch?v=dljNabciEGg)
 
-After watching this video https://www.youtube.com/watch?v=dljNabciEGg I was
-inspired to use org-mode for this purpose. I read the [Babel docs](http://orgmode.org/worg/org-contrib/babel/) and started
-playing with it. The pace of development is crazy high. And using the org-tables
-as a way of communication between various src blocks is a really nice way of
-adhering to the Unix philosophy. I have been playing with IPython for some
-statistics stuff but this is definitely better. It is the smoothest
-implementation of the Unix rules I have seen yet.
+Was Emacs with org-mode and Babel the way to go, with respect to the
+human-friendly interface for my travel log project? The org-mode tables were not
+unfamiliar to me. I have used them to do Spreadsheet-like calculations before,
+which worked really well. In the same way, they turned out to be excellent for
+repetitive data entry. Especially when using `C-c .` (`org-time-stamp`) to
+insert dates. All specifications were finally fulfilled.
 
-- Rule of Modularity
-- Rule of Clarity
-- Rule of Composition
-- Rule of Separation
-etc.
+The gif below is me doing the following things:
+
+1. Cloning [my personal `travel_log` example repository](https://github.com/pepijn/travel_log) and opening it
+2. Loading the state from the `geojson` file into the `org-mode` table
+3. Insert a row into the travel log so it includes a short trip to the [Easter Island](https://en.wikipedia.org/wiki/Easter_Island)
+4. `C-c C-v C-b` (`org-babel-execute-buffer`) it (among other things, also pushes to GitHub)
+5. Refreshing the GitHub geoJSON rendering and observing the newly added trip across the world!
 
 ![](https://raw.githubusercontent.com/pepijn/travel_log/master/media/demo.gif)
