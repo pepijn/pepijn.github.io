@@ -8,24 +8,30 @@ url:         "http://p.epij.nl"
 
 # Google analytics
 google_analytics: UA-6645938-20
+url:         "http://pixyll.com"
+
+date_format: "%b %-d, %Y"
 
 # Optional features
-animated:           false
-show_related_posts: false
-show_post_footers:  false
+animated:             false
+show_related_posts:   false
+show_post_footers:    false
+show_social_icons:    false
+ajaxify_contact_form: false
 
 # Disqus post comments
 # (leave blank to disable Disqus)
 disqus_shortname:
 
 # Social icons
-show_social_icons: false
+show_social_icons: true
 github_username: pepijn
 stackoverflow_id:
-twitter_username: pepachino
+twitter_username: ppnlo
 google_plus_id:
 linkedin_username: pepijnl
 angellist_username:
+medium_id:
 bitcoin_url:
 paypal_url:
 flattr_button:
@@ -45,10 +51,10 @@ share_stumbleupon: false
 share_hackernews: false
 
 # Build settings
-markdown:     redcarpet
+markdown:     kramdown
 redcarpet:
   extensions: ['smart', 'tables', 'with_toc_data']
 permalink:    pretty
-paginate:     3
+paginate:     4
 sass:
   compressed: true

@@ -117,15 +117,27 @@ A relevant Jekyll Github Issue: <https://github.com/jekyll/jekyll/issues/332>
 
 ### Contact Form
 
-If you'd like to keep the contact form, which uses <http://formspree.io/>, you will need to update the email address.
+If you'd like to keep the contact form, which uses <http://formspree.io>, you will need to update the email address.
 
-Currently, the `contact.md` has the following:
+Currently, the `contact.html` has the following:
 
 ```html
-<form action="https://formspree.io/johnotander@icloud.com" method="POST" class="form-stacked form-light">
+<form action="http://formspree.io/johnotander@icloud.com" method="POST" class="form-stacked form-light">
 ```
 
 Where it says `johnotander@icloud.com`, you will need to change that to the email that you wish to have the form data sent to. It will require you to fill the form out when you push it live for the first time so that you can confirm your email.
+
+More setup instructions and advanced options can be found at [http://formspree.io](http://formspree.io/)
+
+### Disqus
+
+To configure Disqus, set up a [Disqus site](https://disqus.com/admin/create/) with the same name as your site. Once that is complete,
+go to the admin page for your site. Under the "Settings" tab there is a button called "Universal Code". Take that code and replace it
+in the `_layouts/post.html` file between the `{% if site.disqus_shortname %}` and `{% endif %}` tags.
+
+### Customizing the CSS
+
+All variables can be found in the `_sass/_variables.scss` file, toggle these as you'd like to change the look and feel of Pixyll.
 
 ### Page Animation
 
