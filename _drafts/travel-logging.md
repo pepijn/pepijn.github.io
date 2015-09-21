@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      geoJSON travel log using Emacs org-mode
-summary:
+summary:    
 categories: emacs org-mode git geojson
 ---
 
@@ -11,17 +11,34 @@ summer to the geoJSON format and this is the result:
 <script
 src="https://embed.github.com/view/geojson/pepijn/travel_log/master/my_summer_2015.geojson?width=719"></script>
 
+## Why
+
+A variety of stuff intersected last summer that led me to building this
+thing. That was:
+
+1. Reading the GitHub blog post
+2. Wanting to make a travel log that saves all my travels
+3. Coming back from this road trip and showing people where we went
+
+## What
+
 After I came back from the road trip I wanted to map the it and also for other
 trips I have done and will do in the future. Or just because I like maps and I
 wanted to play with the geoJSON format (insert GH blog link). There are various
 websites that let you do this, but they all have a pretty bad interface and are
-online services. When they stop you lose your data. So I set out to built it my
-own and created a list of specifications:
+online services. When they stop you lose your data. Just like everyone carefully
+keeps their own backups of all the photos they have and it wouldn't cross their
+mind just storing it on Facebook to keep it eternally, I wanted to do
+thi son my own. So I set out to built it my own and created a list of
+specifications:
+
 
 1. Always look back at the places I have been This log will persist, unlike an
-2. online cloud based log that shuts down when the company goes bankrupt It is
+2. online cloud based log that shuts down when the company goes bankrupt It is. A Google search for 'online travel log' yields about 500 million results. I'm gonna add one to it
 3. easy to generate a nice map. Piggybacking on GitHub for this.  Easy adding of
 4. destinations by command line or other interface
+
+## How
 
 Somewhere in the back of my head I had this [blog post on the GitHub blog](
 https://github.com/blog/1541-geojson-rendering-improvements) I knew that if i
