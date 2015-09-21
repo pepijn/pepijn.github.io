@@ -35,8 +35,7 @@ Medisas and focused on university.
 [![Medisas website screenshot](/images/medisas_website.png)](http://medisas.com)
 
 
-#### 2009 - 2010: Trainee 0x04 at [Phusion](http://www.phusion.nl) (Mostly
-     Utrecht, NL)
+#### 2009 - 2010: Trainee 0x04 at [Phusion](http://www.phusion.nl) (Mostly Utrecht, NL)
 
 During my second to last year of high school, the Phusion guys approached me
 after I tweeted about their product Passenger. I was hired and appropriately
@@ -49,14 +48,14 @@ working in a team, they taught me how to eat with chopsticks (shoutout
 
 ### Related to university
 
-#### 2013 - present: Technical co-founder at
-[StudentResearch](https://www.studentresearch.nl) At the start of the 3rd year
-of medicine, fellow medicine student Hassina Bahadurzada asked me for help with
-materializing her idea: how can we connect researchers that need help with
-students who want to gain experience in doing research? Together, we turned this
-excellent idea into reality and called it StudentResearch. The community of
-researchers and students is still growing rapidly, and so is the amount of
-communication between them. A year ago, we
+#### 2013 - present: Technical co-founder at [StudentResearch](https://www.studentresearch.nl)
+
+At the start of the 3rd year of medicine, fellow medicine student Hassina
+Bahadurzada asked me for help with materializing her idea: how can we connect
+researchers that need help with students who want to gain experience in doing
+research? Together, we turned this excellent idea into reality and called it
+StudentResearch. The community of researchers and students is still growing
+rapidly, and so is the amount of communication between them. A year ago, we
 [received an UvA Grassroots grant](http://icto.uva.nl/icto-centraal/uva-grassroots/ter-inspiratie/ter-inspiratie/ter-inspiratie/content/folder/uitbreiding-studentresearch-kopie.html?page=2&pageSize=20),
 for which the following video was made:
 
@@ -76,8 +75,9 @@ findings soon.
 ![Anatomy cramming website screenshot](/images/anatomy_website_screenshot.png)
 
 
-#### 2011: [Cellular respiration simulation](http://metabolism.plict.nl) During
-the metabolism course in the first year of medicine, I had the idea to
+#### 2011: [Cellular respiration simulation](http://metabolism.plict.nl)
+
+During the metabolism course in the first year of medicine, I had the idea to
 interactively explain the phosphorylation of 38 ADP into ATP in the glycolysis,
 citric acid cycle and oxydative phosphorylation. It takes a little bit of time
 to finish the whole dissimilation of one glucose molecule. That is why I
@@ -117,8 +117,7 @@ works though!
 [![car2go Amsterdam](/images/car2go.png)](http://plict.nl/car2go)
 
 
-#### 2012 - 2013: Full-stack dev at [StudySquare](https://www.studysquare.nl)
-     (Amsterdam, NL)
+#### 2012 - 2013: Full-stack dev at [StudySquare](https://www.studysquare.nl) (Amsterdam, NL)
 
 Before I met Marlon and Hasher, I had not really worked with businessmen my
 age. They approached me because StudySquare, a company that provides extra
@@ -130,8 +129,9 @@ time to time.
 
 [![StudySquare website screenshot](/images/studysquare.png)](https://www.studysquare.nl)
 
-#### 2008 - present: Invoicing system for Henry de Rijk Elektrotechniek To get
-paid legally for this project was the reason I officially started my own
+#### 2008 - present: Invoicing system for Henry de Rijk Elektrotechniek
+
+To get paid legally for this project was the reason I officially started my own
 company. Henry is an electrician and likes to specify all of the materials he
 used for a job on his invoices. Because the prices of the thousands of possible
 products vary over time, we thought out a way to save Henry time while creating
