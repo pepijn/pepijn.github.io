@@ -1,38 +1,41 @@
 ---
 layout:     post
-title:      geoJSON travel log using Emacs org-mode
+title:      A geoJSON travel log using Emacs Org mode and Babel
 summary:    
 categories: emacs org-mode git geojson
 ---
 
-tl;dr: I played around with Emacs' org-mode and mapped my summer holiday to the
-geoJSON format. [This is the result](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson), [rendered by GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/):
+tl;dr: I played around with Emacs Org mode and Babel and mapped my summer holiday to the
+geoJSON format. [This](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson) is the result, [rendered](https://help.github.com/articles/mapping-geojson-files-on-github/) by GitHub:
 [![](https://raw.githubusercontent.com/pepijn/travel_log/03c34c500a0251dbbaa2430eb7a643de2b4ab6f0/media/geojson_github_2.png)](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson)
 
 ## Why
 
 A couple of months ago, I came across [this post on the GitHub blog](
 https://github.com/blog/1541-geojson-rendering-improvements) about geoJSON
-rendering improvements. The rendering of this format looked great and the desire
-to built something with it was stored in my head. The idea stayed there, until
-me and my friends came back from a road trip through South-Eastern
-Europe. Finally I had an excuse to build my geoJSON-based travel
-map. Furthermore, it has been my wish for a longer time to keep a log of my
-travels, so why not take this opportunity to kill two birds with one stone.
+rendering improvements. The rendering of this format was great and so was my
+desire to built something with it. As these things go, it did not materialize
+because of priorities. Nevertheless, the idea rested somewhere in the back of my
+head, until me and my friends came back from a road trip through South-Eastern
+Europe. Finally, I had an excuse to build something related to geoJSON: a travel
+map depicting our route. Furthermore, keeping better track of my trips has been
+my wish for a longer time, so why not take this opportunity to kill two birds
+with one stone.
 
-Why would anyone build *yet another* online travel log solution? The existing
-solutions, such as the famous Dutch [WaarBenJij.nu](http://waarbenjij.nu)
+Why would anyone build *yet another* travel log appliance though? The existing
+solutions, such as the (in)famous Dutch [WaarBenJij.nu](http://waarbenjij.nu)
 (translation: WhereAreYou.now), work fine. Besides having fingerlicking visual
-appeal, they must have a great user experience–judging by the amount of users
-they have... Anyhow, disregarding user experience and whatnot, the matter that
-interested me the most is where and how your data are stored. If I take the hard
-effort to type out my journeys, I want to make sure that the data are accessible
-and transparent in case the travel log internet company buys a metaphorical
-one-way ticket to a deserted island and never returns (with my data).
+appeal, WaarBenJij.nu must have a great user interface–judging by the amount of
+users they have... Anyhow, disregarding user experience and whatnot, the matter
+that interests me the most is where and how your data are stored. If I take the
+hard effort to type out my journeys, I want to make sure that the data are
+accessible and transparent in case the travel log internet company buys a
+metaphorical one-way ticket to a remote tropical island and never returns (with
+my data).
 
 ## What
 
-In other words, my plan was worth building if it adhered to the following
+In other words, my plan was worth implementing if it adhered to the following
 specifications:
 
 
@@ -44,12 +47,12 @@ specifications:
 ## How
 
 Unfortunately, the fact that three quarters of the specifications had been
-fulfilled before beginning any work turned out to be deceiving. The first
-attempt was a command-line app. I found out that command-line apps are not the
-best user experience for repetitive data entry. The insertion of dates and
-geolocations must be much easier when executed in a web browser. What followed
-was an impatient and pathetic attempt of building a new Sinatra app that was
-halted almost as soon as it was started. I lost interest.
+fulfilled before beginning any work turned out to be deceiving. My first attempt
+was a one-off command-line app. I found out that one-off command-line apps are
+not the best user experience for repetitive data entry. The insertion of dates
+and geolocations should probably be much easier when executed in a web
+browser. What followed was an impatient and pathetic attempt of building a
+Sinatra app that was halted almost as soon as it was started. I lost interest.
 
 A few weeks later, while browsing
 [the excellent Emacs Reddit top list](https://www.reddit.com/r/emacs/top/), a
@@ -68,13 +71,15 @@ citizen',
 seemed like an intriguing way to build software.
 
 [![](/images/howard_abrams.png)](https://www.youtube.com/watch?v=dljNabciEGg)
+Howard Abram's Literate Devops video
 
 Was Emacs with org-mode and Babel the way to go, with respect to the
 human-friendly interface for my travel log project? The org-mode tables were not
 unfamiliar to me. I have used them to do Spreadsheet-like calculations before,
 which worked really well. In the same way, they turned out to be excellent for
 repetitive data entry. Especially when using `C-c .` (`org-time-stamp`) to
-insert dates. All specifications were finally fulfilled.
+insert dates. All specifications were finally fulfilled and the project
+implemented.
 
 The gif below is me doing the following things:
 
@@ -85,3 +90,7 @@ The gif below is me doing the following things:
 5. Refreshing the GitHub geoJSON rendering and observing the newly added trip across the world!
 
 ![](https://raw.githubusercontent.com/pepijn/travel_log/master/media/demo.gif)
+
+## Conclusion
+
+Org mode and Babel are great for everything etc etc
