@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Building a GeoJSON travel log: an introduction to literate programming with Org mode"
+title:      "Building a GeoJSON travel log: an introduction to Org mode and Babel"
 summary:    
 categories: emacs org-mode git geojson
 ---
@@ -68,7 +68,9 @@ reproducibility.
 {% highlight sh %}
 #+HEADER: :results output
 #+BEGIN_SRC sh
+
 gem install geocoder
+
 #+END_SRC
 
 #+RESULTS:
@@ -82,11 +84,14 @@ gem install geocoder
 Now we will geocode the locations using the gem above. We don't want to get
 rate-limited by the Google Maps API, so that's why we create the
 `geolocation-cache` table with the distinct locations and their coordinates. For
-instance, Utrecht is listed twice in the travel log but only geocoded once.
+instance, Utrecht is listed twice in the travel log but only geocoded once. By
+the way, the `#+HEADER:` and `#+BEGIN_SRC` lines are instructions to Babel. I
+included them to enhance reproducibility.
 
 {% highlight ruby %}
 #+HEADER: :var travel_log=travel-log
 #+BEGIN_SRC ruby
+
 locations = travel_log.map do |entry|
   # We only need the second column: the location
   _, location = entry
@@ -131,6 +136,7 @@ builds a [GeoJSON-formatted](http://geojson.org) structure and saves it to the
 #+HEADER: :var geolocation_cache=geolocation-cache
 #+HEADER: :var travel_log=travel-log
 #+BEGIN_SRC ruby
+
 coordinates = Hash[geolocation_cache.map do |entry|
   location, longitude, latitude = entry
   [location, [longitude, latitude]]
@@ -249,7 +255,7 @@ hub browse "$GH_PATH_ROOT/blob/master/$FILENAME"
 
 \*Safari opens...\*
 
-![](/images/example_travel_log_github.png)
+[![My travel log example](/images/example_travel_log_github.png)](https://github.com/pepijn/example_travel_log/blob/master/my_trip.geojson)
 
 It works :-)
 
