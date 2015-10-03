@@ -1,12 +1,45 @@
 ---
 layout:     post
-title:      Introduction to Emacs Org mode and Babel
+title:      "Building a GeoJSON travel log: an introduction to literate programming with Org mode"
 summary:    
 categories: emacs org-mode git geojson
 ---
 
-First we define the travel log and name it (put it in a variable) called
-`travel-log`.
+[Literate programming](https://en.wikipedia.org/wiki/Literate_programming) is a
+technique that caught my attention after recently stumbling upon Howard Abrams'
+['Literate Devops with Emacs'
+video](https://www.youtube.com/watch?v=dljNabciEGg). The intersection of
+watching this awesome video, reading about [geoJSON rendering on
+GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/) and
+returning from a road trip last summer led me to building my own travel log. In
+my first blog post I would like to show you how it works.
+[![](https://raw.githubusercontent.com/pepijn/travel_log/03c34c500a0251dbbaa2430eb7a643de2b4ab6f0/media/geojson_github_2.png)](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson)
+
+Creating a travel log means entering a lot of data like dates and
+locations. Existing online travel log solutions, like the well-known Dutch
+website ['WaarBenJij.nu'](http://waarbenjij.nu), do not provide the most user
+friendly experience for this. Besides, what happens to your data when the online
+travel log company goes bankrupt? These two shortcomings are easily addressed
+with common programmer tools like Emacs' [Org mode](http://orgmode.org) and
+distributed version control systems like [Git](https://git-scm.com). While most
+programmers are familiar with Git and GitHub, Org mode is less popular.
+
+> "Org mode is for keeping notes, maintaining TODO lists, planning projects, and
+authoring documents with a fast and effective plain-text system." –
+[http://orgmode.org](http://orgmode.org)
+
+Additionaly, we use the [Babel](http://orgmode.org/worg/org-contrib/babel/) Org
+mode extension to execute source code in various languages (in this case just
+Shell and Ruby) in between the blog post paragraphs. By *using these blocks
+exclusively*, we will create **all the code necessary** to: geocode the
+locations in the travel log to coordinates (and install a library that helps us
+do this), convert the travel log to a GeoJSON file, commit and push it into a
+new repository, and open GitHub in a browser at the right URL. In fact, you can
+open this blog post in Emacs, enter `org-mode` and execute everything
+(`org-babel-execute-buffer`) to reproduce my steps.
+
+Enough talking, let's build this thing! We begin by defining the travel log, and
+'store it in a variable' called `travel-log`.
 
 {% highlight cucumber %}
 #+NAME: travel-log
@@ -20,8 +53,17 @@ First we define the travel log and name it (put it in a variable) called
 | <2015-08-14 Fri> | Utrecht, The Netherlands  |
 {% endhighlight %}
 
-In order to geocode the location names to coordinates we are going to use the
-[`geocoder` Ruby gem](https://github.com/alexreisner/geocoder).
+The brackets (`<` and `>`) around the dates indicate an Org mode timestamp. We
+can easily add and manipulate dates by using the datepicker (`C-c .`) and use
+`TAB` to move through the table: a user-friendly interface :-)
+
+![Emacs Org mode datepicker](/images/emacs_org_mode_datepicker.png)
+
+In order to geocode the location names to coordinates we will use the
+[`geocoder` Ruby gem](https://github.com/alexreisner/geocoder). A shell source
+code block is an excellent way to install it, most importantly because the
+output displays the version that I used while writing the blog post. It improves
+reproducibility.
 
 {% highlight sh %}
 #+HEADER: :results output
@@ -37,8 +79,10 @@ gem install geocoder
 
 {% endhighlight %}
 
-And now we will geocode it. We don't want to geocode Amsterdam twice so we use a
-cache.
+Now we will geocode the locations using the gem above. We don't want to get
+rate-limited by the Google Maps API, so that's why we create the
+`geolocation-cache` table with the distinct locations and their coordinates. For
+instance, Utrecht is listed twice in the travel log but only geocoded once.
 
 {% highlight ruby %}
 #+HEADER: :var travel_log=travel-log
@@ -68,8 +112,8 @@ end
 | A&O Hamburg City, Hamburg |  9.9936818 |        53.5510846 |
 {% endhighlight %}
 
-We are going to construct the geoJSON file now. But before we do, we have to
-specify the location to save the file.
+Before we move on to the GeoJSON conversion, we have to specify a path where we
+can save the file.
 
 {% highlight sh %}
 #+NAME: geojson-file-path
@@ -77,7 +121,9 @@ specify the location to save the file.
 : /tmp/example_travel_log/my_trip.geojson
 {% endhighlight %}
 
-Now we contruct the geoJSON file.
+The following source block joins the `travel-log` with the `geolocation-cache`,
+builds a [GeoJSON-formatted](http://geojson.org) structure and saves it to the
+`geojson-file-path`.
 
 {% highlight ruby %}
 #+HEADER: :results silent
@@ -91,12 +137,16 @@ coordinates = Hash[geolocation_cache.map do |entry|
 end]
 
 require 'date'
-geojson_features = travel_log.map do |entry|
+geojson_features = []
+
+# We use each_cons so we can draw lines between the locations
+travel_log << nil
+travel_log.each_cons(2) do |entry, next_entry|
   org_date, location = entry
 
   date = Date.parse org_date
 
-  {
+  geojson_features << {
     type: 'Feature',
     geometry: {
       type: 'Point',
@@ -105,6 +155,16 @@ geojson_features = travel_log.map do |entry|
     properties: {
       Location: location,
       Date: date
+    }
+  }
+
+  next unless next_entry
+  _, next_loc = next_entry
+  geojson_features << {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: [coordinates[location], coordinates[next_loc]]
     }
   }
 end
@@ -123,13 +183,13 @@ end
 #+END_SRC
 {% endhighlight %}
 
-Now we look at the contents of the file.
+Let's verify the contents of the newly created file before we move on.
 
 {% highlight sh %}
 #+HEADER: :results output
 #+HEADER: :var GEOJSON_FILE_PATH=geojson-file-path
 #+BEGIN_SRC sh
-head -n 19 '' $GEOJSON_FILE_PATH
+head -n 21 '' $GEOJSON_FILE_PATH
 echo etc...
 #+END_SRC
 
@@ -155,20 +215,24 @@ echo etc...
     },
     {
       "type": "Feature",
+      "geometry": {
+        "type": "LineString",
 etc...
 #+end_example
 
 {% endhighlight %}
 
-Finally we push the geoJSON file to GitHub.
+The date, location and coordinates seem to match with the travel log we
+specified earlier. Let's create a repository, commit, push and open GitHub to
+check it out!
 
 {% highlight sh %}
 #+HEADER: :results output silent
 #+HEADER: :var GEOJSON_FILE_PATH=geojson-file-path
 #+BEGIN_SRC sh
-cd $(dirname $GEOJSON_FILE_PATH)
+cd "$(dirname $GEOJSON_FILE_PATH)"
 
-FILENAME=$(basename $GEOJSON_FILE_PATH)
+FILENAME="$(basename $GEOJSON_FILE_PATH)"
 
 brew install hub
 hub init
@@ -177,8 +241,20 @@ hub add $FILENAME
 hub commit -m 'Update travel_log' $FILENAME
 hub push origin master
 
-ROOT=$(hub remote -v | grep fetch | grep -oE '\w+\/\w+')
-hub browse "$ROOT/blob/master/$FILENAME"
+GH_PATH_ROOT="$(hub remote -v | grep fetch | grep -oE '\w+\/\w+')"
+hub browse "$GH_PATH_ROOT/blob/master/$FILENAME"
 #+END_SRC
 
 {% endhighlight %}
+
+\*Safari opens...\*
+
+![](/images/example_travel_log_github.png)
+
+It works :-)
+
+For a more feature complete implementation that might actually be useful for
+real-life travel logging, please check out:
+[https://github.com/pepijn/travel_log](https://github.com/pepijn/travel_log).
+
+Happy hacking!
