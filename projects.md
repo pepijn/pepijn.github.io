@@ -9,7 +9,7 @@ last 4 years.
 
 ### Employee/freelancer (via [Plict](http://www.plict.nl))
 
-#### 2014 - present: Data warehouse developer at [Blendle](https://blendle.com) (Utrecht, NL)
+#### 2014 - 2015: Data warehouse developer at [Blendle](https://blendle.com) (Utrecht, NL)
 
 In March 2014 I started working full-time at the promising Dutch start-up
 Blendle. I took a break from studying to gain experience with working in a small
@@ -17,7 +17,7 @@ team and a high-pressure environment. This was especially true because I joined
 a month before the official launch in the Netherlands. Designing and building
 our data warehouse is now my primary task, although I started as a 'workflow
 developer' (PDF/XML conversion). After my first year I returned to university in
-April 2015. I still work part-time as a freelancer.
+April 2015. From that point on I worked part-time until August 2015.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
@@ -119,13 +119,12 @@ works though!
 
 #### 2012 - 2013: Full-stack dev at [StudySquare](https://www.studysquare.nl) (Amsterdam, NL)
 
-Before I met Marlon and Hasher, I had not really worked with businessmen my
-age. They approached me because StudySquare, a company that provides extra
-lessons for students, needed a technological revamp. We completely rebuilt the
-website and backend system, which is still used by and for a lot of students as
-of today. Although the day-to-day development is now in the hands of my friends
-at [AJ ICT](http://www.ajict.nl), we still do various projects together from
-time to time.
+Marlon, the founder of StudySquare, approached me because StudySquare, a company
+that provides extra lessons for students, needed a technological revamp. We
+completely rebuilt the website and backend system, which is still used by and
+for a lot of students as of today. Although the day-to-day development is now in
+the hands of my friends at [AJ ICT](http://www.ajict.nl), me and Marlon still do
+various projects together from time to time.
 
 [![StudySquare website screenshot](/images/studysquare.png)](https://www.studysquare.nl)
 
