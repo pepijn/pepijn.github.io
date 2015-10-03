@@ -31,11 +31,11 @@ authoring documents with a fast and effective plain-text system." –
 Additionaly, we use the [Babel](http://orgmode.org/worg/org-contrib/babel/) Org
 mode extension to execute source code in various languages (in this case just
 Shell and Ruby) in between the blog post paragraphs. By *using these blocks
-exclusively*, we will create **all the code necessary** to: geocode the
-locations in the travel log to coordinates (and install a library that helps us
-do this), convert the travel log to a GeoJSON file, commit and push it into a
-new repository, and open GitHub in a browser at the right URL. In fact, you can
-open this blog post in Emacs, enter `org-mode` and execute everything
+exclusively*, we will create *all the code necessary* to: geocode the locations
+in the travel log to coordinates (and install a library that helps us do this),
+convert the travel log to a GeoJSON file, commit and push it into a new
+repository, and open GitHub in a browser at the right URL. In fact, you can copy
+& paste this blog post into Emacs, enter `org-mode` and execute everything
 (`org-babel-execute-buffer`) to reproduce my steps.
 
 Enough talking, let's build this thing! We begin by defining the travel log, and
@@ -62,8 +62,8 @@ can easily add and manipulate dates by using the datepicker (`C-c .`) and use
 In order to geocode the location names to coordinates we will use the
 [`geocoder` Ruby gem](https://github.com/alexreisner/geocoder). A shell source
 code block is an excellent way to install it, most importantly because the
-output displays the version that I used while writing the blog post. It improves
-reproducibility.
+output displays the version that I used while writing the blog post, which
+improves reproducibility.
 
 {% highlight sh %}
 #+HEADER: :results output
@@ -195,7 +195,7 @@ Let's verify the contents of the newly created file before we move on.
 #+HEADER: :results output
 #+HEADER: :var GEOJSON_FILE_PATH=geojson-file-path
 #+BEGIN_SRC sh
-head -n 21 '' $GEOJSON_FILE_PATH
+head -n 33 '' $GEOJSON_FILE_PATH
 echo etc...
 #+END_SRC
 
@@ -223,6 +223,18 @@ echo etc...
       "type": "Feature",
       "geometry": {
         "type": "LineString",
+        "coordinates": [
+          [
+            5.1214201,
+            52.09073739999999
+          ],
+          [
+            14.4213456,
+            50.0862754
+          ]
+        ]
+      }
+    },
 etc...
 #+end_example
 
