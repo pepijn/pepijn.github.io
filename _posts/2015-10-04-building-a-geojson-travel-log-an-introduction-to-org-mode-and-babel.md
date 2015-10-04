@@ -1,42 +1,42 @@
 ---
 layout:     post
 title:      "Building a GeoJSON travel log: an introduction to Org mode and Babel"
-summary:    
 categories: emacs org-mode git geojson
 ---
 
 [Literate programming](https://en.wikipedia.org/wiki/Literate_programming) is a
 technique that caught my attention after recently stumbling upon Howard Abrams'
-['Literate Devops with Emacs'
-video](https://www.youtube.com/watch?v=dljNabciEGg). The intersection of
-watching this awesome video, reading about [geoJSON rendering on
-GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/) and
-returning from a road trip last summer led me to building my own travel log. In
-my first blog post I would like to show you how it works.
+['Literate Devops with Emacs' video](https://www.youtube.com/watch?v=dljNabciEGg). The
+intersection of watching this awesome video, reading about
+[geoJSON rendering on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/)
+and returning from a road trip last summer led me to building my own travel
+log. In my first blog post I would like to show you how it works.
 [![](https://raw.githubusercontent.com/pepijn/travel_log/03c34c500a0251dbbaa2430eb7a643de2b4ab6f0/media/geojson_github_2.png)](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson)
 
-Creating a travel log means entering a lot of data like dates and
-locations. Existing online travel log solutions, like the well-known Dutch
-website ['WaarBenJij.nu'](http://waarbenjij.nu), do not provide the most user
-friendly experience for this. Besides, what happens to your data when the online
-travel log company goes bankrupt? These two shortcomings are easily addressed
-with common programmer tools like Emacs' [Org mode](http://orgmode.org) and
-distributed version control systems like [Git](https://git-scm.com). While most
-programmers are familiar with Git and GitHub, Org mode is less popular.
+Creating a travel log means entering a lot of data like dates and locations; a
+job that can be tedious without a user-friendly interface. It shouldn't be too
+hard to beat exisiting online travel log services, such as the well-known Dutch
+website ['WaarBenJij.nu'](http://waarbenjij.nu), in this aspect. Besides, what
+happens to your data when the online travel log company goes bankrupt?  These
+two shortcomings are easily addressed with common programmer tools like Emacs'
+[Org mode](http://orgmode.org) and distributed version control systems like
+[Git](https://git-scm.com). While most programmers are familiar with the
+features of Git and GitHub, those of Org mode are less-known:
 
 > "Org mode is for keeping notes, maintaining TODO lists, planning projects, and
-authoring documents with a fast and effective plain-text system." –
+authoring documents with a fast and effective plain-text system." —
 [http://orgmode.org](http://orgmode.org)
 
-Additionaly, we use the [Babel](http://orgmode.org/worg/org-contrib/babel/) Org
-mode extension to execute source code in various languages (in this case just
-Shell and Ruby) in between the blog post paragraphs. By *using these blocks
-exclusively*, we will create *all the code necessary* to: geocode the locations
-in the travel log to coordinates (and install a library that helps us do this),
-convert the travel log to a GeoJSON file, commit and push it into a new
-repository, and open GitHub in a browser at the right URL. In fact, you can copy
-& paste this blog post into Emacs, enter `org-mode` and execute everything
-(`org-babel-execute-buffer`) to reproduce my steps.
+In addition to Org mode, we use the
+[Babel](http://orgmode.org/worg/org-contrib/babel/) extension to execute source
+code in various languages (in this case just Shell and Ruby) in between the blog
+post paragraphs. By *using these blocks exclusively*, we will create *all the
+code necessary* to: geocode the locations in the travel log to coordinates (and
+install a library that helps us do this), convert the travel log to a GeoJSON
+file, commit and push it into a new repository, and open GitHub in a browser at
+the right URL. In fact, you can copy & paste this blog post into Emacs, enter
+`org-mode` and execute everything (`org-babel-execute-buffer`) to reproduce my
+steps.
 
 Enough talking, let's build this thing! We begin by defining the travel log, and
 'store it in a variable' called `travel-log`.
@@ -54,8 +54,10 @@ Enough talking, let's build this thing! We begin by defining the travel log, and
 {% endhighlight %}
 
 The brackets (`<` and `>`) around the dates indicate an Org mode timestamp. We
-can easily add and manipulate dates by using the datepicker (`C-c .`) and use
-`TAB` to move through the table: a user-friendly interface :-)
+can easily add and manipulate dates by using the datepicker (`C-c .`, which, for
+those unfamiliar with Emacs, means pressing the Control and C keys
+simultaneously before hitting the dot) and use `TAB` to move through the table:
+a user-friendly interface.
 
 ![Emacs Org mode datepicker](/images/emacs_org_mode_datepicker.png)
 
@@ -269,7 +271,12 @@ hub browse "$GH_PATH_ROOT/blob/master/$FILENAME"
 
 [![My travel log example](/images/example_travel_log_github.png)](https://github.com/pepijn/example_travel_log/blob/master/my_trip.geojson)
 
-It works :-)
+It works; all the destinations from the travel log show up on the map with lines
+connecting them. Whenever we change the travel log or the code we can just rerun
+all the source code blocks and check out the new result; no slow switches
+between editors and command lines. All in all, the consequential higher speed of
+development and improved transparency of the program will most definitely make
+me pick Org mode and Babel for future projects.
 
 For a more feature complete implementation that might actually be useful for
 real-life travel logging, please check out:
