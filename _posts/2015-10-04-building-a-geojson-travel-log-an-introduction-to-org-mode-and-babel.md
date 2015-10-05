@@ -8,7 +8,7 @@ categories: emacs org-mode git geojson
 technique that caught my attention after recently stumbling upon Howard Abrams'
 ['Literate Devops with Emacs' video](https://www.youtube.com/watch?v=dljNabciEGg). The
 intersection of watching this awesome video, reading about
-[geoJSON rendering on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/)
+[GeoJSON rendering on GitHub](https://help.github.com/articles/mapping-geojson-files-on-github/)
 and returning from a road trip last summer led me to building my own travel
 log. In my first blog post I would like to show you how it works.
 [![](https://raw.githubusercontent.com/pepijn/travel_log/03c34c500a0251dbbaa2430eb7a643de2b4ab6f0/media/geojson_github_2.png)](https://github.com/pepijn/travel_log/blob/master/my_summer_2015.geojson)
@@ -280,6 +280,11 @@ me pick Org mode and Babel for future projects.
 
 For a more feature complete implementation that might actually be useful for
 real-life travel logging, please check out:
-[https://github.com/pepijn/travel_log](https://github.com/pepijn/travel_log).
+[https://github.com/pepijn/travel_log](https://github.com/pepijn/travel_log). Manipulating
+it (adding a destination) looks like this:
+
+[![manipulating my feature complete travel log](https://raw.githubusercontent.com/pepijn/travel_log/d441172af826a6de697286222ca9158c76546559/media/demo.gif)](https://github.com/pepijn/travel_log)
 
 Happy hacking!
+
+<a href="https://twitter.com/share" class="twitter-share-button" data-via="ppnlo">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
