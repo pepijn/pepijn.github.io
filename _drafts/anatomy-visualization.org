@@ -1,10 +1,12 @@
+#+BEGIN_HTML
 ---
 layout:     post
 title:      Anatomy visualization
 categories: medicine visualization gource postgresql
 ---
+#+END_HTML
 
-#+BEGIN_SRC sh :results file
+#+BEGIN_SRC sh :results file :exports none
 cd ~/Code/anatomy
 DATABASE_URL="$(heroku config:get DATABASE_URL)"
 FILE_PATH="/tmp/database_url_$(echo $DATABASE_URL | shasum -a 256).secret"
@@ -17,6 +19,7 @@ echo "$FILE_PATH"
 [[file:/tmp/database_url_7536247dd915fdca1746327350e18b41b7345c9f8a041f1688dc25722a836cab  -.secret]]
 
 #+NAME: database-url
+#+HEADER: :exports none
 #+BEGIN_SRC sh :var DB_CRED_PATH=database-credentials-path :results silent
 cat "$DB_CRED_PATH"
 #+END_SRC
@@ -42,15 +45,15 @@ SELECT
   round(extract(epoch from answers.created_at)),
   session_rank,
   CASE
-    WHEN similarity(input, structures.name) = 1 THEN 'A'::text
-    WHEN similarity(input, structures.name) >= 0.8 THEN 'M'::text
-    ELSE 'M'::text
+    WHEN similarity(input, structures.name) = 1 THEN 'A'
+    WHEN similarity(input, structures.name) >= 0.8 THEN 'M'
+    ELSE 'M'
   END,
   regexp_replace(structures.name, '(..)', '\1/', 'g') || '/' || input,
   CASE
-    WHEN similarity(input, structures.name) >= 1 THEN '00FF00'::text
-    WHEN similarity(input, structures.name) >= 0.5 THEN 'FFFF00'::text
-    ELSE 'FF0000'::text
+    WHEN similarity(input, structures.name) >= 1 THEN '00FF00'
+    WHEN similarity(input, structures.name) >= 0.5 THEN 'FFFF00'
+    ELSE 'FF0000'
   END
 FROM answers
 JOIN structures ON structures.id = structure_id
@@ -65,7 +68,7 @@ ORDER BY answers
 #+HEADER: :var EXAM_DATE=exam-date
 #+HEADER: :var ANSWERS_QUERY=answers-query
 #+HEADER: :results file
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :exports none
 OUTPUT_FILE="$(mktemp -t anatomy)"
 echo $ANSWERS_QUERY | psql $DATABASE_URL \
                            --no-align \
@@ -93,12 +96,18 @@ head -n 3 $ANSWERS_PATH
 : 1442729377|1|A|me/ni/sc/us/ l/at/er/al/is//meniscus lateralis|00FF00
 
 #+HEADER: :results file
-#+BEGIN_SRC ruby
+#+HEADER: :var exam_date=exam-date
+#+BEGIN_SRC ruby :exports none
 require 'date'
-date = DateTime.parse('2015-09-21 06:30').to_time
+date = DateTime.parse(exam_date).to_time
 captions = 40.times.map do |i|
   adj_time = date - (60 * 60) * i
-  "#{(adj_time).to_i}|#{i} hours until exam" # (#{adj_time})"
+
+  if i == 0
+    "#{adj_time.to_i}|Exam begins..."
+  else
+    "#{adj_time.to_i}|#{i} hour#{'s' if i != 1} until exam" # (#{adj_time})"
+  end
 end
 
 body = captions.reverse.join("\n")
@@ -113,16 +122,16 @@ path
 
 #+NAME: captions-path
 #+RESULTS:
-[[file:/tmp/captions_f5d4293ce030c66a21b4070f97df5f52.log]]
+[[file:/tmp/captions_2d494c2d530f8ea4eb2390406b78409f.log]]
 
 #+BEGIN_SRC sh :var CAPTIONS_PATH=captions-path :results output
-head -n 3 $CAPTIONS_PATH
+tail -n 3 $CAPTIONS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442676600|39 hours until exam
-: 1442680200|38 hours until exam
-: 1442683800|37 hours until exam
+: 1442809800|2 hours until exam
+: 1442813400|1 hour until exam
+: 1442817000|Exam begins...
 
 #+NAME: sessions-query
 #+BEGIN_EXAMPLE sql
@@ -143,7 +152,7 @@ GROUP BY session_id, user_agent
 #+HEADER: :var EXAM_DATE=exam-date
 #+HEADER: :var SESSIONS_QUERY=sessions-query
 #+HEADER: :results file
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :exports none
 OUTPUT_FILE="$(mktemp -t sessions)"
 echo "$SESSIONS_QUERY" | psql $DATABASE_URL \
                               --no-align \
@@ -161,8 +170,8 @@ echo $DEST_PATH
 #+RESULTS:
 [[file:/tmp/sessions_9e1c409c8673a62837be2c6e1a5c84a6.log]]
 
-#+BEGIN_SRC sh :var RANKED_SESSIONS_PATH=sessions-path :results output
-head -n 3 $RANKED_SESSIONS_PATH
+#+BEGIN_SRC sh :var SESSIONS_PATH=sessions-path :results output
+head -n 3 $SESSIONS_PATH
 #+END_SRC
 
 #+RESULTS:
@@ -170,7 +179,7 @@ head -n 3 $RANKED_SESSIONS_PATH
 : 2|Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0|1465384|2015-09-20 06:19:55.221907
 : 3|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9|1465408|2015-09-20 06:28:14.890441
 
-#+BEGIN_SRC ruby :var sessions_path=sessions-path
+#+BEGIN_SRC ruby :var sessions_path=sessions-path :exports none
 require 'fileutils'
 require 'digest'
 md5digest = Digest::MD5.file sessions_path
@@ -187,17 +196,26 @@ data = CSV.foreach(sessions_path, col_sep: '|', headers: headers) do |row|
   next unless %w(Safari Chrome Firefox).include?(browser)
   FileUtils.ln_s "/Users/pepijn/Desktop/browser_icons/#{browser}.png", "#{user_images_path}/#{row[:session_rank]}.png"
 end
-"#{user_images_path}/"
+user_images_path
 #+END_SRC
 
 #+NAME: user-images-path
 #+RESULTS:
-: /tmp/user_images_9e1c409c8673a62837be2c6e1a5c84a6/
+: /tmp/user_images_9e1c409c8673a62837be2c6e1a5c84a6
+
+#+BEGIN_SRC sh :var USER_IMAGES_PATH=user-images-path :results output
+ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
+#+END_SRC
+
+#+RESULTS:
+: 1.png -> /Users/pepijn/Desktop/browser_icons/Safari.png
+: 2.png -> /Users/pepijn/Desktop/browser_icons/Firefox.png
+: 3.png -> /Users/pepijn/Desktop/browser_icons/Safari.png
 
 #+HEADER: :var ANSWERS_PATH=answers-path
 #+HEADER: :var CAPTIONS_PATH=captions-path
 #+HEADER: :var USER_IMAGES_PATH=user-images-path
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :results silent
 gource --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
        --seconds-per-day 1 \
        --max-file-lag 1 \
@@ -208,5 +226,3 @@ gource --title 'AMC/UvA 3rd year medical students revising for their orthopaedic
        --caption-size 30 \
        $ANSWERS_PATH
 #+END_SRC
-
-#+RESULTS:
