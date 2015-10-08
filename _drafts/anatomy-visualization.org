@@ -47,14 +47,14 @@ SELECT
   round(extract(epoch from answers.created_at)),
   session_rank,
   CASE
-    WHEN similarity(input, structures.name) = 1 THEN 'A'
-    WHEN similarity(input, structures.name) >= 0.8 THEN 'M'
+    WHEN similarity(answers.input, structures.name) = 1 THEN 'A'
+    WHEN similarity(answers.input, structures.name) >= 0.8 THEN 'M'
     ELSE 'M'
   END,
-  regexp_replace(structures.name, '(..)', '\1/', 'g') || '/' || input,
+  regexp_replace(structures.name, '(..)', '\1/', 'g') || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input,
   CASE
-    WHEN similarity(input, structures.name) >= 1 THEN '00FF00'
-    WHEN similarity(input, structures.name) >= 0.5 THEN 'FFFF00'
+    WHEN similarity(answers.input, structures.name) = 1 THEN '00FF00'
+    WHEN similarity(answers.input, structures.name) >= 0.5 THEN 'FFFF00'
     ELSE 'FF0000'
   END
 FROM answers
@@ -86,16 +86,16 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_8c6add59dbec84e6077a23a43c9b91c4.log]]
+[[file:/tmp/answers_2d13130410d7edfc67e698ed03831369.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|me/ni/sc/us/ m/ed/ia/li/s/meniscus medialis|00FF00
-: 1442729371|1|A|li/g./ c/ru/ci/at/um/ p/os/te/ri/or//lig. cruciatum posterior|00FF00
-: 1442729377|1|A|me/ni/sc/us/ l/at/er/al/is//meniscus lateralis|00FF00
+: 1442729360|1|A|me/ni/sc/us/ m/ed/ia/li/s/1: meniscus medialis|00FF00
+: 1442729371|1|A|li/g./ c/ru/ci/at/um/ p/os/te/ri/or//2: lig. cruciatum posterior|00FF00
+: 1442729377|1|A|me/ni/sc/us/ l/at/er/al/is//3: meniscus lateralis|00FF00
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
@@ -224,14 +224,21 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+HEADER: :var ANSWERS_PATH=answers-path
 #+HEADER: :var CAPTIONS_PATH=captions-path
 #+HEADER: :var USER_IMAGES_PATH=user-images-path
-#+BEGIN_SRC sh :results silent
-gource --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
-       --seconds-per-day 1 \
-       --max-file-lag 1 \
-       --file-idle-time 60 \
-       --hide dirnames \
-       --user-image-dir $USER_IMAGES_PATH \
-       --caption-file $CAPTIONS_PATH \
-       --caption-size 30 \
-       $ANSWERS_PATH
+#+BEGIN_SRC sh
+time gource \
+     --caption-file $CAPTIONS_PATH \
+     --caption-size 30 \
+     --file-idle-time 5 \
+     --fullscreen \
+     --hide dirnames \
+     --max-file-lag -1 \
+     --seconds-per-day 1000 \
+     --stop-at-end \
+     --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
+     --user-image-dir $USER_IMAGES_PATH \
+     $ANSWERS_PATH \
+     2>&1
 #+END_SRC
+
+#+RESULTS:
+
