@@ -23,9 +23,9 @@ WITH ranked_sessions AS (
   SELECT session_id, rank() OVER (ORDER BY min(created_at)) session_rank
   FROM answers
   WHERE session_id IS NOT NULL
-  AND answers.created_at
-    BETWEEN timestamp :exam_date - interval '28 hours'
-    AND :exam_date
+    AND created_at
+      BETWEEN timestamp :exam_date - interval '28 hours'
+      AND :exam_date
   GROUP BY session_id
 )
 
@@ -46,11 +46,10 @@ SELECT
 FROM answers
 JOIN structures ON structures.id = structure_id
 JOIN ranked_sessions rs ON rs.session_id = answers.session_id
-WHERE answers.session_id IS NOT NULL
-AND answers.created_at
+WHERE answers.created_at
   BETWEEN timestamp :exam_date - interval '28 hours'
   AND :exam_date
-ORDER BY answers.id
+ORDER BY answers
 #+END_EXAMPLE
 
 #+HEADER: :var DATABASE_URL=database-url
@@ -143,6 +142,7 @@ echo "$SESSIONS_QUERY" | psql $DATABASE_URL \
                               --set exam_date="'$EXAM_DATE'" \
                               --output $OUTPUT_FILE \
                               2>&1
+
 DEST_PATH="/tmp/sessions_$(md5 -q $OUTPUT_FILE).log"
 mv $OUTPUT_FILE $DEST_PATH
 echo $DEST_PATH
@@ -161,31 +161,40 @@ head -n 3 $RANKED_SESSIONS_PATH
 : 2|Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0|1465384|2015-09-20 06:19:55.221907
 : 3|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9|1465408|2015-09-20 06:28:14.890441
 
-#+BEGIN_SRC ruby :var ranked_sessions_path=ranked-sessions-path
-headers = %i(session_rank user_agent first_id session_start)
-cache = {}
+#+BEGIN_SRC ruby :var sessions_path=sessions-path
+require 'fileutils'
+require 'digest'
+md5digest = Digest::MD5.file sessions_path
+user_images_path = "/tmp/user_images_#{md5digest}"
+FileUtils.rm_rf user_images_path
+FileUtils.mkdir user_images_path
 
 require 'csv'
 require 'browser'
-require 'fileutils'
-`rm -f /Users/pepijn/Desktop/sessions_browsers/*`
-
-data = CSV.foreach(ranked_sessions_path, col_sep: '|', headers: headers) do |row|
+headers = %i(session_rank user_agent first_id session_start)
+cache = {}
+data = CSV.foreach(sessions_path, col_sep: '|', headers: headers) do |row|
   browser = (cache[row[:user_agent]] ||= Browser.new(ua: row[:user_agent]).name)
   next unless %w(Safari Chrome Firefox).include?(browser)
-  FileUtils.ln_s "/Users/pepijn/Desktop/browser_icons/#{browser}.png", "/Users/pepijn/Desktop/sessions_browsers/#{row[:session_rank]}.png"
+  FileUtils.ln_s "/Users/pepijn/Desktop/browser_icons/#{browser}.png", "#{user_images_path}/#{row[:session_rank]}.png"
 end
+user_images_path
 #+END_SRC
+
+#+NAME: user-images-path
+#+RESULTS:
+: /tmp/user_images_9e1c409c8673a62837be2c6e1a5c84a6
 
 #+HEADER: :var ANSWERS_PATH=answers-path
 #+HEADER: :var CAPTIONS_PATH=captions-path
+#+HEADER: :var USER_IMAGES_PATH=user-images-path
 #+BEGIN_SRC sh
 gource --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
        --seconds-per-day 1 \
        --max-file-lag 1 \
        --file-idle-time 60 \
        --hide dirnames \
-       --user-image-dir ~/Desktop/sessions_browsers \
+       --user-image-dir $USER_IMAGES_PATH \
        --caption-file $CAPTIONS_PATH \
        --caption-size 30 \
        $ANSWERS_PATH
