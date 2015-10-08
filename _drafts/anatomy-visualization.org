@@ -1,0 +1,194 @@
+---
+layout:     post
+title:      Anatomy visualization
+categories: medicine visualization gource postgresql
+---
+
+#+BEGIN_SRC sh
+cd ~/Code/anatomy
+heroku config:get DATABASE_URL
+#+END_SRC
+
+#+NAME: database-url
+#+RESULTS:
+
+#+NAME: exam-date
+: 2015-09-21 08:30:00 +02:00
+
+Deze is opgesplitst per whitespace in de structuurnaam
+
+#+NAME: answers-query
+#+BEGIN_EXAMPLE sql
+WITH ranked_sessions AS (
+  SELECT session_id, rank() OVER (ORDER BY min(created_at)) session_rank
+  FROM answers
+  WHERE session_id IS NOT NULL
+  AND answers.created_at
+    BETWEEN timestamp :exam_date - interval '28 hours'
+    AND :exam_date
+  GROUP BY session_id
+)
+
+SELECT
+  round(extract(epoch from answers.created_at)),
+  session_rank,
+  CASE
+    WHEN similarity(input, structures.name) = 1 THEN 'A'::text
+    WHEN similarity(input, structures.name) >= 0.8 THEN 'M'::text
+    ELSE 'M'::text
+  END,
+  regexp_replace(structures.name, '(..)', '\1/', 'g') || '/' || input,
+  CASE
+    WHEN similarity(input, structures.name) >= 1 THEN '00FF00'::text
+    WHEN similarity(input, structures.name) >= 0.5 THEN 'FFFF00'::text
+    ELSE 'FF0000'::text
+  END
+FROM answers
+JOIN structures ON structures.id = structure_id
+JOIN ranked_sessions rs ON rs.session_id = answers.session_id
+WHERE answers.session_id IS NOT NULL
+AND answers.created_at
+  BETWEEN timestamp :exam_date - interval '28 hours'
+  AND :exam_date
+ORDER BY answers.id
+#+END_EXAMPLE
+
+#+HEADER: :var DATABASE_URL=database-url
+#+HEADER: :var EXAM_DATE=exam-date
+#+HEADER: :var ANSWERS_QUERY=answers-query
+#+HEADER: :results file
+#+BEGIN_SRC sh
+OUTPUT_FILE="$(mktemp -t anatomy)"
+echo $ANSWERS_QUERY | psql $DATABASE_URL \
+                           --no-align \
+                           --tuples-only \
+                           --set exam_date="'$EXAM_DATE'" \
+                           --output $OUTPUT_FILE \
+                           2>&1
+
+DEST_PATH="/tmp/answers_$(md5 -q $OUTPUT_FILE).log"
+mv $OUTPUT_FILE $DEST_PATH
+echo $DEST_PATH
+#+END_SRC
+
+#+NAME: answers-path
+#+RESULTS:
+[[file:/tmp/answers_8c6add59dbec84e6077a23a43c9b91c4.log]]
+
+#+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
+head -n 3 $ANSWERS_PATH
+#+END_SRC
+
+#+RESULTS:
+: 1442729360|1|A|me/ni/sc/us/ m/ed/ia/li/s/meniscus medialis|00FF00
+: 1442729371|1|A|li/g./ c/ru/ci/at/um/ p/os/te/ri/or//lig. cruciatum posterior|00FF00
+: 1442729377|1|A|me/ni/sc/us/ l/at/er/al/is//meniscus lateralis|00FF00
+
+#+HEADER: :results file
+#+BEGIN_SRC ruby
+require 'date'
+date = DateTime.parse('2015-09-21 06:30').to_time
+captions = 40.times.map do |i|
+  adj_time = date - (60 * 60) * i
+  "#{(adj_time).to_i}|#{i} hours until exam" # (#{adj_time})"
+end
+
+body = captions.reverse.join("\n")
+require 'digest'
+md5digest = Digest::MD5.new.update body
+path = "/tmp/captions_#{md5digest}.log"
+open(path, 'w') do |file|
+  file.write body
+end
+path
+#+END_SRC
+
+#+NAME: captions-path
+#+RESULTS:
+[[file:/tmp/captions_f5d4293ce030c66a21b4070f97df5f52.log]]
+
+#+BEGIN_SRC sh :var CAPTIONS_PATH=captions-path :results output
+head -n 3 $CAPTIONS_PATH
+#+END_SRC
+
+#+RESULTS:
+: 1442676600|39 hours until exam
+: 1442680200|38 hours until exam
+: 1442683800|37 hours until exam
+
+#+NAME: sessions-query
+#+BEGIN_EXAMPLE sql
+SELECT
+  rank() OVER (ORDER BY min(created_at)) session_rank,
+  user_agent,
+  min(id) first_id,
+  min(created_at) session_start
+FROM answers
+WHERE session_id IS NOT NULL
+AND answers.created_at
+  BETWEEN timestamp :exam_date - interval '28 hours'
+  AND :exam_date
+GROUP BY session_id, user_agent
+#+END_EXAMPLE
+
+#+HEADER: :var DATABASE_URL=database-url
+#+HEADER: :var EXAM_DATE=exam-date
+#+HEADER: :var SESSIONS_QUERY=sessions-query
+#+HEADER: :results file
+#+BEGIN_SRC sh
+OUTPUT_FILE="$(mktemp -t sessions)"
+echo "$SESSIONS_QUERY" | psql $DATABASE_URL \
+                              --no-align \
+                              --tuples-only \
+                              --set exam_date="'$EXAM_DATE'" \
+                              --output $OUTPUT_FILE \
+                              2>&1
+DEST_PATH="/tmp/sessions_$(md5 -q $OUTPUT_FILE).log"
+mv $OUTPUT_FILE $DEST_PATH
+echo $DEST_PATH
+#+END_SRC
+
+#+NAME: sessions-path
+#+RESULTS:
+[[file:/tmp/sessions_9e1c409c8673a62837be2c6e1a5c84a6.log]]
+
+#+BEGIN_SRC sh :var RANKED_SESSIONS_PATH=sessions-path :results output
+head -n 3 $RANKED_SESSIONS_PATH
+#+END_SRC
+
+#+RESULTS:
+: 1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12|1465360|2015-09-20 06:09:19.603637
+: 2|Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0|1465384|2015-09-20 06:19:55.221907
+: 3|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9|1465408|2015-09-20 06:28:14.890441
+
+#+BEGIN_SRC ruby :var ranked_sessions_path=ranked-sessions-path
+headers = %i(session_rank user_agent first_id session_start)
+cache = {}
+
+require 'csv'
+require 'browser'
+require 'fileutils'
+`rm -f /Users/pepijn/Desktop/sessions_browsers/*`
+
+data = CSV.foreach(ranked_sessions_path, col_sep: '|', headers: headers) do |row|
+  browser = (cache[row[:user_agent]] ||= Browser.new(ua: row[:user_agent]).name)
+  next unless %w(Safari Chrome Firefox).include?(browser)
+  FileUtils.ln_s "/Users/pepijn/Desktop/browser_icons/#{browser}.png", "/Users/pepijn/Desktop/sessions_browsers/#{row[:session_rank]}.png"
+end
+#+END_SRC
+
+#+HEADER: :var ANSWERS_PATH=answers-path
+#+HEADER: :var CAPTIONS_PATH=captions-path
+#+BEGIN_SRC sh
+gource --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
+       --seconds-per-day 1 \
+       --max-file-lag 1 \
+       --file-idle-time 60 \
+       --hide dirnames \
+       --user-image-dir ~/Desktop/sessions_browsers \
+       --caption-file $CAPTIONS_PATH \
+       --caption-size 30 \
+       $ANSWERS_PATH
+#+END_SRC
+
+#+RESULTS:
