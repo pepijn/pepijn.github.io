@@ -4,13 +4,22 @@ title:      Anatomy visualization
 categories: medicine visualization gource postgresql
 ---
 
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :results file
 cd ~/Code/anatomy
-heroku config:get DATABASE_URL
+DATABASE_URL="$(heroku config:get DATABASE_URL)"
+FILE_PATH="/tmp/database_url_$(echo $DATABASE_URL | shasum -a 256).secret"
+echo $DATABASE_URL > "$FILE_PATH"
+echo "$FILE_PATH"
 #+END_SRC
 
-#+NAME: database-url
+#+NAME: database-credentials-path
 #+RESULTS:
+[[file:/tmp/database_url_7536247dd915fdca1746327350e18b41b7345c9f8a041f1688dc25722a836cab  -.secret]]
+
+#+NAME: database-url
+#+BEGIN_SRC sh :var DB_CRED_PATH=database-credentials-path :results silent
+cat "$DB_CRED_PATH"
+#+END_SRC
 
 #+NAME: exam-date
 : 2015-09-21 08:30:00 +02:00
