@@ -178,12 +178,12 @@ data = CSV.foreach(sessions_path, col_sep: '|', headers: headers) do |row|
   next unless %w(Safari Chrome Firefox).include?(browser)
   FileUtils.ln_s "/Users/pepijn/Desktop/browser_icons/#{browser}.png", "#{user_images_path}/#{row[:session_rank]}.png"
 end
-user_images_path
+"#{user_images_path}/"
 #+END_SRC
 
 #+NAME: user-images-path
 #+RESULTS:
-: /tmp/user_images_9e1c409c8673a62837be2c6e1a5c84a6
+: /tmp/user_images_9e1c409c8673a62837be2c6e1a5c84a6/
 
 #+HEADER: :var ANSWERS_PATH=answers-path
 #+HEADER: :var CAPTIONS_PATH=captions-path
