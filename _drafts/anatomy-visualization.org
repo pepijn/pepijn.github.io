@@ -32,7 +32,9 @@ Deze is opgesplitst per whitespace in de structuurnaam
 #+NAME: answers-query
 #+BEGIN_EXAMPLE sql
 WITH ranked_sessions AS (
-  SELECT session_id, rank() OVER (ORDER BY min(created_at)) session_rank
+  SELECT
+    session_id,
+    rank() OVER (ORDER BY min(created_at)) session_rank
   FROM answers
   WHERE session_id IS NOT NULL
     AND created_at
@@ -94,6 +96,13 @@ head -n 3 $ANSWERS_PATH
 : 1442729360|1|A|me/ni/sc/us/ m/ed/ia/li/s/meniscus medialis|00FF00
 : 1442729371|1|A|li/g./ c/ru/ci/at/um/ p/os/te/ri/or//lig. cruciatum posterior|00FF00
 : 1442729377|1|A|me/ni/sc/us/ l/at/er/al/is//meniscus lateralis|00FF00
+
+#+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
+wc -l < $ANSWERS_PATH
+#+END_SRC
+
+#+RESULTS:
+:    50851
 
 #+HEADER: :results file
 #+HEADER: :var exam_date=exam-date
