@@ -224,21 +224,18 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+HEADER: :var ANSWERS_PATH=answers-path
 #+HEADER: :var CAPTIONS_PATH=captions-path
 #+HEADER: :var USER_IMAGES_PATH=user-images-path
-#+BEGIN_SRC sh
-time gource \
-     --caption-file $CAPTIONS_PATH \
-     --caption-size 30 \
-     --file-idle-time 5 \
-     --fullscreen \
-     --hide dirnames \
-     --max-file-lag -1 \
-     --seconds-per-day 1000 \
-     --stop-at-end \
-     --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
-     --user-image-dir $USER_IMAGES_PATH \
-     $ANSWERS_PATH \
+#+BEGIN_SRC sh :results verbatim silent
+time (gource \
+          --caption-file $CAPTIONS_PATH \
+          --caption-size 30 \
+          --file-idle-time 5 \
+          --fullscreen \
+          --hide dirnames \
+          --max-file-lag -1 \
+          --seconds-per-day 1000 \
+          --stop-at-end \
+          --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
+          --user-image-dir $USER_IMAGES_PATH \
+          $ANSWERS_PATH 2>/dev/null) \
      2>&1
 #+END_SRC
-
-#+RESULTS:
-
