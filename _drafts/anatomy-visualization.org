@@ -51,7 +51,7 @@ SELECT
     WHEN similarity(answers.input, structures.name) >= 0.8 THEN 'M'
     ELSE 'M'
   END,
-  regexp_replace(structures.name, '(..)', '\1/', 'g') || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input,
+  category_id || '/' || plate_id || '/' || structure_id || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input,
   CASE
     WHEN similarity(answers.input, structures.name) = 1 THEN '00FF00'
     WHEN similarity(answers.input, structures.name) >= 0.5 THEN 'FFFF00'
@@ -59,6 +59,7 @@ SELECT
   END
 FROM answers
 JOIN structures ON structures.id = structure_id
+JOIN plates ON plates.id = plate_id
 JOIN ranked_sessions rs ON rs.session_id = answers.session_id
 WHERE answers.created_at
   BETWEEN timestamp :exam_date - interval '28 hours'
@@ -86,16 +87,16 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_2d13130410d7edfc67e698ed03831369.log]]
+[[file:/tmp/answers_48b62091524d98bc7906fd2dc2efe25e.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|me/ni/sc/us/ m/ed/ia/li/s/1: meniscus medialis|00FF00
-: 1442729371|1|A|li/g./ c/ru/ci/at/um/ p/os/te/ri/or//2: lig. cruciatum posterior|00FF00
-: 1442729377|1|A|me/ni/sc/us/ l/at/er/al/is//3: meniscus lateralis|00FF00
+: 1442729360|1|A|7/56/617/1: meniscus medialis|00FF00
+: 1442729371|1|A|7/56/616/2: lig. cruciatum posterior|00FF00
+: 1442729377|1|A|7/56/618/3: meniscus lateralis|00FF00
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
