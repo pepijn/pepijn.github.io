@@ -55,23 +55,38 @@ SELECT
   round(extract(epoch from answers.created_at)),
   session_rank,
   CASE similarity(answers.input, structures.name) WHEN 1 THEN 'A' ELSE 'M' END,
-  CASE categories.name
-    WHEN 'Bovenarm' THEN 'Upper arm'
-    WHEN 'Bovenbeen' THEN 'Upper leg'
-    WHEN 'Elleboog' THEN 'Elbow'
-    WHEN 'Enkel' THEN 'Ankle'
-    WHEN 'Hals' THEN 'Neck'
-    WHEN 'Heupgewricht' THEN 'Hip joint'
-    WHEN 'Kniegewricht' THEN 'Knee joint'
-    WHEN 'Onderarm' THEN 'Lower arm'
-    WHEN 'Onderbeen' THEN 'Lower leg'
-    WHEN 'Pols' THEN 'Wrist'
-    WHEN 'Schouder' THEN 'Shoulder'
-    WHEN 'Voet' THEN 'Foot'
-    ELSE categories.name
-  END || '/' || plate_numbers.rank || '/' || CASE replace(split_part(structures.name, ' ', 1), '.', '')
-WHEN 'a' THEN 'Artery' WHEN 'v' THEN 'Vein' WHEN 'lig' THEN 'Ligament' WHEN 'ligamentum' THEN 'Ligament' WHEN 'm' THEN 'Muscle' WHEN 'os' THEN 'Bone' WHEN 'n' THEN 'Nerve' ELSE 'Other' END || '/' ||
-structures.name || '/' || rank() OVER (ORDER BY answers.id) || '. ' || input,
+  concat_ws('/',
+    CASE categories.name
+      WHEN 'Bovenarm' THEN 'Upper arm'
+      WHEN 'Bovenbeen' THEN 'Upper leg'
+      WHEN 'Elleboog' THEN 'Elbow'
+      WHEN 'Enkel' THEN 'Ankle'
+      WHEN 'Hals' THEN 'Neck'
+      WHEN 'Heupgewricht' THEN 'Hip joint'
+      WHEN 'Kniegewricht' THEN 'Knee joint'
+      WHEN 'Onderarm' THEN 'Lower arm'
+      WHEN 'Onderbeen' THEN 'Lower leg'
+      WHEN 'Pols' THEN 'Wrist'
+      WHEN 'Schouder' THEN 'Shoulder'
+      WHEN 'Voet' THEN 'Foot'
+      ELSE categories.name
+    END,
+    plate_numbers.rank,
+/*
+    CASE replace(split_part(structures.name, ' ', 1), '.', '')
+      WHEN 'a' THEN 'Artery'
+      WHEN 'v' THEN 'Vein'
+      WHEN 'lig' THEN 'Ligament'
+      WHEN 'ligamentum' THEN 'Ligament'
+      WHEN 'm' THEN 'Muscle'
+      WHEN 'n' THEN 'Nerve'
+      WHEN 'os' THEN 'Bone'
+      ELSE 'Other'
+    END,
+*/
+    replace(structures.name, ' ', '/'),
+    input || repeat(E'\ '::text, rank() OVER (PARTITION BY structure_id, input ORDER BY answers.id)::int - 1)
+  ),
   CASE round(similarity(answers.input, structures.name)::numeric, 1)
     WHEN 1 THEN '00FF00'
     WHEN 0.9 THEN '32FF00'
@@ -83,7 +98,7 @@ structures.name || '/' || rank() OVER (ORDER BY answers.id) || '. ' || input,
     WHEN 0.3 THEN 'FF9900'
     WHEN 0.2 THEN 'FF6600'
     WHEN 0.1 THEN 'FF3200'
-    WHEN 0 THEN 'FF0000'
+    ELSE 'FF0000'
   END
 FROM answers
 JOIN structures ON structures.id = structure_id
@@ -91,8 +106,8 @@ JOIN plate_numbers ON plate_numbers.id = plate_id
 JOIN categories ON categories.id = category_id
 JOIN ranked_sessions rs ON rs.session_id = answers.session_id
 WHERE answers.created_at
-  BETWEEN timestamp :exam_date - interval '28 hours'
-  AND :exam_date
+  BETWEEN timestamp with time zone :exam_date - interval '28 hours'
+  AND timestamp with time zone :exam_date
 ORDER BY answers
 #+END_EXAMPLE
 
@@ -102,12 +117,14 @@ ORDER BY answers
 #+HEADER: :results file
 #+BEGIN_SRC sh :exports none
 OUTPUT_FILE="$(mktemp -t anatomy)"
-echo $ANSWERS_QUERY | psql $DATABASE_URL \
-                           --no-align \
-                           --tuples-only \
-                           --set exam_date="'$EXAM_DATE'" \
-                           --output $OUTPUT_FILE \
-                           2>&1
+psql $DATABASE_URL \
+     --no-align \
+     --tuples-only \
+     --set exam_date="'$EXAM_DATE'" \
+     --output $OUTPUT_FILE \
+     2>&1 <<EOF # EOF instead of echo pipe supports SQL comments
+$ANSWERS_QUERY
+EOF
 
 DEST_PATH="/tmp/answers_$(md5 -q $OUTPUT_FILE).log"
 mv $OUTPUT_FILE $DEST_PATH
@@ -116,23 +133,29 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-: /tmp/answers_c1cefa5dbaffcd1f70db693dbe439a7c.log
+[[file:/tmp/answers_80872738ba84b8d1394c89da9ee176e0.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
+echo
+tail -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|Knee joint/1/Other/meniscus medialis/1. meniscus medialis|00FF00
-: 1442729371|1|A|Knee joint/1/Ligament/lig. cruciatum posterior/2. lig. cruciatum posterior|00FF00
-: 1442729377|1|A|Knee joint/1/Other/meniscus lateralis/3. meniscus lateralis|00FF00
+: 1442729360|1|A|Knee joint/1/meniscus/medialis/meniscus medialis|00FF00
+: 1442729371|1|A|Knee joint/1/lig./cruciatum/posterior/lig. cruciatum posterior|00FF00
+: 1442729377|1|A|Knee joint/1/meniscus/lateralis/meniscus lateralis|00FF00
+: 
+: 1442815272|271|M|Upper leg/4/m./biceps/femoris/caput/longum/m. biceps femori caput longum|32FF00
+: 1442815283|271|A|Upper leg/4/m./vastus/lateralis/m. vastus lateralis                                                             |00FF00
+: 1442815322|271|M|Upper leg/4/m./peroneus/longus/m. tibialis anterior|FF3200
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-:    50851
+:    50687
 
 #+HEADER: :results file
 #+HEADER: :var exam_date=exam-date
@@ -143,7 +166,7 @@ captions = 40.times.map do |i|
   adj_time = date - (60 * 60) * i
 
   if i == 0
-    "#{adj_time.to_i}|Exam begins..."
+    "#{adj_time.to_i}|Exam begins at 08:30..."
   else
     "#{adj_time.to_i}|#{i} hour#{'s' if i != 1} until exam" # (#{adj_time})"
   end
@@ -161,7 +184,7 @@ path
 
 #+NAME: captions-path
 #+RESULTS:
-[[file:/tmp/captions_2d494c2d530f8ea4eb2390406b78409f.log]]
+[[file:/tmp/captions_b4ac3b5282e414d80fcfd2d41d05e513.log]]
 
 #+BEGIN_SRC sh :var CAPTIONS_PATH=captions-path :results output
 tail -n 3 $CAPTIONS_PATH
@@ -170,7 +193,7 @@ tail -n 3 $CAPTIONS_PATH
 #+RESULTS:
 : 1442809800|2 hours until exam
 : 1442813400|1 hour until exam
-: 1442817000|Exam begins...
+: 1442817000|Exam begins at 08:30...
 
 #+NAME: sessions-query
 #+BEGIN_EXAMPLE sql
@@ -182,8 +205,8 @@ SELECT
 FROM answers
 WHERE session_id IS NOT NULL
 AND answers.created_at
-  BETWEEN timestamp :exam_date - interval '28 hours'
-  AND :exam_date
+  BETWEEN timestamp with time zone :exam_date - interval '28 hours'
+  AND timestamp with time zone :exam_date
 GROUP BY session_id, user_agent
 #+END_EXAMPLE
 
@@ -193,12 +216,14 @@ GROUP BY session_id, user_agent
 #+HEADER: :results file
 #+BEGIN_SRC sh :exports none
 OUTPUT_FILE="$(mktemp -t sessions)"
-echo "$SESSIONS_QUERY" | psql $DATABASE_URL \
-                              --no-align \
-                              --tuples-only \
-                              --set exam_date="'$EXAM_DATE'" \
-                              --output $OUTPUT_FILE \
-                              2>&1
+psql $DATABASE_URL \
+     --no-align \
+     --tuples-only \
+     --set exam_date="'$EXAM_DATE'" \
+     --output $OUTPUT_FILE \
+     2>&1 <<EOF
+$SESSIONS_QUERY
+EOF
 
 DEST_PATH="/tmp/sessions_$(md5 -q $OUTPUT_FILE).log"
 mv $OUTPUT_FILE $DEST_PATH
@@ -207,7 +232,7 @@ echo $DEST_PATH
 
 #+NAME: sessions-path
 #+RESULTS:
-[[file:/tmp/sessions_9e1c409c8673a62837be2c6e1a5c84a6.log]]
+[[file:/tmp/sessions_765c2e6ff6257653d481f722ecc43513.log]]
 
 #+BEGIN_SRC sh :var SESSIONS_PATH=sessions-path :results output
 head -n 3 $SESSIONS_PATH
@@ -240,7 +265,7 @@ user_images_path
 
 #+NAME: user-images-path
 #+RESULTS:
-: /tmp/user_images_9e1c409c8673a62837be2c6e1a5c84a6
+: /tmp/user_images_765c2e6ff6257653d481f722ecc43513
 
 #+BEGIN_SRC sh :var USER_IMAGES_PATH=user-images-path :results output
 ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
@@ -255,19 +280,21 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+HEADER: :var CAPTIONS_PATH=captions-path
 #+HEADER: :var USER_IMAGES_PATH=user-images-path
 #+BEGIN_SRC sh :results verbatim silent
-time (gource \
-          --bloom-intensity 0.8 \
+time (gource -1280x720 \
+          --bloom-intensity 0.7 \
           --caption-file $CAPTIONS_PATH \
-          --caption-size 30 \
+          --caption-size 50 \
+          --caption-duration 20 \
           --dir-colour 00FFFF \
           --dir-name-depth 1 \
-          --file-idle-time 5 \
+          --file-idle-time 2 \
+          --hide mouse,progress \
           --fullscreen \
           --highlight-dirs \
-          --max-file-lag -1 \
-          --seconds-per-day 1000 \
+\ #          --max-file-lag -1 \
+          --seconds-per-day 10000 \
           --stop-at-end \
-          --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam (Monday September 21, 08:30)' \
+          --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam. The dots represent answers; color indicates trigram similarity to correct structure name.' \
           --user-image-dir $USER_IMAGES_PATH \
           $ANSWERS_PATH 2>/dev/null) \
      2>&1
