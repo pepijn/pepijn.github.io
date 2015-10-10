@@ -59,11 +59,31 @@ SELECT
     WHEN similarity(answers.input, structures.name) >= 0.8 THEN 'M'
     ELSE 'M'
   END,
-  categories.name || '/' || plate_numbers.rank || '/' || structure_id || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input,
-  CASE
-    WHEN similarity(answers.input, structures.name) = 1 THEN '00FF00'
-    WHEN similarity(answers.input, structures.name) >= 0.5 THEN 'FFFF00'
-    ELSE 'FF0000'
+  CASE categories.name
+    WHEN 'Bovenarm' THEN 'Upper arm'
+    WHEN 'Bovenbeen' THEN 'Upper leg'
+    WHEN 'Elleboog' THEN 'Elbow'
+    WHEN 'Enkel' THEN 'Ankle'
+    WHEN 'Hals' THEN 'Neck'
+    WHEN 'Heupgewricht' THEN 'Hip joint'
+    WHEN 'Kniegewricht' THEN 'Knee joint'
+    WHEN 'Onderarm' THEN 'Lower arm'
+    WHEN 'Onderbeen' THEN 'Lower leg'
+    WHEN 'Pols' THEN 'Wrist'
+    WHEN 'Schouder' THEN 'Shoulder'
+    WHEN 'Voet' THEN 'Foot'
+    ELSE categories.name
+  END || '/' || plate_numbers.rank || '/' || structure_id || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input || '.' || CASE replace(split_part(structures.name, ' ', 1), '.', '') 
+WHEN 'a' THEN 'artery' WHEN 'v' THEN 'vein' WHEN 'lig' THEN 'ligament' WHEN 'ligamentum' THEN 'ligament' WHEN 'm' THEN 'muscle' WHEN 'os' THEN 'bone' WHEN 'n' THEN 'nerve' ELSE 'other' END,
+  CASE split_part(structures.name, ' ', 1)
+    WHEN 'a.' THEN 'FF0000'
+    WHEN 'v.' THEN '0000FF'
+    WHEN 'lig.' THEN 'FFE8D5'
+    WHEN 'ligamentum' THEN 'FFE8D5'
+    WHEN 'm.' THEN '5F021F'
+    WHEN 'os' THEN 'FFFFFF'
+    WHEN 'n.' THEN 'FFFF00'
+    ELSE '737373'
   END
 FROM answers
 JOIN structures ON structures.id = structure_id
@@ -96,16 +116,16 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_f0b7aad00ac0d385ee980d3fba1eb78f.log]]
+[[file:/tmp/answers_2b693e58b89c1e542383578949683dec.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|Kniegewricht/1/617/1: meniscus medialis|00FF00
-: 1442729371|1|A|Kniegewricht/1/616/2: lig. cruciatum posterior|00FF00
-: 1442729377|1|A|Kniegewricht/1/618/3: meniscus lateralis|00FF00
+: 1442729360|1|A|Knee joint/1/617/1: meniscus medialis.Other|737373
+: 1442729371|1|A|Knee joint/1/616/2: lig. cruciatum posterior.Ligament|FFE8D5
+: 1442729377|1|A|Knee joint/1/618/3: meniscus lateralis.Other|737373
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
@@ -241,6 +261,7 @@ time (gource \
           --file-idle-time 5 \
           --fullscreen \
           --highlight-dirs \
+          --dir-colour 00FFFF \
           --dir-name-depth 1 \
           --max-file-lag -1 \
           --seconds-per-day 1000 \
