@@ -54,11 +54,7 @@ WITH
 SELECT
   round(extract(epoch from answers.created_at)),
   session_rank,
-  CASE
-    WHEN similarity(answers.input, structures.name) = 1 THEN 'A'
-    WHEN similarity(answers.input, structures.name) >= 0.8 THEN 'M'
-    ELSE 'M'
-  END,
+  CASE similarity(answers.input, structures.name) WHEN 1 THEN 'A' ELSE 'M' END,
   CASE categories.name
     WHEN 'Bovenarm' THEN 'Upper arm'
     WHEN 'Bovenbeen' THEN 'Upper leg'
@@ -73,17 +69,21 @@ SELECT
     WHEN 'Schouder' THEN 'Shoulder'
     WHEN 'Voet' THEN 'Foot'
     ELSE categories.name
-  END || '/' || plate_numbers.rank || '/' || structure_id || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input || '.' || CASE replace(split_part(structures.name, ' ', 1), '.', '') 
-WHEN 'a' THEN 'artery' WHEN 'v' THEN 'vein' WHEN 'lig' THEN 'ligament' WHEN 'ligamentum' THEN 'ligament' WHEN 'm' THEN 'muscle' WHEN 'os' THEN 'bone' WHEN 'n' THEN 'nerve' ELSE 'other' END,
-  CASE split_part(structures.name, ' ', 1)
-    WHEN 'a.' THEN 'FF0000'
-    WHEN 'v.' THEN '0000FF'
-    WHEN 'lig.' THEN 'FFE8D5'
-    WHEN 'ligamentum' THEN 'FFE8D5'
-    WHEN 'm.' THEN '5F021F'
-    WHEN 'os' THEN 'FFFFFF'
-    WHEN 'n.' THEN 'FFFF00'
-    ELSE '737373'
+  END || '/' || plate_numbers.rank || '/' || CASE replace(split_part(structures.name, ' ', 1), '.', '')
+WHEN 'a' THEN 'Artery' WHEN 'v' THEN 'Vein' WHEN 'lig' THEN 'Ligament' WHEN 'ligamentum' THEN 'Ligament' WHEN 'm' THEN 'Muscle' WHEN 'os' THEN 'Bone' WHEN 'n' THEN 'Nerve' ELSE 'Other' END || '/' ||
+structures.name || '/' || rank() OVER (ORDER BY answers.id) || '. ' || input,
+  CASE round(similarity(answers.input, structures.name)::numeric, 1)
+    WHEN 1 THEN '00FF00'
+    WHEN 0.9 THEN '32FF00'
+    WHEN 0.8 THEN '65FF00'
+    WHEN 0.7 THEN '99FF00'
+    WHEN 0.6 THEN 'CCFF00'
+    WHEN 0.5 THEN 'FFFF00'
+    WHEN 0.4 THEN 'FFCC00'
+    WHEN 0.3 THEN 'FF9900'
+    WHEN 0.2 THEN 'FF6600'
+    WHEN 0.1 THEN 'FF3200'
+    WHEN 0 THEN 'FF0000'
   END
 FROM answers
 JOIN structures ON structures.id = structure_id
@@ -116,16 +116,16 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_2b693e58b89c1e542383578949683dec.log]]
+: /tmp/answers_c1cefa5dbaffcd1f70db693dbe439a7c.log
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|Knee joint/1/617/1: meniscus medialis.Other|737373
-: 1442729371|1|A|Knee joint/1/616/2: lig. cruciatum posterior.Ligament|FFE8D5
-: 1442729377|1|A|Knee joint/1/618/3: meniscus lateralis.Other|737373
+: 1442729360|1|A|Knee joint/1/Other/meniscus medialis/1. meniscus medialis|00FF00
+: 1442729371|1|A|Knee joint/1/Ligament/lig. cruciatum posterior/2. lig. cruciatum posterior|00FF00
+: 1442729377|1|A|Knee joint/1/Other/meniscus lateralis/3. meniscus lateralis|00FF00
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
@@ -256,13 +256,14 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+HEADER: :var USER_IMAGES_PATH=user-images-path
 #+BEGIN_SRC sh :results verbatim silent
 time (gource \
+          --bloom-intensity 0.8 \
           --caption-file $CAPTIONS_PATH \
           --caption-size 30 \
+          --dir-colour 00FFFF \
+          --dir-name-depth 1 \
           --file-idle-time 5 \
           --fullscreen \
           --highlight-dirs \
-          --dir-colour 00FFFF \
-          --dir-name-depth 1 \
           --max-file-lag -1 \
           --seconds-per-day 1000 \
           --stop-at-end \
