@@ -31,17 +31,25 @@ Deze is opgesplitst per whitespace in de structuurnaam
 
 #+NAME: answers-query
 #+BEGIN_EXAMPLE sql
-WITH ranked_sessions AS (
-  SELECT
-    session_id,
-    rank() OVER (ORDER BY min(created_at)) session_rank
-  FROM answers
-  WHERE session_id IS NOT NULL
-    AND created_at
-      BETWEEN timestamp :exam_date - interval '28 hours'
-      AND :exam_date
-  GROUP BY session_id
-)
+WITH
+  ranked_sessions AS (
+    SELECT
+      session_id,
+      rank() OVER (ORDER BY min(created_at)) session_rank
+    FROM answers
+    WHERE session_id IS NOT NULL
+      AND created_at
+        BETWEEN timestamp :exam_date - interval '28 hours'
+        AND :exam_date
+    GROUP BY session_id
+  ),
+  plate_numbers AS (
+    SELECT
+      id,
+      category_id,
+      rank() OVER (PARTITION BY category_id ORDER BY plates.id)
+    FROM plates
+  )
 
 SELECT
   round(extract(epoch from answers.created_at)),
@@ -51,7 +59,7 @@ SELECT
     WHEN similarity(answers.input, structures.name) >= 0.8 THEN 'M'
     ELSE 'M'
   END,
-  category_id || '/' || plate_id || '/' || structure_id || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input,
+  categories.name || '/' || plate_numbers.rank || '/' || structure_id || '/' || rank() OVER (ORDER BY answers.id) || ': ' || input,
   CASE
     WHEN similarity(answers.input, structures.name) = 1 THEN '00FF00'
     WHEN similarity(answers.input, structures.name) >= 0.5 THEN 'FFFF00'
@@ -59,7 +67,8 @@ SELECT
   END
 FROM answers
 JOIN structures ON structures.id = structure_id
-JOIN plates ON plates.id = plate_id
+JOIN plate_numbers ON plate_numbers.id = plate_id
+JOIN categories ON categories.id = category_id
 JOIN ranked_sessions rs ON rs.session_id = answers.session_id
 WHERE answers.created_at
   BETWEEN timestamp :exam_date - interval '28 hours'
@@ -87,16 +96,16 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_48b62091524d98bc7906fd2dc2efe25e.log]]
+[[file:/tmp/answers_f0b7aad00ac0d385ee980d3fba1eb78f.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|7/56/617/1: meniscus medialis|00FF00
-: 1442729371|1|A|7/56/616/2: lig. cruciatum posterior|00FF00
-: 1442729377|1|A|7/56/618/3: meniscus lateralis|00FF00
+: 1442729360|1|A|Kniegewricht/1/617/1: meniscus medialis|00FF00
+: 1442729371|1|A|Kniegewricht/1/616/2: lig. cruciatum posterior|00FF00
+: 1442729377|1|A|Kniegewricht/1/618/3: meniscus lateralis|00FF00
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
@@ -231,7 +240,8 @@ time (gource \
           --caption-size 30 \
           --file-idle-time 5 \
           --fullscreen \
-          --hide dirnames \
+          --highlight-dirs \
+          --dir-name-depth 1 \
           --max-file-lag -1 \
           --seconds-per-day 1000 \
           --stop-at-end \
