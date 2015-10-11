@@ -54,7 +54,10 @@ WITH
 SELECT
   round(extract(epoch from answers.created_at)),
   session_rank,
-  CASE similarity(answers.input, structures.name) WHEN 1 THEN 'A' ELSE 'M' END,
+  CASE similarity(answers.input, structures.name)
+    WHEN 1 THEN 'A'
+    ELSE 'M'
+  END,
   concat_ws('/',
     CASE categories.name
       WHEN 'Bovenarm' THEN 'Upper arm'
@@ -73,9 +76,9 @@ SELECT
     END,
     plate_numbers.rank,
     structures.name,
-    input || repeat(E'\ '::text, rank() OVER (PARTITION BY structure_id, input ORDER BY answers.id)::int - 1)
+    rank() OVER (PARTITION BY structure_id ORDER BY answers)
   ),
-  CASE round(similarity(answers.input, structures.name)::numeric, 1)
+  CASE round(similarity(input, structures.name)::numeric, 1)
     WHEN 1 THEN '00FF00'
     WHEN 0.9 THEN '32FF00'
     WHEN 0.8 THEN '65FF00'
@@ -121,7 +124,7 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_ae608107d971454b3d99e2b26cb1a3ce.log]]
+[[file:/tmp/answers_d659c902fd1642c7ed8ec3df3ca925e7.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
@@ -130,13 +133,13 @@ tail -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|Knee joint/1/meniscus medialis/meniscus medialis|00FF00
-: 1442729371|1|A|Knee joint/1/lig. cruciatum posterior/lig. cruciatum posterior|00FF00
-: 1442729377|1|A|Knee joint/1/meniscus lateralis/meniscus lateralis|00FF00
+: 1442729360|1|A|Knee joint/1/meniscus medialis/1|00FF00
+: 1442729371|1|A|Knee joint/1/lig. cruciatum posterior/1|00FF00
+: 1442729377|1|A|Knee joint/1/meniscus lateralis/1|00FF00
 : 
-: 1442815272|271|M|Upper leg/4/m. biceps femoris caput longum/m. biceps femori caput longum|32FF00
-: 1442815283|271|A|Upper leg/4/m. vastus lateralis/m. vastus lateralis                                                             |00FF00
-: 1442815322|271|M|Upper leg/4/m. peroneus longus/m. tibialis anterior|FF3200
+: 1442815272|271|M|Upper leg/4/m. biceps femoris caput longum/75|32FF00
+: 1442815283|271|A|Upper leg/4/m. vastus lateralis/75|00FF00
+: 1442815322|271|M|Upper leg/4/m. peroneus longus/71|FF3200
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
@@ -270,9 +273,9 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+BEGIN_SRC sh :results verbatim silent
 time (gource -1280x720 \
              --bloom-intensity 0.7 \
+             --caption-duration 15 \
              --caption-file $CAPTIONS_PATH \
              --caption-size 50 \
-             --caption-duration 15 \
              --dir-colour 00FFFF \
              --dir-name-depth 2 \
              --file-idle-time 10 \
