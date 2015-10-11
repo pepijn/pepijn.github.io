@@ -72,19 +72,7 @@ SELECT
       ELSE categories.name
     END,
     plate_numbers.rank,
-/*
-    CASE replace(split_part(structures.name, ' ', 1), '.', '')
-      WHEN 'a' THEN 'Artery'
-      WHEN 'v' THEN 'Vein'
-      WHEN 'lig' THEN 'Ligament'
-      WHEN 'ligamentum' THEN 'Ligament'
-      WHEN 'm' THEN 'Muscle'
-      WHEN 'n' THEN 'Nerve'
-      WHEN 'os' THEN 'Bone'
-      ELSE 'Other'
-    END,
-*/
-    structures.name, --replace(structures.name, ' ', '/'),
+    structures.name,
     input || repeat(E'\ '::text, rank() OVER (PARTITION BY structure_id, input ORDER BY answers.id)::int - 1)
   ),
   CASE round(similarity(answers.input, structures.name)::numeric, 1)
@@ -281,20 +269,20 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+HEADER: :var USER_IMAGES_PATH=user-images-path
 #+BEGIN_SRC sh :results verbatim silent
 time (gource -1280x720 \
-          --bloom-intensity 0.7 \
-          --caption-file $CAPTIONS_PATH \
-          --caption-size 50 \
-          --caption-duration 15 \
-          --dir-colour 00FFFF \
-          --dir-name-depth 2 \
-          --file-idle-time 10 \
-          --hide mouse,filenames \
-          --highlight-dirs \
-          --max-file-lag -1 \
-          --seconds-per-day 10000 \
-          --stop-at-end \
-          --title 'AMC/UvA 3rd year medical students revising for their orthopaedics (course 3.1) anatomy exam' \
-          --user-image-dir $USER_IMAGES_PATH \
-          $ANSWERS_PATH 2>/dev/null) \
+             --bloom-intensity 0.7 \
+             --caption-file $CAPTIONS_PATH \
+             --caption-size 50 \
+             --caption-duration 15 \
+             --dir-colour 00FFFF \
+             --dir-name-depth 2 \
+             --file-idle-time 10 \
+             --hide mouse,filenames \
+             --highlight-dirs \
+             --max-file-lag -1 \
+             --seconds-per-day 10000 \
+             --stop-at-end \
+             --title 'Answers from AMC/UvA (Amsterdam) 3rd year medical students revising online the day before their orthopaedics (course 3.1) anatomy exam' \
+             --user-image-dir $USER_IMAGES_PATH \
+             $ANSWERS_PATH 2>/dev/null) \
      2>&1
 #+END_SRC
