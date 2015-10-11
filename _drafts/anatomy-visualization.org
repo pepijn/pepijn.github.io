@@ -84,7 +84,7 @@ SELECT
       ELSE 'Other'
     END,
 */
-    replace(structures.name, ' ', '/'),
+    structures.name, --replace(structures.name, ' ', '/'),
     input || repeat(E'\ '::text, rank() OVER (PARTITION BY structure_id, input ORDER BY answers.id)::int - 1)
   ),
   CASE round(similarity(answers.input, structures.name)::numeric, 1)
@@ -133,7 +133,7 @@ echo $DEST_PATH
 
 #+NAME: answers-path
 #+RESULTS:
-[[file:/tmp/answers_80872738ba84b8d1394c89da9ee176e0.log]]
+[[file:/tmp/answers_ae608107d971454b3d99e2b26cb1a3ce.log]]
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
 head -n 3 $ANSWERS_PATH
@@ -142,13 +142,13 @@ tail -n 3 $ANSWERS_PATH
 #+END_SRC
 
 #+RESULTS:
-: 1442729360|1|A|Knee joint/1/meniscus/medialis/meniscus medialis|00FF00
-: 1442729371|1|A|Knee joint/1/lig./cruciatum/posterior/lig. cruciatum posterior|00FF00
-: 1442729377|1|A|Knee joint/1/meniscus/lateralis/meniscus lateralis|00FF00
+: 1442729360|1|A|Knee joint/1/meniscus medialis/meniscus medialis|00FF00
+: 1442729371|1|A|Knee joint/1/lig. cruciatum posterior/lig. cruciatum posterior|00FF00
+: 1442729377|1|A|Knee joint/1/meniscus lateralis/meniscus lateralis|00FF00
 : 
-: 1442815272|271|M|Upper leg/4/m./biceps/femoris/caput/longum/m. biceps femori caput longum|32FF00
-: 1442815283|271|A|Upper leg/4/m./vastus/lateralis/m. vastus lateralis                                                             |00FF00
-: 1442815322|271|M|Upper leg/4/m./peroneus/longus/m. tibialis anterior|FF3200
+: 1442815272|271|M|Upper leg/4/m. biceps femoris caput longum/m. biceps femori caput longum|32FF00
+: 1442815283|271|A|Upper leg/4/m. vastus lateralis/m. vastus lateralis                                                             |00FF00
+: 1442815322|271|M|Upper leg/4/m. peroneus longus/m. tibialis anterior|FF3200
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 wc -l < $ANSWERS_PATH
@@ -284,17 +284,16 @@ time (gource -1280x720 \
           --bloom-intensity 0.7 \
           --caption-file $CAPTIONS_PATH \
           --caption-size 50 \
-          --caption-duration 20 \
+          --caption-duration 15 \
           --dir-colour 00FFFF \
-          --dir-name-depth 1 \
-          --file-idle-time 2 \
-          --hide mouse,progress \
-          --fullscreen \
+          --dir-name-depth 2 \
+          --file-idle-time 10 \
+          --hide mouse,filenames \
           --highlight-dirs \
-\ #          --max-file-lag -1 \
+          --max-file-lag -1 \
           --seconds-per-day 10000 \
           --stop-at-end \
-          --title 'AMC/UvA 3rd year medical students revising for their orthopaedics course (3.1) anatomy exam. The dots represent answers; color indicates trigram similarity to correct structure name.' \
+          --title 'AMC/UvA 3rd year medical students revising for their orthopaedics (course 3.1) anatomy exam' \
           --user-image-dir $USER_IMAGES_PATH \
           $ANSWERS_PATH 2>/dev/null) \
      2>&1
