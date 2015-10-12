@@ -87,7 +87,7 @@ WITH
     SELECT
       step::float / 10 AS similarity,
       CASE step
-        WHEN 10 THEN '00FF00' -- Green: good
+        WHEN 10 THEN '00FF00' -- Green: 100% correct answer
         WHEN 9 THEN '32FF00'
         WHEN 8 THEN '65FF00'
         WHEN 7 THEN '99FF00'
@@ -97,7 +97,7 @@ WITH
         WHEN 3 THEN 'FF9900'
         WHEN 2 THEN 'FF6600'
         WHEN 1 THEN 'FF3200'
-        WHEN 0 THEN 'FF0000' -- Red: bad
+        WHEN 0 THEN 'FF0000' -- Red: wrong answer :-(
       END AS color
     FROM generate_series(10, 0, -1) step
   ),
