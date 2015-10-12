@@ -54,6 +54,9 @@ This is the =exam_date= that we will be using for this visualization:
 
 file:/images/anatomy_visualization_answers_legend.png
 
+We use one big PostgreSQL query that yields all the answers from the timeframe
+in the right format. No scripting needed!
+
 #+NAME: answers-query
 #+BEGIN_EXAMPLE sql
 -- We use trigram similarity to determine answer correctness
@@ -84,17 +87,17 @@ WITH
     SELECT
       step::float / 10 AS similarity,
       CASE step
-        WHEN 10 THEN '00FF00'
+        WHEN 10 THEN '00FF00' -- Green: good
         WHEN 9 THEN '32FF00'
         WHEN 8 THEN '65FF00'
         WHEN 7 THEN '99FF00'
         WHEN 6 THEN 'CCFF00'
-        WHEN 5 THEN 'FFFF00'
+        WHEN 5 THEN 'FFFF00' -- Yellow: meh
         WHEN 4 THEN 'FFCC00'
         WHEN 3 THEN 'FF9900'
         WHEN 2 THEN 'FF6600'
         WHEN 1 THEN 'FF3200'
-        WHEN 0 THEN 'FF0000'
+        WHEN 0 THEN 'FF0000' -- Red: bad
       END AS color
     FROM generate_series(10, 0, -1) step
   ),
@@ -120,6 +123,7 @@ WITH
 SELECT
   round(extract(epoch from answers.created_at)),
   session_rank,
+  -- Green 'beam' (A) when the answer is 100% correct
   CASE similarity(answers.input, structures.name)
     WHEN 1 THEN 'A'
     ELSE 'M'
