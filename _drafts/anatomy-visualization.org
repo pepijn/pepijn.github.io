@@ -107,13 +107,15 @@ ORDER BY answers
 #+HEADER: :var ANSWERS_QUERY=answers-query
 #+HEADER: :results file
 #+BEGIN_SRC sh :exports none
+set -e
 OUTPUT_FILE="$(mktemp -t anatomy)"
 psql $DATABASE_URL \
      --no-align \
      --tuples-only \
      --set exam_date="'$EXAM_DATE'" \
+     --set ON_ERROR_STOP=1 \
      --output $OUTPUT_FILE \
-     2>&1 <<EOF # EOF instead of echo pipe supports SQL comments
+     <<EOF # EOF instead of echo pipe supports SQL comments
 $ANSWERS_QUERY
 EOF
 
@@ -206,13 +208,15 @@ GROUP BY session_id, user_agent
 #+HEADER: :var SESSIONS_QUERY=sessions-query
 #+HEADER: :results file
 #+BEGIN_SRC sh :exports none
+set -e
 OUTPUT_FILE="$(mktemp -t sessions)"
 psql $DATABASE_URL \
      --no-align \
      --tuples-only \
      --set exam_date="'$EXAM_DATE'" \
+     --set ON_ERROR_STOP=1 \
      --output $OUTPUT_FILE \
-     2>&1 <<EOF
+     <<EOF
 $SESSIONS_QUERY
 EOF
 
