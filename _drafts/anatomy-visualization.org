@@ -37,6 +37,44 @@ We define the =exam-date= so we can use it in the code blocks below:
 #+NAME: answers-query
 #+BEGIN_EXAMPLE sql
 WITH
+  translated_categories AS (
+    SELECT
+      id,
+      CASE categories.name
+        WHEN 'Bovenarm' THEN 'Upper arm'
+        WHEN 'Bovenbeen' THEN 'Upper leg'
+        WHEN 'Elleboog' THEN 'Elbow'
+        WHEN 'Enkel' THEN 'Ankle'
+        WHEN 'Hals' THEN 'Neck'
+        WHEN 'Heupgewricht' THEN 'Hip joint'
+        WHEN 'Kniegewricht' THEN 'Knee joint'
+        WHEN 'Onderarm' THEN 'Lower arm'
+        WHEN 'Onderbeen' THEN 'Lower leg'
+        WHEN 'Pols' THEN 'Wrist'
+        WHEN 'Schouder' THEN 'Shoulder'
+        WHEN 'Voet' THEN 'Foot'
+        ELSE categories.name
+      END AS name
+    FROM categories
+  ),
+  answer_colors AS (
+    SELECT
+      step::float / 10 AS similarity,
+      CASE step
+        WHEN 10 THEN '00FF00'
+        WHEN 9 THEN '32FF00'
+        WHEN 8 THEN '65FF00'
+        WHEN 7 THEN '99FF00'
+        WHEN 6 THEN 'CCFF00'
+        WHEN 5 THEN 'FFFF00'
+        WHEN 4 THEN 'FFCC00'
+        WHEN 3 THEN 'FF9900'
+        WHEN 2 THEN 'FF6600'
+        WHEN 1 THEN 'FF3200'
+        ELSE 'FF0000'
+      END AS color
+    FROM generate_series(10, 0, -1) step
+  ),
   ranked_sessions AS (
     SELECT
       session_id,
@@ -64,43 +102,20 @@ SELECT
     ELSE 'M'
   END,
   concat_ws('/',
-    CASE categories.name
-      WHEN 'Bovenarm' THEN 'Upper arm'
-      WHEN 'Bovenbeen' THEN 'Upper leg'
-      WHEN 'Elleboog' THEN 'Elbow'
-      WHEN 'Enkel' THEN 'Ankle'
-      WHEN 'Hals' THEN 'Neck'
-      WHEN 'Heupgewricht' THEN 'Hip joint'
-      WHEN 'Kniegewricht' THEN 'Knee joint'
-      WHEN 'Onderarm' THEN 'Lower arm'
-      WHEN 'Onderbeen' THEN 'Lower leg'
-      WHEN 'Pols' THEN 'Wrist'
-      WHEN 'Schouder' THEN 'Shoulder'
-      WHEN 'Voet' THEN 'Foot'
-      ELSE categories.name
-    END,
+    translated_categories.name,
     plate_numbers.rank,
     structures.name,
     rank() OVER (PARTITION BY structure_id ORDER BY answers)
   ),
-  CASE round(similarity(input, structures.name)::numeric, 1)
-    WHEN 1 THEN '00FF00'
-    WHEN 0.9 THEN '32FF00'
-    WHEN 0.8 THEN '65FF00'
-    WHEN 0.7 THEN '99FF00'
-    WHEN 0.6 THEN 'CCFF00'
-    WHEN 0.5 THEN 'FFFF00'
-    WHEN 0.4 THEN 'FFCC00'
-    WHEN 0.3 THEN 'FF9900'
-    WHEN 0.2 THEN 'FF6600'
-    WHEN 0.1 THEN 'FF3200'
-    ELSE 'FF0000'
-  END
+  color
 FROM answers
 JOIN structures ON structures.id = structure_id
+JOIN answer_colors
+  ON answer_colors.similarity =
+     round(similarity(input, structures.name)::numeric, 1)
 JOIN plate_numbers ON plate_numbers.id = plate_id
-JOIN categories ON categories.id = category_id
 JOIN ranked_sessions rs ON rs.session_id = answers.session_id
+JOIN translated_categories ON translated_categories.id = category_id
 WHERE answers.created_at
   BETWEEN timestamp with time zone :exam_date - interval '28 hours'
   AND timestamp with time zone :exam_date
