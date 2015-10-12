@@ -61,20 +61,6 @@ for which the following video was made:
 
 [![Hassina StudentResearch video](/images/studentresearch_grassroots_video.png)](http://streamingmedia.uva.nl/asset/detail/X2VWfTSK8HW8DOCcTlav1lkD)
 
-
-#### 2012 - present: [Anatomy cramming tool](https://anatomie.plict.nl)
-
-Learning the names of many anatomical structures by heart is a daunting
-task. This is why I created a website that gives students a method of testing
-their knowledge. It is still used by a lot of students every year; especially
-during the 1.5 (core) and 3.1 (orthopaedic) anatomy dissection courses in the
-AMC Amsterdam. All submitted answers have been recorded since October 2013, and
-I am currently analyzing this dataset. I will release a blog post with my
-findings soon.
-
-![Anatomy cramming website screenshot](/images/anatomy_website_screenshot.png)
-
-
 #### 2011: [Cellular respiration simulation](http://metabolism.plict.nl)
 
 During the metabolism course in the first year of medicine, I had the idea to
