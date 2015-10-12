@@ -71,7 +71,7 @@ WITH
         WHEN 3 THEN 'FF9900'
         WHEN 2 THEN 'FF6600'
         WHEN 1 THEN 'FF3200'
-        ELSE 'FF0000'
+        WHEN 0 THEN 'FF0000'
       END AS color
     FROM generate_series(10, 0, -1) step
   ),
