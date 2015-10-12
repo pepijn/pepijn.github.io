@@ -1,3 +1,4 @@
+#+OPTIONS: toc:nil
 #+BEGIN_HTML
 ---
 layout:     post
@@ -5,6 +6,8 @@ title:      Anatomy visualization
 categories: medicine visualization gource postgresql
 ---
 #+END_HTML
+
+[[file:/images/anatomy_google_analytics.png]]
 
 #+BEGIN_SRC sh :results file :exports none
 cd ~/Code/anatomy
@@ -24,10 +27,12 @@ echo "$FILE_PATH"
 cat "$DB_CRED_PATH"
 #+END_SRC
 
+We define the =exam-date= so we can use it in the code blocks below:
+
 #+NAME: exam-date
 : 2015-09-21 08:30:00 +02:00
 
-Deze is opgesplitst per whitespace in de structuurnaam
+* Answers
 
 #+NAME: answers-query
 #+BEGIN_EXAMPLE sql
@@ -128,7 +133,9 @@ echo $DEST_PATH
 #+RESULTS:
 [[file:/tmp/answers_d659c902fd1642c7ed8ec3df3ca925e7.log]]
 
-#+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output
+[[https://github.com/acaudwell/Gource/wiki/Custom-Log-Format][file:/images/gource_custom_log_format_docs.png]]
+
+#+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
 head -n 3 $ANSWERS_PATH
 echo
 tail -n 3 $ANSWERS_PATH
@@ -149,6 +156,8 @@ wc -l < $ANSWERS_PATH
 
 #+RESULTS:
 :    50687
+
+* Captions
 
 #+HEADER: :results file
 #+HEADER: :var exam_date=exam-date
@@ -179,7 +188,9 @@ path
 #+RESULTS:
 [[file:/tmp/captions_b4ac3b5282e414d80fcfd2d41d05e513.log]]
 
-#+BEGIN_SRC sh :var CAPTIONS_PATH=captions-path :results output
+[[https://github.com/acaudwell/Gource/wiki/Captions][file:/images/gource_captions_docs.png]]
+
+#+BEGIN_SRC sh :var CAPTIONS_PATH=captions-path :results output :exports both
 tail -n 3 $CAPTIONS_PATH
 #+END_SRC
 
@@ -187,6 +198,8 @@ tail -n 3 $CAPTIONS_PATH
 : 1442809800|2 hours until exam
 : 1442813400|1 hour until exam
 : 1442817000|Exam begins at 08:30...
+
+* User images
 
 #+NAME: sessions-query
 #+BEGIN_EXAMPLE sql
@@ -229,7 +242,7 @@ echo $DEST_PATH
 #+RESULTS:
 [[file:/tmp/sessions_765c2e6ff6257653d481f722ecc43513.log]]
 
-#+BEGIN_SRC sh :var SESSIONS_PATH=sessions-path :results output
+#+BEGIN_SRC sh :var SESSIONS_PATH=sessions-path :results output :exports results
 head -n 3 $SESSIONS_PATH
 #+END_SRC
 
@@ -249,9 +262,8 @@ FileUtils.mkdir user_images_path
 require 'csv'
 require 'browser'
 headers = %i(session_rank user_agent first_id session_start)
-cache = {}
 data = CSV.foreach(sessions_path, col_sep: '|', headers: headers) do |row|
-  browser = (cache[row[:user_agent]] ||= Browser.new(ua: row[:user_agent]).name)
+  browser = Browser.new(ua: row[:user_agent]).name
   next unless %w(Safari Chrome Firefox).include?(browser)
   FileUtils.ln_s "/Users/pepijn/Desktop/browser_icons/#{browser}.png", "#{user_images_path}/#{row[:session_rank]}.png"
 end
@@ -262,7 +274,9 @@ user_images_path
 #+RESULTS:
 : /tmp/user_images_765c2e6ff6257653d481f722ecc43513
 
-#+BEGIN_SRC sh :var USER_IMAGES_PATH=user-images-path :results output
+[[https://github.com/acaudwell/Gource][file:/images/gource_user_images_docs.png]]
+
+#+BEGIN_SRC sh :var USER_IMAGES_PATH=user-images-path :results output :exports both
 ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 #+END_SRC
 
@@ -270,6 +284,8 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 : 1.png -> /Users/pepijn/Desktop/browser_icons/Safari.png
 : 2.png -> /Users/pepijn/Desktop/browser_icons/Firefox.png
 : 3.png -> /Users/pepijn/Desktop/browser_icons/Safari.png
+
+* Gource
 
 #+HEADER: :var ANSWERS_PATH=answers-path
 #+HEADER: :var CAPTIONS_PATH=captions-path
