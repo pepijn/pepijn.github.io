@@ -40,7 +40,7 @@ WITH
   translated_categories AS (
     SELECT
       id,
-      CASE categories.name
+      CASE name
         WHEN 'Bovenarm' THEN 'Upper arm'
         WHEN 'Bovenbeen' THEN 'Upper leg'
         WHEN 'Elleboog' THEN 'Elbow'
@@ -53,7 +53,7 @@ WITH
         WHEN 'Pols' THEN 'Wrist'
         WHEN 'Schouder' THEN 'Shoulder'
         WHEN 'Voet' THEN 'Foot'
-        ELSE categories.name
+        ELSE name
       END AS name
     FROM categories
   ),
