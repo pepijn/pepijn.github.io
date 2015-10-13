@@ -17,10 +17,10 @@ check out the [[https://youtu.be/xytCT8QoSDU][YouTube video]] for the result:
 
 For medical students it is inevitable: you have to know all the anatomical terms
 by heart. The task is easy, but the amount of structures one has to learn is
-quite intimidating. The feelings of despair while repeatedly recalling a lost
-focus to the latin words in the anatomy book. I myself tried it the classic way,
-but after a few minutes of goofing around, my attention span had decided: we
-needed a better way to study anatomy (maybe one that involves computers).
+quite intimidating. I remember the feelings of despair that arose while staring
+at the latin words in the anatomy book. After one brave attempt, my attention
+span had decided: we needed a better way to study this (one that involves
+computers).
 
 [[file:/images/anatomy_google_analytics.png]]
 
