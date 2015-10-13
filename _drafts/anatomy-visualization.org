@@ -20,8 +20,7 @@ by heart. The task is easy, but the amount of structures one has to learn is
 quite intimidating. The feelings of despair while repeatedly recalling a lost
 focus to the latin words in the anatomy book. I myself tried it the classic way,
 but after a few minutes of goofing around, my attention span had decided: we
-needed a better way to study anatomy (maybe one that involves computers). And so
-an application was built!
+needed a better way to study anatomy (maybe one that involves computers).
 
 [[file:/images/anatomy_google_analytics.png]]
 
