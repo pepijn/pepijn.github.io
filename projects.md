@@ -21,7 +21,7 @@ April 2015. From that point on I worked part-time until August 2015.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
-#### 2013 - present: ERT at AMC Intensive Care (Amsterdam, NL)
+#### 2013 - present: ERT at [AMC](http://www.amc.nl) [Intensive Care](https://www.amc.nl/web/Zorg/Patient/Opname-voor-meerdere-dagen/Intensive-Care-Unit.htm) (Amsterdam, NL)
 
 ERT is an acronym for Education Registration Tool. Intensive care nurses of the
 Academic Medical Center in Amsterdam register to the courses they are interested
