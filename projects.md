@@ -21,6 +21,15 @@ April 2015. From that point on I worked part-time until August 2015.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
+#### 2013 - present: ERT at AMC Intensive Care (Amsterdam, NL)
+
+ERT is an acronym for Education Registration Tool. Intensive care nurses of the
+Academic Medical Center in Amsterdam register to the courses they are interested
+in. Managers verify that the course has been taken by the nurse. The tool
+replaced an offline whiteboard-based system that lacked a proper backup
+strategy.
+
+![ERT at AMC](/images/ert_amc.png)
 
 #### 2013: Full-stack dev at [Medisas](http://medisas.com) (Mountain View, CA)
 
@@ -75,6 +84,13 @@ allowfullscreen></iframe>
 
 
 ### Various
+
+#### 2015 - present: [Kriterion](http://www.kriterion.nl)
+
+Plict built the new website of the awesome local cinema Kriterion. Kriterion and
+Plict are still working together on improving the website every now and then.
+
+[![Kriterion](/images/kriterion.png)](http://www.kriterion.nl)
 
 #### 2014: [TicketSwap Bot](https://gist.github.com/pepijn/c683c3b26da66846dbcc)
 
