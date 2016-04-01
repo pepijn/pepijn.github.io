@@ -1,0 +1,68 @@
+==================================================================
+https://keybase.io/pepijnl
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://p.epij.nl
+  * I am pepijnl (https://keybase.io/pepijnl) on keybase.
+  * I have a public key with fingerprint 42D2 9AE4 C19D 429F 3458  8A15 8D1E 8B08 E344 3250
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "010188d20acb34a75965e2fd79c1bba01e9b863a626817e661f4d1078a4993af0c090a",
+            "fingerprint": "42d29ae4c19d429f34588a158d1e8b08e3443250",
+            "host": "keybase.io",
+            "key_id": "8d1e8b08e3443250",
+            "kid": "010188d20acb34a75965e2fd79c1bba01e9b863a626817e661f4d1078a4993af0c090a",
+            "uid": "f54c15622fc81cf0a12f3d60fd31a800",
+            "username": "pepijnl"
+        },
+        "service": {
+            "hostname": "p.epij.nl",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1459502258,
+    "expire_in": 157680000,
+    "prev": "452d1137a3e5a10b833c669090c28fd66c296b26e4a5451793d8bd814529b60c",
+    "seqno": 32,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.53
+Comment: https://keybase.io/crypto
+
+yMIjAnicrZJdSBRRFMdXTTMzKg2innKKklqXe+/M3L2zLGURlPRFUBZRbHfm3nGn
+1Z1tZnYtyhDafagsJOmlD4kIoiiIQsmPIDX7JAhCiwoS86Ey7CEKCpLuSL312NPl
+Hn7///mfw7k/qyBQkpc9pnze+Krjbt7TvrZ0oHYyeuuQpNvsoBQ5JCX41MPrGXe9
+WMJiUkQCEEBCGALU0GWFhlUNqxyZLKwZUNcpgFzTCZYpRpjAMMcYmgqDIEyoomky
+NYEBNECloGRayTrupBwr6QlbBTGkUa4YUGMK0kxZUQmhUCUMcqIDwmVFkZEKhDBu
+u75ChNOpy0OWLWriE5uK9w/+P+dOT9mZqoiqYoRMg0DDBBQiU2YYmEyGlAC/b9rl
+TpI2cEGneMral6yXmoKSKGYsg/t79Qf5C4R8IiSQoJRybM827HpRjnteKuKrvIMp
+H2vkeuyPQUy3kkysUAgy3HEtOylFoCANz/IdoaJqKkBIJUGJH0hZDo9ZPqGGsUgH
+gN+GZ/zFq4hBKIepzFUKgU5k2cBYE8MaiJgMYwNpWEeYK1RVVBjWZEZ0RoQ/0nQM
+DMkfaX/SliIyEjlpnfB0rbok9dIOl5r67+2eFsgrCRQV5vu3FSiZMefvxclbpk+G
+ElcHaub29I5e+LG6alt8u7zr153KOf3rqhc+SBzVzkcXBW37nLay/Xj8UmXsXby1
+ffzm4uKxj6HclbWmebfo0pvlJ1cNf1hfGWgINNde9xZ8Be0nlpV2jY0eqFlxOKt8
+GpjdeWRmesKaeLbUbbO6wUjRDlavlG2L9m5uas6aD8v3fHNW4SJ14lFp28WyU/EN
+Dc7WU+N9vYllrXO9luFnw/dyt50CN9+Do5Pl1Stmh9cMzX/dWTU0WHFWObNks95S
+nete2CUVs8utx95+76gpfb8+V7Bm55YX2c9PZvWMPI5/CZ2ed+ba88H859GfhX3f
+rp/tyTiNPxbtvdH4cpNR4f4G7t837A==
+=nVS4
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/pepijnl
+
+==================================================================
