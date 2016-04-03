@@ -1,0 +1,3 @@
+[submodule "org/python_upsert_scraper"]
+	path = org/python_upsert_scraper
+	url = https://github.com/pepijn/python-upsert-scraper

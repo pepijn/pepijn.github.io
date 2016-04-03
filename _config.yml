@@ -5,6 +5,7 @@ author:      Pepijn Looije
 description:
 baseurl:     ""
 url:         "http://p.epij.nl"
+gems:        [jekyll-paginate]
 
 # Google analytics
 google_analytics: UA-6645938-20

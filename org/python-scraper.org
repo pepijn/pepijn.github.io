@@ -1,0 +1,394 @@
+#+OPTIONS: toc:nil
+#+BEGIN_HTML
+---
+layout:     post
+title:      Building a scraper on PostgreSQL 9.5 UPSERT
+categories: postgresql python
+---
+#+END_HTML
+
+#+BEGIN_SRC ipython :session :results silent :exports none
+import os
+import inspect
+from pprint import pprint
+
+%load_ext autoreload
+%autoreload 2
+
+from upsert_scraper import scraper
+from upsert_scraper.scraper import scrape
+
+class fresh_test_database:
+    def __enter__(self):
+        import psycopg2
+        dbname="python_scraper_test"
+        !pkill $dbname
+        conn = psycopg2.connect("dbname=postgres")
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute("DROP DATABASE IF EXISTS %s" % dbname)
+        cur.execute("CREATE DATABASE %s" % dbname)
+
+        return "postgres://localhost/%s" % dbname
+    def __exit__(self, type, value, traceback):
+        return None
+
+def print_source(obj, prefix=None):
+    print("#+BEGIN_EXAMPLE python")
+    if prefix:
+        print(prefix)
+    print(inspect.getsource(obj))
+    print("#+END_EXAMPLE")
+
+def scrape(body, timestamp=None, database_url=None):
+    kwargs = dict(database_url=database_url)
+    if timestamp:
+        kwargs['timestamp'] = timestamp
+    return scraper.scrape(body + '\n', **kwargs)
+
+def print_query(index):
+    with open('upsert_scraper/query.sql') as f:
+        query = [line.strip() for line in f.read().split(';')]
+        print("#+BEGIN_EXAMPLE sql")
+        print(query[index])
+        print("#+END_EXAMPLE")
+
+#+END_SRC
+
+* Introduction
+
+#+NAME: before
+#+BEGIN_EXAMPLE html
+<html>
+  <p>A thing</p>
+</html>
+#+END_EXAMPLE
+
+#+NAME: after
+#+BEGIN_EXAMPLE html
+<html>
+  A thing
+  A new thing
+</html>
+#+END_EXAMPLE
+
+#+BEGIN_SRC ipython :session :var before=before after=after :results output raw :exports results
+with fresh_test_database() as db:
+    scrape(before, '2016-03-31', database_url=db)
+    result = scrape(after, '2016-04-02', database_url=db)
+for line in result:
+    print(": " + line, end='')
+#+END_SRC
+
+#+RESULTS:
+: *** 2016-03-31 00:00:00+02:00
+: --- 2016-04-02 00:00:00+02:00
+: ***************
+: *** 1,3 ****
+:   <html>
+: !   <p>A thing</p>
+:   </html>
+: --- 1,4 ----
+:   <html>
+: !   A thing
+: !   A new thing
+:   </html>
+
+* Methods
+
+#+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
+pprint(before)
+pprint(after)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC ipython
+'<html>\n  <p>A thing</p>\n</html>'
+'<html>\n  A thing\n  A new thing\n</html>'
+#+END_SRC
+
+#+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
+with fresh_test_database() as db:
+    scrape(before, '2016-03-31', database_url=db)
+    pprint(scrape(after, '2016-04-02', database_url=db))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC ipython
+['*** 2016-03-31 00:00:00+02:00\n',
+ '--- 2016-04-02 00:00:00+02:00\n',
+ '***************\n',
+ '*** 1,3 ****\n',
+ '--- 1,4 ----\n',
+ '  <html>\n',
+ '    A thing\n',
+ '+   A new thing\n',
+ '  </html>\n']
+#+END_SRC
+
+
+#+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
+with fresh_test_database() as db:
+    scrape(before, '2015-01-01', database_url=db)
+    scrape(after, '2016-01-01', database_url=db)
+    pprint(scrape(after, '2016-04-03', database_url=db))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC ipython
+None
+#+END_SRC
+
+hoi
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_source(scraper.scrape)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE python
+def scrape(body, timestamp=datetime.now(), database_url=None):
+    assert timestamp
+    path = os.path.join(os.path.dirname(__file__), 'query.sql')
+    with open(path) as f:
+        with psycopg2.connect(database_url) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f.read(), (body, timestamp))
+                results = cur.fetchall()
+                return diff(*results)
+
+#+END_EXAMPLE
+
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_query(0)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE sql
+CREATE TABLE IF NOT EXISTS scraps (
+  id serial PRIMARY KEY,
+  body text NOT NULL UNIQUE,
+  seen_at timestamptz[] NOT NULL
+)
+#+END_EXAMPLE
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_query(1)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto
+#+END_EXAMPLE
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_query(2)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE sql
+WITH
+  last_observations AS (
+    SELECT body, unnest(seen_at) AS seen_at
+    FROM scraps
+    ORDER BY seen_at DESC
+    LIMIT 2),
+  distinct_observations AS (
+    SELECT DISTINCT ON (body) seen_at, body
+    FROM last_observations
+  )
+SELECT *
+FROM distinct_observations
+ORDER BY seen_at DESC
+#+END_EXAMPLE
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_query(3)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE sql
+WITH
+  last_observations AS (
+    SELECT body, unnest(seen_at) AS seen_at
+    FROM scraps
+    ORDER BY seen_at DESC
+    LIMIT 2),
+  distinct_observations AS (
+    SELECT DISTINCT ON (body) seen_at, body
+    FROM last_observations
+  )
+SELECT *
+FROM distinct_observations
+ORDER BY seen_at DESC
+#+END_EXAMPLE
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_source(scraper.diff)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE python
+def diff(after, before=None):
+    if not before:
+        return None
+
+    diff = difflib.context_diff(before[1].splitlines(True),
+                                after[1].splitlines(True),
+                                str(before[0]),
+                                str(after[0]))
+    return list(diff)
+
+#+END_EXAMPLE
+
+
+* Results
+
+#+BEGIN_SRC ipython :session :var before=before after=after :exports both :results output
+with fresh_test_database() as db:
+    scrape(before, '2016-03-30', database_url=db)
+    scrape(before, '2016-03-31', database_url=db)
+    scrape(after, '2016-04-01', database_url=db)
+    scrape(after, '2016-04-02', database_url=db)
+    scrape("<h1>blocked</h1>", '2016-04-03', database_url=db)
+
+    !echo scraps table: # prevents whitespace truncation
+    !psql $db -c 'SELECT body, seen_at FROM scraps'
+#+END_SRC
+
+
+#+RESULTS:
+#+begin_example
+scraps table:
+       body       |                       seen_at
+------------------+-----------------------------------------------------
+ <html>          +| {"2016-03-30 00:00:00+02","2016-03-31 00:00:00+02"}
+   A thing       +|
+ </html>         +|
+                  |
+ <html>          +| {"2016-04-01 00:00:00+02","2016-04-02 00:00:00+02"}
+   A thing       +|
+   A new thing   +|
+ </html>         +|
+                  |
+ <h1>blocked</h1>+| {"2016-04-03 00:00:00+02"}
+                  |
+(3 rows)
+
+#+end_example
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_source(scraper.main)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE python
+def main():
+    database_url = os.environ['DATABASE_URL']
+    sender = os.environ['FROM']
+    sendgrid_user = os.environ['SENDGRID_USERNAME']
+    sendgrid_pass = os.environ['SENDGRID_PASSWORD']
+
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--recipients', required=True)
+    parser.add_argument('--subject', required=True)
+    args = parser.parse_args()
+
+    import sys
+    body = sys.stdin.read()
+
+    diff = scrape(body, database_url=database_url)
+
+    if not diff:
+        return
+
+    import sendgrid
+    sg = sendgrid.SendGridClient(sendgrid_user, sendgrid_pass)
+    message = sendgrid.Mail(to=args.recipients,
+                            subject=args.subject,
+                            text=''.join(diff),
+                            from_email=sender)
+    status, msg = sg.send(message)
+    if status is not 200:
+        sys.exit(1)
+
+#+END_EXAMPLE
+
+#+BEGIN_SRC sh :results verbatim :cache yes :exports code
+cd upsert_scraper
+heroku destroy upsert-scraper-example --confirm upsert-scraper-example
+set -eu
+heroku create upsert-scraper-example --region eu
+
+heroku config:set TZ=Europe/Amsterdam
+heroku config:set FROM=scraper@example.com
+
+heroku addons:create heroku-postgresql:hobby-dev
+heroku addons:create sendgrid:starter
+
+heroku addons:create scheduler:standard
+heroku addons:open scheduler
+#+END_SRC
+
+#+RESULTS[752b98dd7e28c4fcfc1710648b535ea1536f19c6]:
+#+begin_example
+https://upsert-scraper-example.herokuapp.com/ | https://git.heroku.com/upsert-scraper-example.git
+TZ: Europe/Amsterdam
+FROM: scraper@example.com
+Creating postgresql-encircled-20717... done, (free)
+Adding postgresql-encircled-20717 to upsert-scraper-example... done
+Setting DATABASE_URL and restarting upsert-scraper-example... done, v5
+Database has been created and is available
+ ! This database is empty. If upgrading, you can transfer
+ ! data from another database with pg:copy
+Use `heroku addons:docs heroku-postgresql` to view documentation.
+Creating sendgrid-crystalline-86616... done, (free)
+Adding sendgrid-crystalline-86616 to upsert-scraper-example... done
+Setting SENDGRID_PASSWORD, SENDGRID_USERNAME and restarting upsert-scraper-example... done, v6
+Use `heroku addons:docs sendgrid` to view documentation.
+Creating scheduler-sinuous-49548... done, (free)
+Adding scheduler-sinuous-49548 to upsert-scraper-example... done
+This add-on consumes dyno hours, which could impact your monthly bill. To learn more:
+http://devcenter.heroku.com/addons_with_dyno_hour_usage
+
+To manage scheduled jobs run:
+heroku addons:open scheduler
+Use `heroku addons:docs scheduler` to view documentation.
+Opening https://addons-sso.heroku.com/apps/upsert-scraper-example/addons/852c353e-88a3-4e39-b0b5-9a4263b51f1a...
+#+end_example
+
+* Conclusion
+
+* Acknowledgements
+
+- IPython
+- gregsexton/ob-ipython
+- Babel (Org-mode)
+
+* Appendix
+
+** Creating a fresh test database
+
+#+BEGIN_SRC ipython :session :results output raw :exports results
+print_source(fresh_test_database.__enter__,
+             prefix="class fresh_test_database():")
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE python
+class fresh_test_database():
+    def __enter__(self):
+        import psycopg2
+        dbname="python_scraper_test"
+        get_ipython().system('pkill $dbname')
+        conn = psycopg2.connect("dbname=postgres")
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute("DROP DATABASE IF EXISTS %s" % dbname)
+        cur.execute("CREATE DATABASE %s" % dbname)
+
+        return "postgres://localhost/%s" % dbname
+
+#+END_EXAMPLE
