@@ -1,10 +1,11 @@
 ---
 layout: page
-title: About Me
+title: About
 permalink: /about/
+tags: about
 ---
 
-* 23 years old
+* 24 years old
 * Grew up in [Utrecht](https://en.wikipedia.org/wiki/Utrecht)
 * Moved to [Amsterdam](https://en.wikipedia.org/wiki/Amsterdam) in September 2012
 * Studies Medicine at the [AMC](http://amc.nl) of the [Universiteit van Amsterdam](http://uva.nl) since September 2011

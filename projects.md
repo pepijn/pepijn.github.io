@@ -2,6 +2,7 @@
 layout: page
 title: Projects
 permalink: /projects/
+tags: projects
 ---
 
 This is a selection of projects that I worked on or founded myself during the
