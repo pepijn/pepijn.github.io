@@ -40,11 +40,9 @@ def print_source(obj, prefix=None):
     print(inspect.getsource(obj))
     print("#+END_EXAMPLE")
 
-def scrape(body, timestamp=None, database_url=None):
+def scrape(body, timestamp, database_url=None):
     kwargs = dict(database_url=database_url)
-    if timestamp:
-        kwargs['timestamp'] = timestamp
-    return scraper.scrape(body + '\n', **kwargs)
+    return scraper.scrape(body + '\n', timestamp, **kwargs)
 
 def print_query(index):
     with open('upsert_scraper/query.sql') as f:
@@ -55,7 +53,7 @@ def print_query(index):
 
 #+END_SRC
 
-My roommate asked me for advice on building a simple web scraper this
+My roommate asked me for advice on building a simple web scraper last
 weekend. The script should run automatically and check the targeted website at
 least every hour. My roommate is not in possession of a server and his laptop is
 not always online. Within these constraints, we succeeded in building a tool
@@ -204,8 +202,7 @@ print_source(scraper.scrape)
 
 #+RESULTS:
 #+BEGIN_EXAMPLE python
-def scrape(body, timestamp=None, database_url=None):
-    assert timestamp
+def scrape(body, timestamp, database_url=None):
     path = os.path.join(os.path.dirname(__file__), 'query.sql')
     with open(path) as f:
         with psycopg2.connect(database_url) as conn:
