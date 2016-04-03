@@ -60,7 +60,7 @@ def print_query(index):
 #+NAME: before
 #+BEGIN_EXAMPLE html
 <html>
-  <p>A thing</p>
+  A thing
 </html>
 #+END_EXAMPLE
 
@@ -85,13 +85,10 @@ for line in result:
 : --- 2016-04-02 00:00:00+02:00
 : ***************
 : *** 1,3 ****
-:   <html>
-: !   <p>A thing</p>
-:   </html>
 : --- 1,4 ----
 :   <html>
-: !   A thing
-: !   A new thing
+:     A thing
+: +   A new thing
 :   </html>
 
 * Methods
@@ -103,7 +100,7 @@ pprint(after)
 
 #+RESULTS:
 #+BEGIN_SRC ipython
-'<html>\n  <p>A thing</p>\n</html>'
+'<html>\n  A thing\n</html>'
 '<html>\n  A thing\n  A new thing\n</html>'
 #+END_SRC
 
