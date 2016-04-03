@@ -2,7 +2,7 @@
 #+BEGIN_HTML
 ---
 layout:     post
-title:      Building a scraper on PostgreSQL 9.5 UPSERT
+title:      Basing a scraper on PostgreSQL 9.5 'UPSERT'
 categories: postgresql python
 ---
 #+END_HTML
@@ -55,7 +55,18 @@ def print_query(index):
 
 #+END_SRC
 
+My roommate asked me for advice on building a simple web scraper this
+weekend. The script should run automatically and check the targeted website at
+least every hour. My roommate is not in possession of a server and his laptop is
+not always online. Within these constraints, we succeeded in building a tool
+that checks every 10 minutes and has zero maintenance costs. In this post, I
+will explain how we did it and used PostgreSQL's new UPSERT feature to our
+advantage.
+
 * Introduction
+
+Given a website that presents the following source code to my roommate on
+=2016-03-31=:
 
 #+NAME: before
 #+BEGIN_EXAMPLE html
@@ -64,13 +75,20 @@ def print_query(index):
 </html>
 #+END_EXAMPLE
 
+A couple of days later, the owners of this fictional website have added
+something to their page. The source looks like this on =2016-04-02=:
+
 #+NAME: after
 #+BEGIN_EXAMPLE html
 <html>
   A thing
-  A new thing
+  A new thing!
 </html>
 #+END_EXAMPLE
+
+Keeping close track of these mutations has great value to my roommate. This is
+why I think he would want the following diff (he did not know yet what a diff
+was--just wanted a notification) in his mailbox after the change occured.
 
 #+BEGIN_SRC ipython :session :var before=before after=after :results output raw :exports results
 with fresh_test_database() as db:
@@ -88,10 +106,34 @@ for line in result:
 : --- 1,4 ----
 :   <html>
 :     A thing
-: +   A new thing
+: +   A new thing!
 :   </html>
 
-* Methods
+A push notification of the email would alarm him of the modification. He would
+consequently rush to the website to do the thing that he needs to do with the
+new thing.
+
+* Objective
+
+There are many ways to build a web scraper. In this post, I will show you how we
+did it within the following constraints:
+
+- Online 24/7
+- Scrapes at least every hour
+- No recurring costs (except development time, of course)
+- Notify via email when the website has changed
+- Extra: add a diff to the email
+- Extra: save all the data so we could analyze it later
+- Extra: use the new PostgreSQL 9.5 'UPSERT' feature
+
+The source code for this post (Babel & Org-mode, IPython, PostgreSQL) and the
+scraper (Python, PostgreSQL) is [[https://github.com/pepijn/pepijn.github.io/tree/master/org][available on GitHub]].
+
+* The scraper
+
+From now on, the snippets that follow are either IPython, or SQL code and/or
+have their output underneath. The =before= and =after= variables that appear in the
+code have the following values, based on the HTML snippets in the introduction:
 
 #+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
 pprint(before)
@@ -101,8 +143,19 @@ pprint(after)
 #+RESULTS:
 #+BEGIN_SRC ipython
 '<html>\n  A thing\n</html>'
-'<html>\n  A thing\n  A new thing\n</html>'
+'<html>\n  A thing\n  A new thing!\n</html>'
 #+END_SRC
+
+** Example scenarios
+
+Before diving into the implementation details, let us look at two example
+scenarios that one encounters while using a scraper.
+
+*** Scrape after mutation
+
+The first scenario involves two /scrapes/. The first one scrapes the =before=
+content and the second one the =after= content. The output diff of the second
+scrape is, as expected, present and is printed to the block under the code.
 
 #+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
 with fresh_test_database() as db:
@@ -119,10 +172,15 @@ with fresh_test_database() as db:
  '--- 1,4 ----\n',
  '  <html>\n',
  '    A thing\n',
- '+   A new thing\n',
+ '+   A new thing!\n',
  '  </html>\n']
 #+END_SRC
 
+*** Scrape unchanged content
+
+This scenario scrapes the =after= content twice, in sequence. As a result, the
+output of the third scrape (the second =after= scrape) has no output. This is
+the how the scraper works; it can only return a diff when something has changed.
 
 #+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
 with fresh_test_database() as db:
@@ -136,7 +194,9 @@ with fresh_test_database() as db:
 None
 #+END_SRC
 
-hoi
+** Implementation
+
+The entry point of the scraper is the =scrape()= function:
 
 #+BEGIN_SRC ipython :session :results output raw :exports results
 print_source(scraper.scrape)
@@ -144,7 +204,7 @@ print_source(scraper.scrape)
 
 #+RESULTS:
 #+BEGIN_EXAMPLE python
-def scrape(body, timestamp=datetime.now(), database_url=None):
+def scrape(body, timestamp=None, database_url=None):
     assert timestamp
     path = os.path.join(os.path.dirname(__file__), 'query.sql')
     with open(path) as f:
@@ -156,6 +216,12 @@ def scrape(body, timestamp=datetime.now(), database_url=None):
 
 #+END_EXAMPLE
 
+*** PostgreSQL
+
+Most of the interesting stuff happens in the =query.sql= file that is loaded by
+the =scrape()= function.
+
+**** Creating the table
 
 #+BEGIN_SRC ipython :session :results output raw :exports results
 print_query(0)
@@ -170,6 +236,8 @@ CREATE TABLE IF NOT EXISTS scraps (
 )
 #+END_EXAMPLE
 
+**** Load cryptographic hash functions
+
 #+BEGIN_SRC ipython :session :results output raw :exports results
 print_query(1)
 #+END_SRC
@@ -179,26 +247,23 @@ print_query(1)
 CREATE EXTENSION IF NOT EXISTS pgcrypto
 #+END_EXAMPLE
 
+**** Insert or update ('UPSERT')
+
 #+BEGIN_SRC ipython :session :results output raw :exports results
 print_query(2)
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_EXAMPLE sql
-WITH
-  last_observations AS (
-    SELECT body, unnest(seen_at) AS seen_at
-    FROM scraps
-    ORDER BY seen_at DESC
-    LIMIT 2),
-  distinct_observations AS (
-    SELECT DISTINCT ON (body) seen_at, body
-    FROM last_observations
-  )
-SELECT *
-FROM distinct_observations
-ORDER BY seen_at DESC
+WITH body AS (SELECT %s::text AS txt)
+INSERT INTO scraps (hash, body, seen_at)
+    SELECT digest(txt, 'sha1'), txt, ARRAY[%s::timestamptz]
+    FROM body
+  ON CONFLICT (hash) DO UPDATE
+    SET seen_at = scraps.seen_at || EXCLUDED.seen_at
 #+END_EXAMPLE
+
+**** Return the last record(s)
 
 #+BEGIN_SRC ipython :session :results output raw :exports results
 print_query(3)
@@ -206,20 +271,20 @@ print_query(3)
 
 #+RESULTS:
 #+BEGIN_EXAMPLE sql
-WITH
-  last_observations AS (
-    SELECT body, unnest(seen_at) AS seen_at
-    FROM scraps
-    ORDER BY seen_at DESC
-    LIMIT 2),
-  distinct_observations AS (
-    SELECT DISTINCT ON (body) seen_at, body
-    FROM last_observations
-  )
+WITH last_observations AS (
+       SELECT body, unnest(seen_at) AS seen_at
+       FROM scraps
+       ORDER BY seen_at DESC
+       LIMIT 2),
+     distinct_observations AS (
+       SELECT DISTINCT ON (body) seen_at, body
+       FROM last_observations)
 SELECT *
 FROM distinct_observations
 ORDER BY seen_at DESC
 #+END_EXAMPLE
+
+*** Diffing
 
 #+BEGIN_SRC ipython :session :results output raw :exports results
 print_source(scraper.diff)
@@ -313,47 +378,50 @@ def main():
 
 #+END_EXAMPLE
 
-#+BEGIN_SRC sh :results verbatim :cache yes :exports code
+#+BEGIN_SRC sh :results verbatim :cache yes :exports code :var APP_NAME="vastgoed-scrapert"
 cd upsert_scraper
-heroku destroy upsert-scraper-example --confirm upsert-scraper-example
+heroku destroy $APP_NAME --confirm $APP_NAME
+
 set -eu
-heroku create upsert-scraper-example --region eu
+heroku create $APP_NAME --region eu
 
 heroku config:set TZ=Europe/Amsterdam
 heroku config:set FROM=scraper@example.com
 
-heroku addons:create heroku-postgresql:hobby-dev
+heroku addons:create heroku-postgresql:hobby-dev --version 9.5
 heroku addons:create sendgrid:starter
 
 heroku addons:create scheduler:standard
 heroku addons:open scheduler
+
+git push heroku master
 #+END_SRC
 
-#+RESULTS[752b98dd7e28c4fcfc1710648b535ea1536f19c6]:
+#+RESULTS[c0a5b57e21ee8acf074084920ab33f00f459367b]:
 #+begin_example
-https://upsert-scraper-example.herokuapp.com/ | https://git.heroku.com/upsert-scraper-example.git
+https://vastgoed-scrapert.herokuapp.com/ | https://git.heroku.com/vastgoed-scrapert.git
 TZ: Europe/Amsterdam
 FROM: scraper@example.com
-Creating postgresql-encircled-20717... done, (free)
-Adding postgresql-encircled-20717 to upsert-scraper-example... done
-Setting DATABASE_URL and restarting upsert-scraper-example... done, v5
+Creating postgresql-graceful-65275... done, (free)
+Adding postgresql-graceful-65275 to vastgoed-scrapert... done
+Setting DATABASE_URL and restarting vastgoed-scrapert... done, v5
 Database has been created and is available
  ! This database is empty. If upgrading, you can transfer
  ! data from another database with pg:copy
 Use `heroku addons:docs heroku-postgresql` to view documentation.
-Creating sendgrid-crystalline-86616... done, (free)
-Adding sendgrid-crystalline-86616 to upsert-scraper-example... done
-Setting SENDGRID_PASSWORD, SENDGRID_USERNAME and restarting upsert-scraper-example... done, v6
+Creating sendgrid-horizontal-56807... done, (free)
+Adding sendgrid-horizontal-56807 to vastgoed-scrapert... done
+Setting SENDGRID_PASSWORD, SENDGRID_USERNAME and restarting vastgoed-scrapert... done, v6
 Use `heroku addons:docs sendgrid` to view documentation.
-Creating scheduler-sinuous-49548... done, (free)
-Adding scheduler-sinuous-49548 to upsert-scraper-example... done
+Creating scheduler-trapezoidal-14878... done, (free)
+Adding scheduler-trapezoidal-14878 to vastgoed-scrapert... done
 This add-on consumes dyno hours, which could impact your monthly bill. To learn more:
 http://devcenter.heroku.com/addons_with_dyno_hour_usage
 
 To manage scheduled jobs run:
 heroku addons:open scheduler
 Use `heroku addons:docs scheduler` to view documentation.
-Opening https://addons-sso.heroku.com/apps/upsert-scraper-example/addons/852c353e-88a3-4e39-b0b5-9a4263b51f1a...
+Opening https://addons-sso.heroku.com/apps/vastgoed-scrapert/addons/d33068db-fcf8-44a6-a2f1-872b2e817661...
 #+end_example
 
 * Conclusion
