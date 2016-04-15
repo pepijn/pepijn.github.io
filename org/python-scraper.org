@@ -2,455 +2,270 @@
 #+BEGIN_HTML
 ---
 layout:     post
-title:      Basing a scraper on PostgreSQL 9.5 'UPSERT'
-categories: postgresql python
+title:      Sidestepping Heroku's limits with PostgreSQL 9.5's UPSERT
+categories: postgresql heroku
 ---
 #+END_HTML
 
-#+BEGIN_SRC ipython :session :results silent :exports none
-import os
-import inspect
-from pprint import pprint
-
-%load_ext autoreload
-%autoreload 2
-
-from upsert_scraper import scraper
-from upsert_scraper.scraper import scrape
-
-class fresh_test_database:
-    def __enter__(self):
-        import psycopg2
-        dbname="python_scraper_test"
-        !pkill $dbname
-        conn = psycopg2.connect("dbname=postgres")
-        conn.autocommit = True
-        cur = conn.cursor()
-        cur.execute("DROP DATABASE IF EXISTS %s" % dbname)
-        cur.execute("CREATE DATABASE %s" % dbname)
-
-        return "postgres://localhost/%s" % dbname
-    def __exit__(self, type, value, traceback):
-        return None
-
-def print_source(obj, prefix=None):
-    print("#+BEGIN_EXAMPLE python")
-    if prefix:
-        print(prefix)
-    print(inspect.getsource(obj))
-    print("#+END_EXAMPLE")
-
-def scrape(body, timestamp, database_url=None):
-    kwargs = dict(database_url=database_url)
-    return scraper.scrape(body + '\n', timestamp, **kwargs)
-
-def print_query(index):
-    with open('upsert_scraper/query.sql') as f:
-        query = [line.strip() for line in f.read().split(';')]
-        print("#+BEGIN_EXAMPLE sql")
-        print(query[index])
-        print("#+END_EXAMPLE")
-
-#+END_SRC
-
-My roommate asked me for advice on building a simple web scraper last
-weekend. The script should run automatically and check the targeted website at
-least every hour. My roommate is not in possession of a server and his laptop is
-not always online. Within these constraints, we succeeded in building a tool
-that checks every 10 minutes and has zero maintenance costs. In this post, I
-will explain how we did it and used PostgreSQL's new UPSERT feature to our
-advantage.
+My roommate recently asked me for advice on how to build a persistent web
+scraper. The scraper should run on a machine that is constanly connected to the
+internet, because it should check at least every hour or so. Running the scraper
+on his laptop is not an option for my roommate, because he frequently takes it
+with him on the road. Neither is running it on a remote server, because he does
+not own any nor is he planning to spend money on one. We ended up using Heroku;
+a free platform as a service provider that embraces all of these
+constraints. There is, however, a database row limit that we had to work
+around. It proved to be a nice opportunity to play with the new PostgreSQL 9.5
+=INSERT ... ON CONFLICT DO UPDATE=, also known as UPSERT, functionality.
 
 * Introduction
 
-Given a website that presents the following source code to my roommate on
-=2016-03-31=:
+** Choosing the right storage
 
-#+NAME: before
-#+BEGIN_EXAMPLE html
-<html>
-  A thing
-</html>
-#+END_EXAMPLE
+The [[https://elements.heroku.com/addons/scheduler][Heroku Scheduler addon]] enabled us to run a script every 10 minutes (the
+highest available frequency) that scrapes the targeted website. With that
+requirement settled, we needed a way to compare the old state to the new
+state. The simplest way we could think of to solve this problem is to save the
+hashed HTML contents into a Heroku config variable. That solves the problem of
+notification, but will not allow us analyse the data later. For this reason,
+using a database would make sense. PostgreSQL storage is cheap (free) on Heroku,
+so we picked that one.
 
-A couple of days later, the owners of this fictional website have added
-something to their page. The source looks like this on =2016-04-02=:
+** Heroku limitations
 
-#+NAME: after
-#+BEGIN_EXAMPLE html
-<html>
-  A thing
-  A new thing!
-</html>
-#+END_EXAMPLE
+Normally, I would insert one row per scraping run with the scraped contents (or
+a foreign key to a unique piece of content) and a timestamp into the
+database. In this case, however, it was not a good idea because the free Heroku
+PostgreSQL database offering has certain limitations. You are allowed to have a
+maximum of [[https://elements.heroku.com/addons/heroku-postgresql][10.000 rows]] in the database. A scraper that scrapes every 10 minutes
+reaches the limit after 40 days of service. We needed a way to circumvent the
+limitation, since we were planning on scraping longer than that.
 
-Keeping close track of these mutations has great value to my roommate. This is
-why I think he would want the following diff (he did not know yet what a diff
-was--just wanted a notification) in his mailbox after the change occured.
+** Circumventing limitations
 
-#+BEGIN_SRC ipython :session :var before=before after=after :results output raw :exports results
-with fresh_test_database() as db:
-    scrape(before, '2016-03-31', database_url=db)
-    result = scrape(after, '2016-04-02', database_url=db)
-for line in result:
-    print(": " + line, end='')
+What if we scaled horizontally instead of vertically (like all the cool guys are
+doing)? Instead of adding rows, we could grow columns; PostgreSQL arrays seem to
+be a good fit for this. One row per unique piece of scraped content with an ever
+expanding array of timestamps. One could implement this using two
+queries. First, a =SELECT= establishes whether we have seen the content
+before. Second, an =INSERT= or =UPDATE= respectively inserts a new piece of
+content with the current time to the array or updates an existing row by
+appending the current time. Or, you use the new [[https://wiki.postgresql.org/wiki/What's_new_in_PostgreSQL_9.5#INSERT_..._ON_CONFLICT_DO_NOTHING.2FUPDATE_.28.22UPSERT.22.29][INSERT ... ON CONFLICT DO UPDATE]]
+operation, like I will show you in this article.
+
+* Methods
+
+** The query
+
+We built the plumbing of the scraper using Python; the [[https://github.com/pepijn/python-upsert-scraper][source code is available
+on GitHub]]. The Python script executes the following query--the interesting
+part--every time it runs.
+
+#+BEGIN_SRC sh :results raw :exports results
+echo '#+BEGIN_EXAMPLE sql'
+cat upsert_scraper/query.sql | tail -n 35
+echo '#+END_EXAMPLE'
 #+END_SRC
 
-#+RESULTS:
-: *** 2016-03-31 00:00:00+02:00
-: --- 2016-04-02 00:00:00+02:00
-: ***************
-: *** 1,3 ****
-: --- 1,4 ----
-:   <html>
-:     A thing
-: +   A new thing!
-:   </html>
-
-A push notification of the email would alarm him of the modification. He would
-consequently rush to the website to do the thing that he needs to do with the
-new thing.
-
-* Objective
-
-There are many ways to build a web scraper. In this post, I will show you how we
-did it within the following constraints:
-
-- Online 24/7
-- Scrapes at least every hour
-- No recurring costs (except development time, of course)
-- Notify via email when the website has changed
-- Extra: add a diff to the email
-- Extra: save all the data so we could analyze it later
-- Extra: use the new PostgreSQL 9.5 'UPSERT' feature
-
-The source code for this post (Babel & Org-mode, IPython, PostgreSQL) and the
-scraper (Python, PostgreSQL) is [[https://github.com/pepijn/pepijn.github.io/tree/master/org][available on GitHub]].
-
-* The scraper
-
-From now on, the snippets that follow are either IPython, or SQL code and/or
-have their output underneath. The =before= and =after= variables that appear in the
-code have the following values, based on the HTML snippets in the introduction:
-
-#+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
-pprint(before)
-pprint(after)
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_SRC ipython
-'<html>\n  A thing\n</html>'
-'<html>\n  A thing\n  A new thing!\n</html>'
-#+END_SRC
-
-** Example scenarios
-
-Before diving into the implementation details, let us look at two example
-scenarios that one encounters while using a scraper.
-
-*** Scrape after mutation
-
-The first scenario involves two /scrapes/. The first one scrapes the =before=
-content and the second one the =after= content. The output diff of the second
-scrape is, as expected, present and is printed to the block under the code.
-
-#+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
-with fresh_test_database() as db:
-    scrape(before, '2016-03-31', database_url=db)
-    pprint(scrape(after, '2016-04-02', database_url=db))
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_SRC ipython
-['*** 2016-03-31 00:00:00+02:00\n',
- '--- 2016-04-02 00:00:00+02:00\n',
- '***************\n',
- '*** 1,3 ****\n',
- '--- 1,4 ----\n',
- '  <html>\n',
- '    A thing\n',
- '+   A new thing!\n',
- '  </html>\n']
-#+END_SRC
-
-*** Scrape unchanged content
-
-This scenario scrapes the =after= content twice, in sequence. As a result, the
-output of the third scrape (the second =after= scrape) has no output. This is
-the how the scraper works; it can only return a diff when something has changed.
-
-#+BEGIN_SRC ipython :session :var before=before after=after :results output code :exports both
-with fresh_test_database() as db:
-    scrape(before, '2015-01-01', database_url=db)
-    scrape(after, '2016-01-01', database_url=db)
-    pprint(scrape(after, '2016-04-03', database_url=db))
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_SRC ipython
-None
-#+END_SRC
-
-** Implementation
-
-The entry point of the scraper is the =scrape()= function:
-
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_source(scraper.scrape)
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_EXAMPLE python
-def scrape(body, timestamp, database_url=None):
-    path = os.path.join(os.path.dirname(__file__), 'query.sql')
-    with open(path) as f:
-        with psycopg2.connect(database_url) as conn:
-            with conn.cursor() as cur:
-                cur.execute(f.read(), (body, timestamp))
-                results = cur.fetchall()
-                return diff(*results)
-
-#+END_EXAMPLE
-
-*** PostgreSQL
-
-Most of the interesting stuff happens in the =query.sql= file that is loaded by
-the =scrape()= function.
-
-**** Creating the table
-
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_query(0)
-#+END_SRC
-
+#+NAME: query
 #+RESULTS:
 #+BEGIN_EXAMPLE sql
 CREATE TABLE IF NOT EXISTS scraps (
-  id serial PRIMARY KEY,
-  body text NOT NULL UNIQUE,
-  seen_at timestamptz[] NOT NULL
-)
-#+END_EXAMPLE
+    id serial PRIMARY KEY,
+    hash bytea NOT NULL UNIQUE,
+    body text NOT NULL,
+    seen_at timestamptz[] NOT NULL
+);
 
-**** Load cryptographic hash functions
+-- This extension yields the digest function that enables us to
+-- hash the body and index it efficiently. Moreover, PostgreSQL
+-- does not allow indexes on very large text columns. We expect to
+-- store large HTML bodies so we definitely need the hashing.
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_query(1)
-#+END_SRC
 
-#+RESULTS:
-#+BEGIN_EXAMPLE sql
-CREATE EXTENSION IF NOT EXISTS pgcrypto
-#+END_EXAMPLE
+-- Capture the script input (:body) via a CTE so we can use it
+-- multiple times in the query. Once to save the body, once to
+-- hash it.
+WITH body AS (SELECT :body::text AS txt)
 
-**** Insert or update ('UPSERT')
-
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_query(2)
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_EXAMPLE sql
-WITH body AS (SELECT %s::text AS txt)
+-- This is exactly the INSERT you would write without UPSERT.
 INSERT INTO scraps (hash, body, seen_at)
-    SELECT digest(txt, 'sha1'), txt, ARRAY[%s::timestamptz]
+    SELECT digest(txt, 'sha1'), txt, ARRAY[:ts::timestamptz]
     FROM body
+
+-- Here it gets interesting; we utilize the UNIQUE index on hash
+-- to yield a conflict if the body already exists. If that
+-- happens, we append the new seen_at (via the special 'EXCLUDED'
+-- table) to the seen_at array.
   ON CONFLICT (hash) DO UPDATE
     SET seen_at = scraps.seen_at || EXCLUDED.seen_at
+
+-- The query returns a summary of the row so I can use it in my
+-- blog post. This part will run, but the output is ignored, in
+-- production.
+RETURNING id, left(hash::text, 3) || '...' hash, body, seen_at;
 #+END_EXAMPLE
 
-**** Return the last record(s)
 
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_query(3)
+** The test
+
+We supply the query above to the script below via the =$QUERY= variable. First,
+we initialize an empty database and run the query twice with the =body= variable
+set to =content= and =ts= set to the SQL function =now()=. After that, we
+simulate a change on the targeted website by running the query again after
+setting =content= to =changed=. In production, the =body= variable contains an
+HTML document. The output of the script is printed below it.
+
+#+BEGIN_SRC sh :var QUERY=query :results verbatim :exports both
+dropdb --if-exists scraper_test
+createdb scraper_test
+
+psql scraper_test --variable body="'content'" \
+                  --variable ts='now()' \
+                  <<EOF | grep -Ev 'CREATE|INSERT|row'
+$QUERY
+$QUERY
+EOF
+
+echo Content changed...
+
+psql scraper_test --variable body="'changed'" \
+                  --variable ts='now()' \
+                  <<EOF | grep -Ev 'CREATE|INSERT|row'
+$QUERY
+EOF
+
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXAMPLE sql
-WITH last_observations AS (
-       SELECT body, unnest(seen_at) AS seen_at
-       FROM scraps
-       ORDER BY seen_at DESC
-       LIMIT 2),
-     distinct_observations AS (
-       SELECT DISTINCT ON (body) seen_at, body
-       FROM last_observations)
-SELECT *
-FROM distinct_observations
-ORDER BY seen_at DESC
-#+END_EXAMPLE
+#+begin_example
+ id |  hash  |  body   |              seen_at
+----+--------+---------+-----------------------------------
+  1 | \x0... | content | {"2016-04-15 15:46:05.796129+02"}
 
-*** Diffing
+ id |  hash  |  body   |                              seen_at
+----+--------+---------+-------------------------------------------------------------------
+  1 | \x0... | content | {"2016-04-15 15:46:05.796129+02","2016-04-15 15:46:05.798061+02"}
 
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_source(scraper.diff)
-#+END_SRC
+ id |  hash  |  body   |              seen_at
+----+--------+---------+-----------------------------------
+  3 | \x3... | changed | {"2016-04-15 15:46:05.810277+02"}
 
-#+RESULTS:
-#+BEGIN_EXAMPLE python
-def diff(after, before=None):
-    if not before:
-        return None
-
-    diff = difflib.context_diff(before[1].splitlines(True),
-                                after[1].splitlines(True),
-                                str(before[0]),
-                                str(after[0]))
-    return list(diff)
-
-#+END_EXAMPLE
+#+end_example
 
 
 * Results
 
-#+BEGIN_SRC ipython :session :var before=before after=after :exports both :results output
-with fresh_test_database() as db:
-    scrape(before, '2016-03-30', database_url=db)
-    scrape(before, '2016-03-31', database_url=db)
-    scrape(after, '2016-04-01', database_url=db)
-    scrape(after, '2016-04-02', database_url=db)
-    scrape("<h1>blocked</h1>", '2016-04-03', database_url=db)
-
-    !echo scraps table: # prevents whitespace truncation
-    !psql $db -c 'SELECT body, seen_at FROM scraps'
+#+NAME: database-url
+#+BEGIN_SRC sh :results silent :exports none
+pass Scraper/Production/DATABASE_URL
 #+END_SRC
 
+The scraper has been running flawlessly in production for almost two
+weeks. Let's see how many rows have been added during that time.
 
-#+RESULTS:
-#+begin_example
-scraps table:
-       body       |                       seen_at
-------------------+-----------------------------------------------------
- <html>          +| {"2016-03-30 00:00:00+02","2016-03-31 00:00:00+02"}
-   A thing       +|
- </html>         +|
-                  |
- <html>          +| {"2016-04-01 00:00:00+02","2016-04-02 00:00:00+02"}
-   A thing       +|
-   A new thing   +|
- </html>         +|
-                  |
- <h1>blocked</h1>+| {"2016-04-03 00:00:00+02"}
-                  |
-(3 rows)
-
-#+end_example
-
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_source(scraper.main)
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_EXAMPLE python
-def main():
-    database_url = os.environ['DATABASE_URL']
-    sender = os.environ['FROM']
-    sendgrid_user = os.environ['SENDGRID_USERNAME']
-    sendgrid_pass = os.environ['SENDGRID_PASSWORD']
-
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--recipients', required=True)
-    parser.add_argument('--subject', required=True)
-    args = parser.parse_args()
-
-    import sys
-    body = sys.stdin.read()
-
-    diff = scrape(body, database_url=database_url)
-
-    if not diff:
-        return
-
-    import sendgrid
-    sg = sendgrid.SendGridClient(sendgrid_user, sendgrid_pass)
-    message = sendgrid.Mail(to=args.recipients,
-                            subject=args.subject,
-                            text=''.join(diff),
-                            from_email=sender)
-    status, msg = sg.send(message)
-    if status is not 200:
-        sys.exit(1)
-
+#+NAME: nest
+#+BEGIN_EXAMPLE sql
+SELECT count(*) FROM scraps
 #+END_EXAMPLE
 
-#+BEGIN_SRC sh :results verbatim :cache yes :exports code :var APP_NAME="vastgoed-scrapert"
-cd upsert_scraper
-heroku destroy $APP_NAME --confirm $APP_NAME
-
-set -eu
-heroku create $APP_NAME --region eu
-
-heroku config:set TZ=Europe/Amsterdam
-heroku config:set FROM=scraper@example.com
-
-heroku addons:create heroku-postgresql:hobby-dev --version 9.5
-heroku addons:create sendgrid:starter
-
-heroku addons:create scheduler:standard
-heroku addons:open scheduler
-
-git push heroku master
+#+HEADER: :var QUERY=nest
+#+HEADER: :var DATABASE_URL=database-url
+#+BEGIN_SRC sh :exports results :results output verbatim :cache yes
+psql --tuples-only $DATABASE_URL -c "$QUERY"
 #+END_SRC
 
-#+RESULTS[c0a5b57e21ee8acf074084920ab33f00f459367b]:
-#+begin_example
-https://vastgoed-scrapert.herokuapp.com/ | https://git.heroku.com/vastgoed-scrapert.git
-TZ: Europe/Amsterdam
-FROM: scraper@example.com
-Creating postgresql-graceful-65275... done, (free)
-Adding postgresql-graceful-65275 to vastgoed-scrapert... done
-Setting DATABASE_URL and restarting vastgoed-scrapert... done, v5
-Database has been created and is available
- ! This database is empty. If upgrading, you can transfer
- ! data from another database with pg:copy
-Use `heroku addons:docs heroku-postgresql` to view documentation.
-Creating sendgrid-horizontal-56807... done, (free)
-Adding sendgrid-horizontal-56807 to vastgoed-scrapert... done
-Setting SENDGRID_PASSWORD, SENDGRID_USERNAME and restarting vastgoed-scrapert... done, v6
-Use `heroku addons:docs sendgrid` to view documentation.
-Creating scheduler-trapezoidal-14878... done, (free)
-Adding scheduler-trapezoidal-14878 to vastgoed-scrapert... done
-This add-on consumes dyno hours, which could impact your monthly bill. To learn more:
-http://devcenter.heroku.com/addons_with_dyno_hour_usage
+#+RESULTS[4359d17584cb0c34abb3f67bfb34ed2339b4a962]:
+:     18
+:
 
-To manage scheduled jobs run:
-heroku addons:open scheduler
-Use `heroku addons:docs scheduler` to view documentation.
-Opening https://addons-sso.heroku.com/apps/vastgoed-scrapert/addons/d33068db-fcf8-44a6-a2f1-872b2e817661...
+After running every 10 minutes for almost two weeks, the scraper inserted just
+18 records. Before we inspect the contents of the database, let's establish that
+we are in compliance with the Heroku PostgreSQL maximum rows limitation:
+
+[[file:/images/heroku_stats.png]]
+
+We have to =unnest= the =seen_at= array to obtain the total count of scraper
+runs.
+
+#+NAME: unnest
+#+BEGIN_EXAMPLE sql
+SELECT count(*) FROM (SELECT unnest(seen_at) FROM scraps) un
+#+END_EXAMPLE
+
+#+HEADER: :var QUERY=unnest
+#+HEADER: :var DATABASE_URL=database-url
+#+BEGIN_SRC sh :exports results :results verbatim :cache yes
+psql --tuples-only $DATABASE_URL -c "$QUERY"
+#+END_SRC
+
+#+RESULTS[5346510e8e0d7844d22085133957858cd23062b6]:
+:   1601
+:
+
+Let's break the 1601 rows down by date and aggregate the count of checks and
+changes of content that occured that day. Please check out the appendix for the
+exact query that I used.
+
+#+HEADER: :var QUERY=times
+#+HEADER: :var DATABASE_URL=database-url
+#+BEGIN_SRC sh :exports results :results verbatim :exports results :cache yes
+psql $DATABASE_URL <<EOF | grep -v rows
+$QUERY
+EOF
+#+END_SRC
+
+#+RESULTS[50aa984fa92be0b94a49581d00802cced4489a86]:
+#+begin_example
+    day     | checks | changes
+------------+--------+---------
+ 2016-04-04 |     87 |       0
+ 2016-04-05 |    144 |       1
+ 2016-04-06 |    144 |       0
+ 2016-04-07 |    139 |       3
+ 2016-04-08 |    144 |       4
+ 2016-04-09 |    144 |       0
+ 2016-04-10 |    144 |       0
+ 2016-04-11 |    141 |       2
+ 2016-04-12 |    144 |       4
+ 2016-04-13 |    144 |       1
+ 2016-04-14 |    138 |       3
+ 2016-04-15 |     88 |       0
+ Total:     |   1601 |      18
+
 #+end_example
+
+The sums of checks and changes match the unnested and total counts above,
+respectively.
 
 * Conclusion
 
+
+
 * Acknowledgements
 
-- IPython
-- gregsexton/ob-ipython
 - Babel (Org-mode)
+- PostgreSQL
 
 * Appendix
 
-** Creating a fresh test database
+** Breakdown query
 
-#+BEGIN_SRC ipython :session :results output raw :exports results
-print_source(fresh_test_database.__enter__,
-             prefix="class fresh_test_database():")
-#+END_SRC
+#+NAME: times
+#+BEGIN_EXAMPLE sql
+WITH base AS (SELECT
+  date_trunc('day', seen_at)::date::text AS day,
+  count(*) checks,
+  count(DISTINCT body) - 1 changes
+FROM (SELECT unnest(seen_at) seen_at, body FROM scraps) un
+GROUP BY day)
 
-#+RESULTS:
-#+BEGIN_EXAMPLE python
-class fresh_test_database():
-    def __enter__(self):
-        import psycopg2
-        dbname="python_scraper_test"
-        get_ipython().system('pkill $dbname')
-        conn = psycopg2.connect("dbname=postgres")
-        conn.autocommit = True
-        cur = conn.cursor()
-        cur.execute("DROP DATABASE IF EXISTS %s" % dbname)
-        cur.execute("CREATE DATABASE %s" % dbname)
+SELECT * FROM base
 
-        return "postgres://localhost/%s" % dbname
+UNION
 
+SELECT 'Total:', sum(checks), sum(changes)
+FROM base
+ORDER BY day
 #+END_EXAMPLE
