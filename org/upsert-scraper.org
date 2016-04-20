@@ -7,29 +7,35 @@ categories: postgresql heroku
 ---
 #+END_HTML
 
-My roommate recently asked me for advice on how to build a persistent web
-scraper. The scraper should run on a machine that is constanly connected to the
-internet, because it should check at least every hour or so. Running the scraper
-on his laptop is not an option for my roommate, because he frequently takes it
-with him on the road. Neither is running it on a remote server, because he does
-not own any nor is he planning to spend money on one. We ended up using Heroku;
-a free platform as a service provider that embraces all of these
-constraints. There is, however, a database row limit that we had to work
-around. It proved to be a nice opportunity to play with the new PostgreSQL 9.5
-=INSERT ... ON CONFLICT DO UPDATE=, also known as UPSERT, functionality.
+My roommate needed help with building a web scraper. As a result of various
+constraints, we ended up using Heroku. There was, however, a database row limit
+that we had to work around. It turned out to be a nice opportunity to play with
+the new PostgreSQL 9.5 =INSERT ... ON CONFLICT DO UPDATE=, also known as UPSERT,
+functionality. The goal of this article is to introduce UPSERT to you via a
+practical example.
 
 * Introduction
+
+My roommate, an aspiring programmer, recently asked me for advice on how to
+build a persistent web scraper. The scraper should run on a machine that is
+constanly connected to the internet, because it should check at least every hour
+or so. Running the scraper on his laptop is not an option for my roommate,
+because he frequently takes it with him on the road. Neither is running it on a
+remote server, because he possesses none nor is he planning to spend money on
+one. We tried out Heroku; a free platform as a service provider that embraces
+all of these constraints.
 
 ** Choosing the right storage
 
 The [[https://elements.heroku.com/addons/scheduler][Heroku Scheduler addon]] enabled us to run a script every 10 minutes (the
 highest available frequency) that scrapes the targeted website. With that
-requirement settled, we needed a way to compare the old state to the new
-state. The simplest way we could think of to solve this problem is to save the
-hashed HTML contents into a Heroku config variable. That solves the problem of
-notification, but will not allow us analyse the data later. For this reason,
-using a database would make sense. PostgreSQL storage is cheap (free) on Heroku,
-so we picked that one.
+requirement settled, we needed a way to compare the old state to the new state,
+so we could send ourselves an email as soon as the website changed. The simplest
+solution we could come up with involved saving the hashed HTML contents into a
+Heroku config variable. That solves the problem of notification, but will not
+allow us analyse the data later. For this reason, using a database made
+sense. PostgreSQL storage is cheap, free actually on Heroku, so we picked that
+one.
 
 ** Heroku limitations
 
@@ -41,19 +47,21 @@ maximum of [[https://elements.heroku.com/addons/heroku-postgresql][10.000 rows]]
 reaches the limit after 40 days of service. We needed a way to circumvent the
 limitation, since we were planning on scraping longer than that.
 
-** Circumventing limitations
-
-What if we scaled horizontally instead of vertically (like all the cool guys are
-doing)? Instead of adding rows, we could grow columns; PostgreSQL arrays seem to
-be a good fit for this. One row per unique piece of scraped content with an ever
-expanding array of timestamps. One could implement this using two
-queries. First, a =SELECT= establishes whether we have seen the content
-before. Second, an =INSERT= or =UPDATE= respectively inserts a new piece of
-content with the current time to the array or updates an existing row by
-appending the current time. Or, you use the new [[https://wiki.postgresql.org/wiki/What's_new_in_PostgreSQL_9.5#INSERT_..._ON_CONFLICT_DO_NOTHING.2FUPDATE_.28.22UPSERT.22.29][INSERT ... ON CONFLICT DO UPDATE]]
-operation, like I will show you in this article.
+What if we scaled horizontally instead of vertically? Instead of adding rows, we
+could grow columns; PostgreSQL arrays seem to be a good fit for this. One row
+per unique piece of scraped content with an ever expanding array of
+timestamps. One could implement this using two queries. First, a =SELECT=
+establishes whether we have seen the content before. Second, an =INSERT= or
+=UPDATE= respectively inserts a new piece of content with the current time to
+the array or updates an existing row by appending the current time. Or, you use
+the new [[https://wiki.postgresql.org/wiki/What's_new_in_PostgreSQL_9.5#INSERT_..._ON_CONFLICT_DO_NOTHING.2FUPDATE_.28.22UPSERT.22.29][INSERT ... ON CONFLICT DO UPDATE]] operation instead, like I will show you
+in this article.
 
 * Methods
+
+In this article, I will only show you how to complete the task using UPSERT. If
+you would like to see how you could achieve similar behavior with PostgreSQL
+versions below 9.5, please check out [[http://stackoverflow.com/a/17267423][this Stackoverflow answer]].
 
 ** The query
 
@@ -63,7 +71,7 @@ part--every time it runs.
 
 #+BEGIN_SRC sh :results raw :exports results
 echo '#+BEGIN_EXAMPLE sql'
-cat upsert_scraper/query.sql | tail -n 35
+cat upsert_scraper/query.sql | sed 1,2d
 echo '#+END_EXAMPLE'
 #+END_SRC
 
@@ -84,9 +92,9 @@ CREATE TABLE IF NOT EXISTS scraps (
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 
--- Capture the script input (:body) via a CTE so we can use it
--- multiple times in the query. Once to save the body, once to
--- hash it.
+-- Capture the script input (body) via a CTE (the WITH part) so we
+-- can use it multiple times in the query. Once to save the body,
+-- once to hash it.
 WITH body AS (SELECT :body::text AS txt)
 
 -- This is exactly the INSERT you would write without UPSERT.
@@ -123,16 +131,16 @@ createdb scraper_test
 
 psql scraper_test --variable body="'content'" \
                   --variable ts='now()' \
-                  <<EOF | grep -Ev 'CREATE|INSERT|row'
+                  <<EOF
 $QUERY
 $QUERY
 EOF
 
-echo Content changed...
+echo \\nContent changed...\\n
 
 psql scraper_test --variable body="'changed'" \
                   --variable ts='now()' \
-                  <<EOF | grep -Ev 'CREATE|INSERT|row'
+                  <<EOF
 $QUERY
 EOF
 
@@ -140,18 +148,33 @@ EOF
 
 #+RESULTS:
 #+begin_example
+CREATE TABLE
+CREATE EXTENSION
+ id |  hash  |  body   |             seen_at
+----+--------+---------+----------------------------------
+  1 | \x0... | content | {"2016-04-20 11:05:31.38508+02"}
+(1 row)
+
+INSERT 0 1
+CREATE TABLE
+CREATE EXTENSION
+ id |  hash  |  body   |                             seen_at
+----+--------+---------+------------------------------------------------------------------
+  1 | \x0... | content | {"2016-04-20 11:05:31.38508+02","2016-04-20 11:05:31.386758+02"}
+(1 row)
+
+INSERT 0 1
+
+Content changed...
+
+CREATE TABLE
+CREATE EXTENSION
  id |  hash  |  body   |              seen_at
 ----+--------+---------+-----------------------------------
-  1 | \x0... | content | {"2016-04-15 15:46:05.796129+02"}
+  3 | \x3... | changed | {"2016-04-20 11:05:31.397775+02"}
+(1 row)
 
- id |  hash  |  body   |                              seen_at
-----+--------+---------+-------------------------------------------------------------------
-  1 | \x0... | content | {"2016-04-15 15:46:05.796129+02","2016-04-15 15:46:05.798061+02"}
-
- id |  hash  |  body   |              seen_at
-----+--------+---------+-----------------------------------
-  3 | \x3... | changed | {"2016-04-15 15:46:05.810277+02"}
-
+INSERT 0 1
 #+end_example
 
 
@@ -177,16 +200,16 @@ psql --tuples-only $DATABASE_URL -c "$QUERY"
 #+END_SRC
 
 #+RESULTS[4359d17584cb0c34abb3f67bfb34ed2339b4a962]:
-:     18
+:     24
 :
 
 After running every 10 minutes for almost two weeks, the scraper inserted just
-18 records. Before we inspect the contents of the database, let's establish that
-we are in compliance with the Heroku PostgreSQL maximum rows limitation:
+24 records. Before we inspect the contents of the database, let's make sure that
+we really are in compliance with the Heroku PostgreSQL maximum rows limitation:
 
 [[file:/images/heroku_stats.png]]
 
-We have to =unnest= the =seen_at= array to obtain the total count of scraper
+We have to [[http://www.postgresql.org/docs/9.5/static/functions-array.html#ARRAY-FUNCTIONS-TABLE][unnest]] the =seen_at= array to obtain the total count of scraper
 runs.
 
 #+NAME: unnest
@@ -201,10 +224,10 @@ psql --tuples-only $DATABASE_URL -c "$QUERY"
 #+END_SRC
 
 #+RESULTS[5346510e8e0d7844d22085133957858cd23062b6]:
-:   1601
+:   2282
 :
 
-Let's break the 1601 rows down by date and aggregate the count of checks and
+Let's break the 2282 rows down by date and aggregate the count of checks and
 changes of content that occured that day. Please check out the appendix for the
 exact query that I used.
 
@@ -216,7 +239,7 @@ $QUERY
 EOF
 #+END_SRC
 
-#+RESULTS[50aa984fa92be0b94a49581d00802cced4489a86]:
+#+RESULTS[733cf4b2b6aeff29c10187adfdb9be58ba8d802d]:
 #+begin_example
     day     | checks | changes
 ------------+--------+---------
@@ -231,24 +254,46 @@ EOF
  2016-04-12 |    144 |       4
  2016-04-13 |    144 |       1
  2016-04-14 |    138 |       3
- 2016-04-15 |     88 |       0
- Total:     |   1601 |      18
+ 2016-04-15 |    139 |       0
+ 2016-04-16 |    144 |       0
+ 2016-04-17 |    144 |       0
+ 2016-04-18 |    143 |       4
+ 2016-04-19 |    144 |       2
+ 2016-04-20 |     55 |       0
+ Total:     |   2282 |      24
 
 #+end_example
 
 The sums of checks and changes match the unnested and total counts above,
 respectively.
 
+* Discussion
+
+This scraping method only works when the website is static and the content
+changes slowly, compared to dynamic websites with different HTML output on each
+request. For example, some websites return a different [[https://en.wikipedia.org/wiki/Cross-site_request_forgery][XSRF token]] at every
+visit. In that case, every scraping run inserts a new row into the database,
+negating the savings of our UPSERT horizontal expansion.
+
 * Conclusion
 
+The HTML output of our targeted website only changed when the content of
+interest changed, leading to our high checks vs. changes ratio. Using UPSERT for
+scraping turned out to be a good fit for this website because it enables us to
+scrape for some time ahead, while logging all of the captured data.
 
+#+BEGIN_HTML
+<a href="https://twitter.com/share" class="twitter-share-button" data-via="ppnlo" data-size="large">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+#+END_HTML
 
 * Acknowledgements
 
-- Babel (Org-mode)
-- PostgreSQL
+Thank you people that made [[http://orgmode.org/][Org mode]] and [[http://orgmode.org/worg/org-contrib/babel/][Babel]]. :-)
 
 * Appendix
+
+The source code of this article is available online..
 
 ** Breakdown query
 
@@ -265,7 +310,28 @@ SELECT * FROM base
 
 UNION
 
-SELECT 'Total:', sum(checks), sum(changes)
-FROM base
+SELECT 'Total:', sum(checks), sum(changes) FROM base
+
 ORDER BY day
 #+END_EXAMPLE
+
+** Software used
+
+*** PostgreSQL
+
+#+BEGIN_SRC sh :results verbatim :exports both
+psql postgres --tuples-only -c 'SELECT version()'
+#+END_SRC
+
+#+RESULTS:
+:  PostgreSQL 9.5.2 on x86_64-apple-darwin15.4.0, compiled by Apple LLVM version 7.3.0 (clang-703.0.29), 64-bit
+:
+
+*** psql
+
+#+BEGIN_SRC sh :exports both
+psql --version
+#+END_SRC
+
+#+RESULTS:
+: psql (PostgreSQL) 9.5.2
