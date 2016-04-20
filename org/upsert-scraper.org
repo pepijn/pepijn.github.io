@@ -17,13 +17,13 @@ practical example.
 * Introduction
 
 My roommate, an aspiring programmer, recently asked me for advice on how to
-build a persistent web scraper. The scraper should run on a machine that is
-constanly connected to the internet, because it should check at least every hour
-or so. Running the scraper on his laptop is not an option for my roommate,
-because he frequently takes it with him on the road. Neither is running it on a
-remote server, because he possesses none nor is he planning to spend money on
-one. We tried out Heroku; a free platform as a service provider that embraces
-all of these constraints.
+build a web scraper. The scraper should run on a machine that is constanly
+connected to the internet, because it should check at least every hour or
+so. Running the scraper on his laptop is not an option for my roommate, because
+he frequently takes it with him on the road. Neither is running it on a remote
+server, because he possesses none nor is he planning to spend money on one. We
+tried out Heroku; a free platform as a service provider that embraces all of
+these constraints.
 
 ** Choosing the right storage
 

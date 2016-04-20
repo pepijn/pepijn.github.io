@@ -14,13 +14,13 @@ practical example.
 ## Introduction
 
 My roommate, an aspiring programmer, recently asked me for advice on how to
-build a persistent web scraper. The scraper should run on a machine that is
-constanly connected to the internet, because it should check at least every hour
-or so. Running the scraper on his laptop is not an option for my roommate,
-because he frequently takes it with him on the road. Neither is running it on a
-remote server, because he possesses none nor is he planning to spend money on
-one. We tried out Heroku; a free platform as a service provider that embraces
-all of these constraints.
+build a web scraper. The scraper should run on a machine that is constanly
+connected to the internet, because it should check at least every hour or
+so. Running the scraper on his laptop is not an option for my roommate, because
+he frequently takes it with him on the road. Neither is running it on a remote
+server, because he possesses none nor is he planning to spend money on one. We
+tried out Heroku; a free platform as a service provider that embraces all of
+these constraints.
 
 ### Choosing the right storage
 
@@ -138,7 +138,7 @@ CREATE TABLE
 CREATE EXTENSION
  id |  hash  |  body   |              seen_at
 ----+--------+---------+-----------------------------------
-  1 | \x0... | content | {"2016-04-20 13:17:06.917963+02"}
+  1 | \x0... | content | {"2016-04-20 13:40:07.638314+02"}
 (1 row)
 
 INSERT 0 1
@@ -146,7 +146,7 @@ CREATE TABLE
 CREATE EXTENSION
  id |  hash  |  body   |                              seen_at
 ----+--------+---------+-------------------------------------------------------------------
-  1 | \x0... | content | {"2016-04-20 13:17:06.917963+02","2016-04-20 13:17:06.919885+02"}
+  1 | \x0... | content | {"2016-04-20 13:40:07.638314+02","2016-04-20 13:40:07.640239+02"}
 (1 row)
 
 INSERT 0 1
@@ -157,7 +157,7 @@ CREATE TABLE
 CREATE EXTENSION
  id |  hash  |  body   |              seen_at
 ----+--------+---------+-----------------------------------
-  3 | \x3... | changed | {"2016-04-20 13:17:06.931184+02"}
+  3 | \x3... | changed | {"2016-04-20 13:40:07.652258+02"}
 (1 row)
 
 INSERT 0 1
