@@ -274,7 +274,7 @@ at their scheduled time, or at all. Scheduler has a known issue whereby
 scheduled processes are occasionally skipped.
 #+END_QUOTE
 
-Source: [[https://devcenter.heroku.com/articles/scheduler#known-issues-and-alternatives][Heroku Scheduler documentation]]
+Source: [[https://devcenter.heroku.com/articles/scheduler#known-issues-and-alternatives][Known issues and alternatives; Heroku Scheduler documentation]]
 
 * Discussion
 
