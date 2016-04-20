@@ -293,7 +293,7 @@ Thank you people that made [[http://orgmode.org/][Org mode]] and [[http://orgmod
 
 * Appendix
 
-The source code of this article is available online..
+The [[https://github.com/pepijn/pepijn.github.io/blob/master/org/upsert-scraper.org][source code of this article]] is available online.
 
 ** Breakdown query
 
