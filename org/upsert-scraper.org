@@ -48,14 +48,14 @@ reaches the limit after 40 days of service. We needed a way to circumvent the
 limitation, since we were planning on scraping longer than that.
 
 What if we scaled horizontally instead of vertically? Instead of adding rows, we
-could grow columns; PostgreSQL arrays seem to be a good fit for this. One row
-per unique piece of scraped content with an ever expanding array of
-timestamps. One could implement this using two queries. First, a =SELECT=
-establishes whether we have seen the content before. Second, an =INSERT= or
-=UPDATE= respectively inserts a new piece of content with the current time to
-the array or updates an existing row by appending the current time. Or, you use
-the new [[https://wiki.postgresql.org/wiki/What's_new_in_PostgreSQL_9.5#INSERT_..._ON_CONFLICT_DO_NOTHING.2FUPDATE_.28.22UPSERT.22.29][INSERT ... ON CONFLICT DO UPDATE]] operation instead, like I will show you
-in this article.
+could grow columns and consequently circumvent the row limit. One row per unique
+piece of scraped content with an ever expanding array of timestamps. PostgreSQL
+arrays seem to be a good fit for this. One could implement this using two
+queries. First, a =SELECT= establishes whether we have seen the content
+before. Second, an =INSERT= or =UPDATE= respectively inserts a new piece of
+content with the current time to the array or updates an existing row by
+appending the current time. Or, you use the new [[https://wiki.postgresql.org/wiki/What's_new_in_PostgreSQL_9.5#INSERT_..._ON_CONFLICT_DO_NOTHING.2FUPDATE_.28.22UPSERT.22.29][INSERT ... ON CONFLICT DO UPDATE]]
+operation instead, like I will show you in this article.
 
 * Methods
 
@@ -265,7 +265,16 @@ EOF
 #+end_example
 
 The sums of checks and changes match the unnested and total counts above,
-respectively.
+respectively. Note: the amount of checks differs between days probably because
+of the following:
+
+#+BEGIN_QUOTE
+Scheduler is a best-effort service. There is no guarantee that jobs will execute
+at their scheduled time, or at all. Scheduler has a known issue whereby
+scheduled processes are occasionally skipped.
+#+END_QUOTE
+
+Source: [[https://devcenter.heroku.com/articles/scheduler#known-issues-and-alternatives][Heroku Scheduler documentation]]
 
 * Discussion
 
