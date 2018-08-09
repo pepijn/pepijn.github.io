@@ -5,8 +5,20 @@ permalink: /about/
 tags: about
 ---
 
-* 24 years old
-* Grew up in [Utrecht](https://en.wikipedia.org/wiki/Utrecht)
-* Moved to [Amsterdam](https://en.wikipedia.org/wiki/Amsterdam) in September 2012
-* Studies Medicine at the [AMC](http://amc.nl) of the [Universiteit van Amsterdam](http://uva.nl) since September 2011
-* Is a programmer and likes to work on [all sorts of projects](/projects), primarily using Ruby with PostgreSQL, and sometimes Python or Clojure
+Hello! My name is Pepijn Looije which I've come to realize looks like a string
+of random characters to anyone who's not Dutch. Should you ever run into me in
+real life then save yourself the trouble and call me Pep(e). Unless you want to
+learn of course---I'll gladly teach!
+
+I'm from '92, grew up in [Utrecht](https://en.wikipedia.org/wiki/Utrecht) and
+moved to Amsterdam where I completed the first half of Medicine (so I'm *not* a
+doctor) at the [AMC](http://amc.nl) of the [Universiteit van
+Amsterdam](http://uva.nl). As of writing, I didn't return to university yet to
+finish the second part.
+
+Instead, I pilgrimaged to [Nubank](https://www.nubank.com.br) in São Paulo,
+Brazil to learn more about [Datomic](https://www.datomic.com) and Clojure
+applied at scale. What was initially a 6 month internship escalated into full
+time employment in data infra/warehousing related squads. I came to love what
+we're doing as a company, the country, people, and quilo lunches amongst other
+things.
