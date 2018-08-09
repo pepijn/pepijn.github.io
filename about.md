@@ -20,6 +20,6 @@ writing, I didn't return to university yet to finish the second part.
 Instead, I pilgrimaged to [Nubank](https://www.nubank.com.br) in São Paulo,
 Brazil to learn more about [append-only databases](https://www.datomic.com) and
 [dynamic functional programming](https://clojure.org/) applied at scale. What
-was initially a 6 month internship escalated into indefinite full time
-employment in data infra/warehousing related squads. I came to love what we're
-doing as a company, the country, people, and quilo lunches amongst other things.
+was initially a 6 month internship escalated into indefinite employment in data
+infra/warehousing related squads. I came to love what we're doing as a company,
+the country, people, and quilo lunches amongst other things.
