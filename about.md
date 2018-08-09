@@ -11,11 +11,13 @@ real life then save yourself the trouble and call me Pep(e). Unless you want to
 learn of course---I'll gladly teach!
 
 I was born in '92 on [land that didn't exist before
-1967](https://en.wikipedia.org/wiki/Zuiderzee_Works), grew up in
-[Utrecht](https://en.wikipedia.org/wiki/Utrecht) and moved to Amsterdam where I
-completed the first half of Medicine (so I'm *not* a doctor) at the
-[AMC](http://amc.nl) of the [Universiteit van Amsterdam](http://uva.nl). As of
-writing, I didn't return to university yet to finish the second part.
+1967](https://en.wikipedia.org/wiki/Zuiderzee_Works), grew up in Utrecht and
+moved to Amsterdam where I completed the first half of Medicine (so I'm *not* a
+doctor) at the AMC of the Universiteit van Amsterdam. I'm still happy that I was
+able to do my bachelor's thesis in [the techiest corner of the
+hospital](https://www.amc.nl/web/leren/research-62/research/medical-informatics-research.htm). As
+of writing, I didn't return to university yet to finish the second and final
+part of Medicine (which is called coschappen in Dutch).
 
 Instead, I pilgrimaged to [Nubank](https://www.nubank.com.br) in São Paulo,
 Brazil to learn more about [append-only databases](https://www.datomic.com) and
