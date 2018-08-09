@@ -16,7 +16,7 @@ doctor) at the [AMC](http://amc.nl) of the [Universiteit van
 Amsterdam](http://uva.nl). As of writing, I didn't return to university yet to
 finish the second part.
 
-Instead, I pilgrimaged to [Nubank](https://www.nubank.com.br) in São Paulo,
+Instead, I pilgrimaged to [Nubank](https://www.nubank.com.br) in Sao Paulo,
 Brazil to learn more about [Datomic](https://www.datomic.com) and Clojure
 applied at scale. What was initially a 6 month internship escalated into full
 time employment in data infra/warehousing related squads. I came to love what
