@@ -4,12 +4,12 @@ email:       p@epij.nl
 author:      Pepijn Looije
 description:
 baseurl:     ""
-url:         "http://p.epij.nl"
+url:         "https://p.epij.nl"
 
 date_format: "%b %-d, %Y"
 header_pages:
+ - projects.md
  - about.md
- - contact.html
 
 # Google services
 google_verification:
