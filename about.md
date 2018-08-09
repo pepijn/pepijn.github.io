@@ -19,7 +19,7 @@ hospital](https://www.amc.nl/web/leren/research-62/research/medical-informatics-
 of writing, I didn't return to university yet to finish the second and final
 part of Medicine (which is called coschappen in Dutch).
 
-Instead, I pilgrimaged to [Nubank](https://www.nubank.com.br) in São Paulo,
+Instead, I nerd-pilgrimaged to [Nubank](https://www.nubank.com.br) in São Paulo,
 Brazil to learn about [append-only databases](https://www.datomic.com) and
 [dynamic functional programming](https://clojure.org/) applied at scale. What
 was initially a 6 month internship escalated into indefinite employment in data
