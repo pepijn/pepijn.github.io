@@ -1,0 +1,434 @@
+#+OPTIONS: toc:nil
+#+EXCLUDE_TAGS: noexport
+#+EXPORT_FILE_NAME: ../_posts/2018-08-23-real-world-ledger-part-1.md
+#+BEGIN_EXPORT html
+---
+layout:     post
+title:      "Real World Ledger part 1: Weighing Eggs in Baskets"
+categories: ledger-cli accounting
+published:  true
+---
+#+END_EXPORT
+
+Do you ever feel like you're losing grip of your personal finances? You deposit
+into your savings account in one currency, buy stocks and bonds in another, and
+maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
+ocassionally check your assets' value. But at the same time the world around you
+is changing, making it hard to stay on top of your situation.
+
+Interest rates on savings slide to 0%, stock markets bubble and crash, and
+global political debate intensifies. Above all, your bank or government expects
+you to pay back that student loan sometime in the future. It's safe to say that
+our economy is a rough sea, and a bit of help navigating it is more than
+welcome.
+
+This post is part one in a series where I introduce you to Ledger, an open
+source command line accounting program that will be your travelling companion: a
+tool to map your financial position so you won't get lost.
+
+* Introduction
+
+In this post series I'll demonstrate how I use Ledger, an open source command
+line accounting tool, to manage my finances and investment portfolio: a
+collection of assets (such as stocks, government bonds, cryptocurrency, and
+cash) in different currencies. I consider Ledger one of the most useful tools in
+my software stack, and I think a lot more people could benefit from its power
+and the peace of mind that it brings.
+
+At the same time it's hard to find real-world examples of Ledger---many online
+examples are trivial and miss human/societal context. The goal of these posts is
+to address this gap and introduce Ledger to you by providing sufficient
+real-world examples to pique your curiosity and get the ball rolling.
+
+That said, I won't be the one explaining you the theory behind techniques like
+double-entry accounting and investment portfolios in this post because I am
+neither an accountant nor am I an investment advisor. The Ledger documentation
+does a good job at explaining double-entry[fn:ledger-docs] and Investopedia
+explains portfolios well[fn:portfolio-investopedia]. I will limit myself to the
+narrative and practical examples---those are the things I've personally
+experienced.
+
+[fn:ledger-docs] https://www.ledger-cli.org/3.0/doc/ledger3.html
+[fn:portfolio-investopedia] https://www.investopedia.com/terms/p/portfolio.asp
+
+* Part 1: Weighing Eggs in Baskets
+
+The example story through this blog series features the development of a basic
+financial situation into an investment portfolio with carefully weighted stocks,
+government bonds, cryptocurrency, and of course cash. All is fine and balanced
+until a cryptocurrency hype comes knocking at the door and exposes the portfolio
+manager, you, to a novel risk.
+
+We get started in this post by diversifying our savings into stocks, bonds, and
+cryptocurrency. This way, we won't have all our eggs in one basket. We also
+discuss how you convert different assets to one currency so we can realiably
+weigh them: apples to apples. The weighing is essential when creating your
+investment portfolio *allocation*---which we'll discuss in the next post.
+
+#+BEGIN_QUOTE
+"Ledger is a powerful, double-entry accounting system that is accessed from the
+UNIX command-line." --- https://www.ledger-cli.org
+#+END_QUOTE
+
+To follow along with the story below, you will need a terminal with Ledger
+installed and a plain text file editor, such as Sublime Text. If you use macOS,
+installing Ledger is easy using [[https://brew.sh/][Homebrew]]: =brew install ledger=. Feel free to
+make your workflow more pleasant by installing a Ledger mode in your text
+editor---this gives you syntax highlighting. Sublime and other well-known
+editors (like Emacs and vim) have Ledger modes readily available online.
+
+** The basics: single currency and single asset class
+*** Our first posting: adding our savings account
+:PROPERTIES:
+:header-args: :dir /tmp
+:END:
+
+Let's start simple: we have a savings account at a bank called ASN
+bank[fn:green-bank] in our home country where most of our money resides. This
+account already has money in it---obviously we don't start owning assets the
+moment we begin using Ledger---so we have to initialize our balance by moving
+money from /somewhere/. Idiomatically that /somewhere/ is an account called
+'opening balances'. When we express this in Ledger, this is what the file
+=postings1.dat= (=.dat= is commonly used with Ledger, but feel free to use
+something else like =.txt=) looks like:
+
+#+NAME: opening
+#+BEGIN_EXAMPLE ledger
+2018-01-01 Opening Balances
+    Assets:NL:ASN:Savings                 € 1,337.00
+    Equity:Opening Balances              € -1,337.00
+#+END_EXAMPLE
+
+#+BEGIN_SRC bash :var opening=opening :results none :exports none
+cat <<-EOF > postings1.dat
+$opening
+EOF
+#+END_SRC
+
+How do we interpret these three lines? Every posting has a date (=2018-07-01=)
+and a payee (=Opening Balances=). Then, what follows directly beneath it are the
+entries belonging to that posting. In this case we move the =€ 1337= from
+'opening balances' to the savings account. Most of the labels here are arbitrary
+and depend on your preference and taste. I like to structure actual bank
+accounts as follows: country, name of bank, type of account. That results in
+=Assets:NL:ASN:Savings=.
+
+Now we run our first query using the Ledger command line tool. We ask for the
+=balance= of accounts that match =assets= in the file =postings.dat=.
+
+#+NAME: opening-query
+#+BEGIN_SRC bash :results verbatim :exports both
+ledger --file postings1.dat balance assets
+#+END_SRC
+
+The result, as expected, the balance of one asset account:
+
+#+RESULTS: opening-query
+:           € 1,337.00  Assets:NL:ASN:Savings
+
+[fn:green-bank] [[https://eerlijkegeldwijzer.nl/bankwijzer/banken/asn-bank/][Eerlijke Bankwijzer: ASN Bank]]
+
+*** Our first mutation: interest from savings, and deposits and withdrawals
+
+Fast forward 6 months. We have received some interest from the bank and did a
+couple of deposits and withdrawals. We could add postings for all the deposits
+and withdrawals, but that's a lot of premature work and definitely not the
+required to benefit from Ledger. That's why we're using an 'adjustment' account
+in the following *addition* to our =postings1.dat= file, calling it
+=postings2.dat=.
+
+#+NAME: first-mutation
+#+BEGIN_EXAMPLE ledger
+2018-06-01 ASN
+    Assets:NL:ASN:Savings                 € 3,787.50 = € 1,337
+    Income:Interest                         € -42
+    Equity:Adjustment
+#+END_EXAMPLE
+
+A net amount of € 3,787.50 was added to the savings account (the equals sign (=)
+adds a check that the balance of the account after the mutation is exactly €
+1,337), of which € 42 was interest received on the principal. The rest was
+the result of deposits and withdrawals. We don't really care about tracking all
+those transactions in detail right now, so we lazily use an adjustment
+account. Lastly, we're able to omit the amount for =Equity:Adjustment= because
+there's only one possibility: =€ -3,787.50 - € 42 = € -3,745.5=.
+
+The adjustment account resolves a common discouragement of adopting Ledger that
+I keep hearing---people think that Ledger requires them to arduously type in all
+transactions like a monkey. You don't, and above all you can always do that
+later or build scripts to do it for you should you so desire.
+
+#+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation :results none :exports none
+set -euxo pipefail
+cat <<-EOF > postings2.dat
+$opening
+$first_mutation
+EOF
+#+END_SRC
+
+We now rerun the Ledger command line tool. This time, we ask for the =balance=
+of all accounts, not just assets:
+
+#+NAME: first-mutation-query
+#+BEGIN_SRC bash :results verbatim :exports both
+ledger --file postings2.dat balance
+#+END_SRC
+
+Please note that the total of all accounts always sums to zero---that condition
+is the main property of double-entry accounting:
+
+#+RESULTS: first-mutation-query
+:           € 5,124.50  Assets:NL:ASN:Savings
+:          € -5,082.50  Equity
+:          € -3,745.50    Adjustment
+:          € -1,337.00    Opening Balances
+:             € -42.00  Income:Interest
+: --------------------
+:                    0
+
+** Going deeper: multiple currencies and asset classes
+*** Diversifying into multiple assets
+
+We decided to diversify, hoping to get a better return than the ~0% interest
+rate on your savings account[fn:low-savings-interest] in our ~2% inflation
+habitat[fn:inflation]. But, at the same time, you don't want to go all-in on
+stocks because it's generally considered a bad idea to put all your eggs in one
+basket. That's why we diversify and buy some government bonds and cryptocurrency
+too. 'Interactive Brokers' and 'Binck Bank' in the file below are examples of
+stock/bonds brokers. =postings3.dat=:
+
+#+NAME: diversification
+#+BEGIN_EXAMPLE ledger
+2018-07-01 Interactive Brokers
+    Assets:NL:ASN:Savings                   € -1,285
+    Assets:US:Interactive Brokers:Cash       $ 1,500
+
+2018-07-02 Binck Bank
+    Assets:NL:ASN:Savings                   € -2,000
+    Assets:NL:BinckBank:Cash
+
+2018-07-03 Interactive Brokers
+    Assets:US:Interactive Brokers:Stocks      6 AAPL @ $ 183.92
+    Assets:US:Interactive Brokers:Cash
+
+2018-07-04 Binck Bank
+    Assets:NL:BinckBank:Bonds      1,100 "NL2014-47" @ € 1.39
+    Assets:NL:BinckBank:Stocks                5 HEIA @ € 86.08
+    Assets:NL:BinckBank:Cash
+
+2018-07-05 Coinbase
+    Assets:Cryptocurrency:BTC wallet         BTC 0.1
+    Assets:NL:ASN:Savings                     € -561
+#+END_EXAMPLE
+
+In the example above we use different syntax to reach the same goal: buying one
+commodity by selling another commodity (such as stocks from US dollars and
+Bitcoin from euros). The Ledger docs explain the differences
+clearly[fn:posting-costs].
+
+#+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation diversification=diversification :results none :exports none
+cat <<-EOF > postings3.dat
+$opening
+$first_mutation
+$diversification
+EOF
+#+END_SRC
+
+Let's check the impact of our asset diversification buying spree on our balance:
+
+#+NAME: blaat
+#+BEGIN_SRC bash :results verbatim :exports both
+ledger --file postings3.dat balance assets --no-total --flat
+#+END_SRC
+
+Please be advised that I passed two new arguments: =--no-total= and
+=--flat=. The total is superfluous because we're only looking at
+assets. Conversely, the total is valuable when you're looking at both assets and
+liabilities. Subtracting them yields net worth[fn:net-worth]. And =--flat= is
+purely aesthetic. It suppresses Ledger's automatic hierarchy view because it is
+confusing when printing heterogenous commodities (such as currencies, stocks,
+etc.).
+
+#+RESULTS: blaat
+:              BTC 0.1  Assets:Cryptocurrency:BTC wallet
+:           € 1,278.50  Assets:NL:ASN:Savings
+:      1,100 NL2014-47  Assets:NL:BinckBank:Bonds
+:              € 40.60  Assets:NL:BinckBank:Cash
+:               5 HEIA  Assets:NL:BinckBank:Stocks
+:                $ 396  Assets:US:Interactive Brokers:Cash
+:               6 AAPL  Assets:US:Interactive Brokers:Stocks
+
+This balance sheet matches our expectations but it isn't giving us much extra
+information about each of the assets relative to each other---value wise we're
+comparing apples to oranges. Wouldn't it be nice to have all the assets
+converted to one currency so we can compare apples to apples?
+
+[fn:black-swan] https://www.goodreads.com/book/show/242472.The_Black_Swan
+[fn:nyt]
+https://www.nytimes.com/2018/08/10/business/vanguard-recession-economy.html
+[fn:eggs]
+https://www.goodenglish.org.sg/resources/idioms/dont-put-all-your-eggs-in-one-basket
+[fn:low-savings-interest] Interest rates for ABN Amro savings accounts, similar
+to other Dutch banks: https://www.abnamro.nl/en/personal/savings/spaarrente.html
+[fn:inflation] [[http://statline.cbs.nl/StatWeb/publication/?VW=T&DM=SLNL&PA=70936NED&D1=0&D2=(l-34)-l&HD=081020-1258&HDR=T&STB=G1][CBS inflation]]
+[fn:posting-costs]
+https://www.ledger-cli.org/3.0/doc/ledger3.html#Explicit-posting-costs
+[fn:net-worth] https://en.wikipedia.org/wiki/Net_worth
+
+*** Implicit and explicit market prices
+
+In order to compare values of assets we have to pick a base currency to convert
+them to. I'm carrying a Dutch passport so my usual pick is to convert everything
+to euros. But, as long as you supply Ledger the exchange rates, you could
+express the value of your assets, even your guitar if you're so inclined, in
+whatever commodity you like---from Apple stock to real
+apples[fn:apples]. Obviously your tools shouldn't stop you from expressing the
+value of your guitar in apples that you pick from the tree! The only thing
+Ledger needs is either an /implicit/ or /explicit/ market price.
+
+We'll discuss prices in a moment. Before, to see the value of our assets
+expressed in euros, we run the following command (adding =--exchange €=):
+
+#+NAME: olarzinho
+#+BEGIN_SRC bash :results verbatim :exports both
+ledger -f postings3.dat b Assets --exchange € --no-total
+#+END_SRC
+
+Finally we have a birds eye view of all our assets's value across different
+countries, accounts, and currencies:
+
+#+RESULTS: olarzinho
+#+begin_example
+          € 5,124.50  Assets
+            € 561.00    Cryptocurrency:BTC wallet
+          € 3,278.50    NL
+          € 1,278.50      ASN:Savings
+          € 2,000.00      BinckBank
+          € 1,529.00        Bonds
+             € 40.60        Cash
+            € 430.40        Stocks
+          € 1,285.00    US:Interactive Brokers
+            € 339.65      Cash
+            € 945.35      Stocks
+#+end_example
+
+How did Ledger convert evertyhing to euros? Ledger keeps track of prices
+/implicitly/ and also allows you to specify prices
+manually---/explicitly/. Let's focus on the implicit part first, by asking
+Ledger for the prices that it stored so far:
+
+#+NAME: olarzinho2
+#+BEGIN_SRC bash :results verbatim :exports both
+ledger -f postings3.dat prices
+#+END_SRC
+
+With this command you peek into Ledger's internal price database. The prices
+that you see were established by the postings in =postings3.dat= and are all
+/implicit/:
+
+#+RESULTS: olarzinho2
+: 2018/07/01 €        $ 1.167315175097
+: 2018/07/03 AAPL         $ 183.92
+: 2018/07/04 "NL2014-47"       € 1.39
+: 2018/07/04 HEIA          € 86.08
+: 2018/07/05 BTC        € 5,610.00
+
+As a matter of experiment, let's say the price of Apple stock recently shot
+up. It rose to an extent that we're now curious to see how much the value of our
+US brokerage account increased. To find out, we're going to /explicitly/ express
+Apple's stock price in US dollars in a new file called =prices.dat=:
+
+#+NAME: prices
+#+BEGIN_EXAMPLE ledger
+P 2018-08-03 AAPL $ 207.99
+#+END_EXAMPLE
+
+The singe line in this file states: on =2018-08-03= the price for =AAPL= in =$=
+was =207.99=. Let's make this file available to Ledger by specifying
+=--price-db= and querying assets in the US (in which Apple belongs) only
+(=Assets:US=):
+
+#+BEGIN_SRC bash :var prices=prices :results none :exports none
+cat <<-EOF > prices.dat
+$prices
+EOF
+#+END_SRC
+
+#+NAME: olarzinho3
+#+BEGIN_SRC bash :results verbatim :exports both
+ledger --file postings3.dat \
+       balance Assets:US \
+       --exchange € \
+       --price-db prices.dat \
+       --no-total
+#+END_SRC
+
+Indeed, we see the gains on Apple stock reflected by our increased total US
+assets value. Apple stock got converted to US dollars got converted to euros:
+
+#+RESULTS: olarzinho3
+:           € 1,408.72  Assets:US:Interactive Brokers
+:             € 339.65    Cash
+:           € 1,069.07    Stocks
+
+You should add a line to =prices.dat= for every price that you want to track. I
+personally have more than a thousand lines in my prices file and retrieve some
+prices automatically using APIs (predominantly forex rates). The benefit of a
+high resolution like that is that graphical plots of my assets, liabilities, and
+net worth (using a daily interval on the x-axis) are less jumpy.
+
+[fn:apples] https://www.ledger-cli.org/3.0/doc/ledger3.html#Posting-costs
+
+** Conclusion
+
+To summarize, we've just created our first postings, discovered the implicit
+exchange rates that Ledger keeps and added an Apple stock price explicitly. All
+along the way we were able to query our balance in two representations: in its
+original commodity and converted to one base currency.
+
+*In part 2 we'll look at how you materialize an investment portfolio strategy
+and asset allocation using Ledger.* Please leave your email adress if you want a
+notification once it's published! I'd also love to hear your feedback about this
+post and hear suggestions about topics that you'd like to see discussed in
+depth. Reach out to me on Twitter: [[https://twitter.com/ppnlo][@ppnlo]]. Or through email: replace the first
+dot in the domain name with an @.
+
+#+BEGIN_EXPORT html
+<!-- Begin MailChimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+	/* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://epij.us19.list-manage.com/subscribe/post?u=359e0c2277a83d3411e823493&amp;id=dad6148db5" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+	<h2>Feel free to subscribe: I'll notify you when publish the next part</h2>
+<div class="indicates-required"><span class="asterisk">*</span> indicates required</div>
+<div class="mc-field-group">
+	<label for="mce-EMAIL">Email Address  <span class="asterisk">*</span>
+</label>
+	<input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+</div>
+	<div id="mce-responses" class="clear">
+		<div class="response" id="mce-error-response" style="display:none"></div>
+		<div class="response" id="mce-success-response" style="display:none"></div>
+	</div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_359e0c2277a83d3411e823493_dad6148db5" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+<script type='text/javascript' src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js'></script><script type='text/javascript'>(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[3]='ADDRESS';ftypes[3]='address';fnames[4]='PHONE';ftypes[4]='phone';}(jQuery));var $mcj = jQuery.noConflict(true);</script>
+<!--End mc_embed_signup-->
+#+END_EXPORT
+
+* Appendix
+
+As always, this post is written in a literate
+programming[fn:literate-programming] style, which means that the code samples in
+it are reproducible and correct. Check out the Org-mode and Babel source code on
+GitHub:
+
+[fn:literate-programming] https://en.wikipedia.org/wiki/Literate_programming
