@@ -5,10 +5,24 @@ permalink: /projects/
 tags: projects
 ---
 
-This is a selection of projects that I worked on or founded myself during the
-last 4 years.
+This is a selection of projects that I worked on or founded myself during recent
+years.
 
 ### Employee/freelancer (via [Plict](http://www.plict.nl))
+
+#### 2016 - present: Data Access Squad at [Nubank](https://nubank.com.br) (São Paulo, BR)
+
+The Data Access squad split-off from the Data Infra squad at Nubank. Before, in
+Data Infra, I mostly worked on building our ETL pipelines and finding ways to
+make them more robust. As our ETL platform stabilized, I shifted towards data
+modeling. Now, in Data Access, we focus on the interaction between data
+consumers in Nubank (e.g. decision makers, analysts, data scientists) and the
+data of Nubank. Examples: owning the business intelligence tool, having
+authority over the 'data dictionary' (i.e. the data warehouse), and teaching the
+company.
+
+![Nubank](/images/nubank.jpg)
+
 
 #### 2014 - 2015: Data warehouse developer at [Blendle](https://blendle.com) (Utrecht, NL)
 
@@ -22,7 +36,7 @@ April 2015. From that point on I worked part-time until August 2015.
 
 ![Blendle Team](/images/blendle_team.jpg)
 
-#### 2013 - present: ERT at [AMC](http://www.amc.nl) [Intensive Care](https://www.amc.nl/web/Zorg/Patient/Opname-voor-meerdere-dagen/Intensive-Care-Unit.htm) (Amsterdam, NL)
+#### 2013 - 2016: ERT at [AMC](http://www.amc.nl) [Intensive Care](https://www.amc.nl/web/Zorg/Patient/Opname-voor-meerdere-dagen/Intensive-Care-Unit.htm) (Amsterdam, NL)
 
 ERT is an acronym for Education Registration Tool. Intensive care nurses of the
 Academic Medical Center in Amsterdam register to the courses they are interested
