@@ -22,9 +22,10 @@ rough sea.
 
 This post is part one in a series where I show how to map and plan your
 financial positions in Ledger so you're able to navigate those real world issues
-with confidence. With the series I hope to fill a skills gap that I encountered
-when starting with Ledger: many online examples are trivial and miss
-human/societal context.
+with confidence. How to do that exactly isn't trivial, though. With this blog
+series I hope to fill that skills gap&#x2014;the same that I encountered when
+starting with Ledger. I found many online examples too abstract and missing
+human/societal context for someone unfamiliar with accounting.
 
 That said, I won't be explaining you the theory behind techniques like
 double-entry accounting and investment portfolios in this post because I am
