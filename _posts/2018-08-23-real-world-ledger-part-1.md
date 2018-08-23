@@ -251,7 +251,7 @@ countries, accounts, and currencies:
             € 945.35      Stocks
 {% endhighlight %}
 
-How did Ledger convert evertyhing to euros? Ledger keeps track of prices
+How did Ledger convert everything to euros? Ledger keeps track of prices
 *implicitly* and also allows you to specify prices
 manually---*explicitly*. Let's focus on the implicit part first, by asking
 Ledger for the prices that it stored so far:
