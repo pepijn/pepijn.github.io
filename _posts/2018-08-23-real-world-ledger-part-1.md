@@ -312,8 +312,8 @@ programming<sup><a id="fnr.9" class="footref" href="#fn.9">9</a></sup> style, wh
 it are reproducible and correct. Check out the Org-mode and Babel source code on
 GitHub: [real-world-ledger-part-1.org](https://raw.githubusercontent.com/pepijn/pepijn.github.io/master/org/real-world-ledger-part-1.org).
 
-*Thank you Thomas Smolders, Pieter Levels and Arend Koopmans for helping me with
-this post!*
+*Thank you Thomas Smolders, Pieter Levels, Arend Koopmans and Rik Helwegen for
+helping me with this post!*
 
 
 # Footnotes
