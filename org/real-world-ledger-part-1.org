@@ -6,7 +6,7 @@
 layout:     post
 title:      "Real World Ledger part 1: Weighing Eggs in Baskets"
 categories: ledger-cli accounting
-published:  true
+published:  false
 ---
 #+END_EXPORT
 
