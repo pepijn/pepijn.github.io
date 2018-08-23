@@ -423,4 +423,7 @@ programming[fn:literate-programming] style, which means that the code samples in
 it are reproducible and correct. Check out the Org-mode and Babel source code on
 GitHub: [[https://raw.githubusercontent.com/pepijn/pepijn.github.io/master/org/real-world-ledger-part-1.org][real-world-ledger-part-1.org]].
 
+/Thank you Thomas Smolders, Pieter Levels and Arend Koopmans for helping me with
+this post!/
+
 [fn:literate-programming] https://en.wikipedia.org/wiki/Literate_programming
