@@ -334,7 +334,7 @@ Apple's stock price in US dollars in a new file called =prices.dat=:
 P 2018-08-03 AAPL $ 207.99
 #+END_EXAMPLE
 
-The singe line in this file states: on =2018-08-03= the price for =AAPL= in =$=
+The single line in this file states: on =2018-08-03= the price for =AAPL= in =$=
 was =207.99=. Let's make this file available to Ledger by specifying
 =--price-db= and querying assets in the US (in which Apple belongs) only
 (=Assets:US=):
