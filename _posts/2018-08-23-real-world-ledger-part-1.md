@@ -8,34 +8,25 @@ published:  true
 Do you ever feel like you're losing grip of your personal finances? You deposit
 into your savings account in one currency, buy stocks and bonds in another, and
 maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
-ocassionally check your assets' value. But at the same time the world around you
-is changing, making it hard to stay on top of your situation.
-
-Interest rates on savings slide to 0%, stock markets bubble and crash, and
-global political debate intensifies. Above all, your bank or government expects
-you to pay back that student loan sometime in the future. It's safe to say that
-our economy is a rough sea, and a bit of help navigating it is more than
-welcome.
-
-This post is part one in a series where I introduce you to Ledger, an open
-source command line accounting program that will be your travelling companion: a
-tool to map your financial position so you won't get lost.
+ocassionally check your assets' value, but volatile prices and exchange rates
+make it challenging. Ledger is a command line accounting tool that addresses
+these issues. In this post I'll introduce you to it.
 
 ## Introduction
 
-In this post series I'll demonstrate how I use Ledger, an open source command
-line accounting tool, to manage my finances and investment portfolio: a
-collection of assets (such as stocks, government bonds, cryptocurrency, and
-cash) in different currencies. I consider Ledger one of the most useful tools in
-my software stack, and I think a lot more people could benefit from its power
-and the peace of mind that it brings.
+The world around you is changing: interest rates on savings accounts slide to
+0%, stock markets bubble and crash, and global political debate
+intensifies. Above all, your bank or government expects you to pay back that
+student loan sometime in the future. It is safe to say that our economy is a
+rough sea.
 
-At the same time it's hard to find real-world examples of Ledger&#x2014;many online
-examples are trivial and miss human/societal context. The goal of these posts is
-to address this gap and introduce Ledger to you by providing sufficient
-real-world examples to pique your curiosity and get the ball rolling.
+This post is part one in a series where I show how to map and plan your
+financial positions in Ledger so you're able to navigate those real world issues
+with confidence. With the series I hope to fill a skills gap that I encountered
+when starting with Ledger: many online examples are trivial and miss
+human/societal context.
 
-That said, I won't be the one explaining you the theory behind techniques like
+That said, I won't be explaining you the theory behind techniques like
 double-entry accounting and investment portfolios in this post because I am
 neither an accountant nor am I an investment advisor. The Ledger documentation
 does a good job at explaining double-entry<sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> and Investopedia
@@ -318,7 +309,7 @@ dot in the domain name with an @.
 As always, this post is written in a literate
 programming<sup><a id="fnr.9" class="footref" href="#fn.9">9</a></sup> style, which means that the code samples in
 it are reproducible and correct. Check out the Org-mode and Babel source code on
-GitHub: [real-world-ledger-part-1.org](https://github.com/pepijn/pepijn.github.io/blob/master/org/real-world-ledger-part-1.org).
+GitHub: [real-world-ledger-part-1.org](https://raw.githubusercontent.com/pepijn/pepijn.github.io/master/org/real-world-ledger-part-1.org).
 
 
 # Footnotes
