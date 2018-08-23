@@ -78,7 +78,7 @@ something else like `.txt`) looks like:
     Equity:Opening Balances              € -1,337.00
 {% endhighlight %}
 
-How do we interpret these three lines? Every posting has a date (`2018-07-01`)
+How do we interpret these three lines? Every posting has a date (`2018-01-01`)
 and a payee (`Opening Balances`). Then, what follows directly beneath it are the
 entries belonging to that posting. In this case we move the `€ 1337` from
 'opening balances' to the savings account. Most of the labels here are arbitrary
@@ -110,18 +110,17 @@ in the following **addition** to our `postings1.dat` file, calling it
 
 {% highlight ledger %}
 2018-06-01 ASN
-    Assets:NL:ASN:Savings                 € 3,787.50 = € 1,337
+    Assets:NL:ASN:Savings                 € 3,787.50
     Income:Interest                         € -42
     Equity:Adjustment
 {% endhighlight %}
 
-A net amount of € 3,787.50 was added to the savings account (the equals sign (=)
-adds a check that the balance of the account after the mutation is exactly €
-1,337), of which € 42 was interest received on the principal. The rest was
-the result of deposits and withdrawals. We don't really care about tracking all
-those transactions in detail right now, so we lazily use an adjustment
-account. Lastly, we're able to omit the amount for `Equity:Adjustment` because
-there's only one possibility: `€ -3,787.50 - € 42 = € -3,745.5`.
+A net amount of € 3,787.50 was added to the savings account, of which € 42 was
+interest received on the principal. The rest was the result of deposits and
+withdrawals. We don't really care about tracking all those transactions in
+detail right now, so we lazily use an adjustment account. Lastly, we're able to
+omit the amount for `Equity:Adjustment` because there's only one possibility: `€
+-3,787.50 - € 42 = € -3,745.5`.
 
 The adjustment account resolves a common discouragement of adopting Ledger that
 I keep hearing&#x2014;people think that Ledger requires them to arduously type in all
@@ -360,8 +359,8 @@ programming<sup><a id="fnr.9" class="footref" href="#fn.9">9</a></sup> style, wh
 it are reproducible and correct. Check out the Org-mode and Babel source code on
 GitHub: [real-world-ledger-part-1.org](https://raw.githubusercontent.com/pepijn/pepijn.github.io/master/org/real-world-ledger-part-1.org).
 
-*Thank you Thomas Smolders, Pieter Levels, Arend Koopmans and Rik Helwegen for
-helping me with this post!*
+*Thank you Thomas Smolders, Pieter Levels, Arend Koopmans, Rik Helwegen and Nils
+Mackay for helping me with this post!*
 
 
 # Footnotes
