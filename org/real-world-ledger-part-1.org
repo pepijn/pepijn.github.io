@@ -429,6 +429,6 @@ dot in the domain name with an @.
 As always, this post is written in a literate
 programming[fn:literate-programming] style, which means that the code samples in
 it are reproducible and correct. Check out the Org-mode and Babel source code on
-GitHub:
+GitHub: [[https://raw.githubusercontent.com/pepijn/pepijn.github.io/master/org/real-world-ledger-part-1.org][real-world-ledger-part-1.org]].
 
 [fn:literate-programming] https://en.wikipedia.org/wiki/Literate_programming

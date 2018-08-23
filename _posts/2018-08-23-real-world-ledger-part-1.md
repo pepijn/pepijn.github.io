@@ -318,7 +318,7 @@ dot in the domain name with an @.
 As always, this post is written in a literate
 programming<sup><a id="fnr.9" class="footref" href="#fn.9">9</a></sup> style, which means that the code samples in
 it are reproducible and correct. Check out the Org-mode and Babel source code on
-GitHub:
+GitHub: [real-world-ledger-part-1.org](https://github.com/pepijn/pepijn.github.io/blob/master/org/real-world-ledger-part-1.org).
 
 
 # Footnotes
