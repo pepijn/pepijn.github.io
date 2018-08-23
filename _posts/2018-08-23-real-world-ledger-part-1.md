@@ -138,6 +138,16 @@ ledger --file postings2.dat balance
 Please note that the total of all accounts always sums to zero&#x2014;that condition
 is the main property of double-entry accounting:
 
+{% highlight plaintext %}
+          € 5,124.50  Assets:NL:ASN:Savings
+         € -5,082.50  Equity
+         € -3,745.50    Adjustment
+         € -1,337.00    Opening Balances
+            € -42.00  Income:Interest
+--------------------
+                   0
+{% endhighlight %}
+
 ### Going deeper: multiple currencies and asset classes
 
 #### Diversifying into multiple assets
@@ -192,6 +202,16 @@ purely aesthetic. It suppresses Ledger's automatic hierarchy view because it is
 confusing when printing heterogenous commodities (such as currencies, stocks,
 etc.).
 
+{% highlight plaintext %}
+             BTC 0.1  Assets:Cryptocurrency:BTC wallet
+          € 1,278.50  Assets:NL:ASN:Savings
+     1,100 NL2014-47  Assets:NL:BinckBank:Bonds
+             € 40.60  Assets:NL:BinckBank:Cash
+              5 HEIA  Assets:NL:BinckBank:Stocks
+               $ 396  Assets:US:Interactive Brokers:Cash
+              6 AAPL  Assets:US:Interactive Brokers:Stocks
+{% endhighlight %}
+
 This balance sheet matches our expectations but it isn't giving us much extra
 information about each of the assets relative to each other&#x2014;value wise we're
 comparing apples to oranges. Wouldn't it be nice to have all the assets
@@ -218,6 +238,20 @@ ledger -f postings3.dat b Assets --exchange € --no-total
 Finally we have a birds eye view of all our assets's value across different
 countries, accounts, and currencies:
 
+{% highlight plaintext %}
+          € 5,124.50  Assets
+            € 561.00    Cryptocurrency:BTC wallet
+          € 3,278.50    NL
+          € 1,278.50      ASN:Savings
+          € 2,000.00      BinckBank
+          € 1,529.00        Bonds
+             € 40.60        Cash
+            € 430.40        Stocks
+          € 1,285.00    US:Interactive Brokers
+            € 339.65      Cash
+            € 945.35      Stocks
+{% endhighlight %}
+
 How did Ledger convert evertyhing to euros? Ledger keeps track of prices
 *implicitly* and also allows you to specify prices
 manually---*explicitly*. Let's focus on the implicit part first, by asking
@@ -230,6 +264,14 @@ ledger -f postings3.dat prices
 With this command you peek into Ledger's internal price database. The prices
 that you see were established by the postings in `postings3.dat` and are all
 *implicit*:
+
+{% highlight plaintext %}
+2018/07/01 €        $ 1.167315175097
+2018/07/03 AAPL         $ 183.92
+2018/07/04 "NL2014-47"       € 1.39
+2018/07/04 HEIA          € 86.08
+2018/07/05 BTC        € 5,610.00
+{% endhighlight %}
 
 As a matter of experiment, let's say the price of Apple stock recently shot
 up. It rose to an extent that we're now curious to see how much the value of our
@@ -255,6 +297,12 @@ ledger --file postings3.dat \
 
 Indeed, we see the gains on Apple stock reflected by our increased total US
 assets value. Apple stock got converted to US dollars got converted to euros:
+
+{% highlight plaintext %}
+          € 1,408.72  Assets:US:Interactive Brokers
+            € 339.65    Cash
+          € 1,069.07    Stocks
+{% endhighlight %}
 
 You should add a line to `prices.dat` for every price that you want to track. I
 personally have more than a thousand lines in my prices file and retrieve some
