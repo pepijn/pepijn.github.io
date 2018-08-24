@@ -13,7 +13,7 @@ published:  true
 Do you ever feel like you're losing grip of your personal finances? You deposit
 into your savings account in one currency, buy stocks and bonds in another, and
 maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
-ocassionally check your assets' value, but volatile prices and exchange rates
+occasionally check your assets' value, but volatile prices and exchange rates
 make it challenging. Ledger is a command line accounting tool that addresses
 these issues. In this post I'll introduce you to it.
 

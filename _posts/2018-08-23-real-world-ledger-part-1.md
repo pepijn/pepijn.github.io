@@ -8,7 +8,7 @@ published:  true
 Do you ever feel like you're losing grip of your personal finances? You deposit
 into your savings account in one currency, buy stocks and bonds in another, and
 maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
-ocassionally check your assets' value, but volatile prices and exchange rates
+occasionally check your assets' value, but volatile prices and exchange rates
 make it challenging. Ledger is a command line accounting tool that addresses
 these issues. In this post I'll introduce you to it.
 
@@ -281,7 +281,7 @@ Apple's stock price in US dollars in a new file called `prices.dat`:
 P 2018-08-03 AAPL $ 207.99
 {% endhighlight %}
 
-The singe line in this file states: on `2018-08-03` the price for `AAPL` in `$`
+The single line in this file states: on `2018-08-03` the price for `AAPL` in `$`
 was `207.99`. Let's make this file available to Ledger by specifying
 `--price-db` and querying assets in the US (in which Apple belongs) only
 (`Assets:US`):
