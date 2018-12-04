@@ -10,3 +10,5 @@ org/*.md
 _drafts/*.md
 
 Gemfile.lock
+
+/private/
