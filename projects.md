@@ -3,6 +3,7 @@ layout: page
 title: Projects
 permalink: /projects/
 tags: projects
+include: true
 ---
 
 This is a selection of projects that I worked on or founded myself during recent

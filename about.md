@@ -3,6 +3,7 @@ layout: page
 title: About
 permalink: /ooije/
 tags: about
+include: true
 ---
 
 Hello! My name is Pepijn Looije which I've come to realize looks like a string
