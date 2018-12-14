@@ -96,6 +96,13 @@ you suggest me resources that you consider missing from this list.
 <td class="org-left">Prog</td>
 <td class="org-left">Learn Scala interactively</td>
 </tr>
+
+
+<tr>
+<td class="org-left">Uber's Queryparser<sup><a id="fnr.13" class="footref" href="#fn.13">13</a></sup></td>
+<td class="org-left">Data</td>
+<td class="org-left">How Uber analyses internal data access</td>
+</tr>
 </tbody>
 </table>
 
@@ -127,3 +134,5 @@ Dimensional Modeling - Ralph Kimball, Margy Ross](https://www.goodreads.com/book
 ferramental para promover uma cultura data-driven](https://www.infoq.com/br/presentations/infraestrutura-de-dados-no-nubank)
 
 <sup><a id="fn.12" href="#fnr.12">12</a></sup> [scala koans - scala 2.11 + scalatest 3](https://github.com/hackenfreude/scalakoansexercises)
+
+<sup><a id="fn.13" href="#fnr.13">13</a></sup> [Queryparser, an Open Source Tool for Parsing and Analyzing SQL](https://eng.uber.com/queryparser/)
