@@ -6,4 +6,6 @@ dir="$1"
 
 cd "$dir"
 
+rbenv exec bundle install
+
 rbenv exec bundle exec jekyll serve --livereload --port 1337
