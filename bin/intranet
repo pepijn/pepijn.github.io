@@ -2,4 +2,8 @@
 
 set -euxo pipefail
 
+dir="$1"
+
+cd "$dir"
+
 rbenv exec bundle exec jekyll serve --livereload --port 1337
