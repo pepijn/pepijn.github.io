@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+rbenv exec bundle exec jekyll serve --livereload --port 1337
