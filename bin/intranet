@@ -6,6 +6,8 @@ dir="$1"
 
 cd "$dir"
 
+rbenv exec gem install bundler
+
 rbenv exec bundle install
 
 rbenv exec bundle exec jekyll serve --drafts --livereload --port 1337 --open-url
