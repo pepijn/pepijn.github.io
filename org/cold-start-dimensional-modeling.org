@@ -1,0 +1,24 @@
+#+OPTIONS: toc:nil
+#+EXCLUDE_TAGS: noexport
+#+EXPORT_FILE_NAME: ../_posts/2020-01-22-dimensional-modeling-rollout.md
+#+BEGIN_EXPORT html
+---
+layout:     post
+title:      "Gradually Rolling Out Modeling"
+categories: dimensional-modeling data-infrastructure
+published:  true
+---
+#+END_EXPORT
+
+At Nubank we have a Data Infrastructure. The metadata in this infrastructure is
+of low level and contains data up to the level of columns. We now have the
+people in the company that see the value of adding more metadata, the Data
+Analyst Chapter. This should improve reusability of data between business
+areas. Additionally, most BI tools (we use Looker) work more intuitively when a
+modeler annotates column types like fact and dimension.
+
+The [[https://www.infoq.com/br/presentations/infraestrutura-de-dados-no-nubank/][method of adding datasets to our DAG]] has been around since 2016 and is still
+immensely popular. We have a [[https://www.youtube.com/watch?v=_UiWGP2lj8Y][more than 400 contributors to our dataset monorepo]],
+mostly non-tech roles like Business Analysts that are writing Scala. For that
+reason we don't want to create a completely isolated solution. No, we want
+something that looks a lot like the thing today but with a gradual improvement.
