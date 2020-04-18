@@ -5,7 +5,7 @@ categories: ledger-cli accounting
 published:  true
 ---
 
-Do you ever feel like you're losing grip of your personal finances? You deposit
+Do you ever feel like you're losing grip on your personal finances? You deposit
 into your savings account in one currency, buy stocks and bonds in another, and
 maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
 occasionally check your assets' value, but volatile prices and exchange rates
@@ -96,7 +96,7 @@ ledger --file postings1.dat balance assets
 The result, as expected, the balance of one asset account:
 
 {% highlight plaintext %}
-          € 1,337.00  Assets:NL:ASN:Savings
+€ 1,337.00  Assets:NL:ASN:Savings
 {% endhighlight %}
 
 #### Our first mutation: interest from savings, and deposits and withdrawals
@@ -202,13 +202,13 @@ confusing when printing heterogenous commodities (such as currencies, stocks,
 etc.).
 
 {% highlight plaintext %}
-             BTC 0.1  Assets:Cryptocurrency:BTC wallet
-          € 1,278.50  Assets:NL:ASN:Savings
-     1,100 NL2014-47  Assets:NL:BinckBank:Bonds
-             € 40.60  Assets:NL:BinckBank:Cash
-              5 HEIA  Assets:NL:BinckBank:Stocks
-               $ 396  Assets:US:Interactive Brokers:Cash
-              6 AAPL  Assets:US:Interactive Brokers:Stocks
+        BTC 0.1  Assets:Cryptocurrency:BTC wallet
+     € 1,278.50  Assets:NL:ASN:Savings
+1,100 NL2014-47  Assets:NL:BinckBank:Bonds
+        € 40.60  Assets:NL:BinckBank:Cash
+         5 HEIA  Assets:NL:BinckBank:Stocks
+          $ 396  Assets:US:Interactive Brokers:Cash
+         6 AAPL  Assets:US:Interactive Brokers:Stocks
 {% endhighlight %}
 
 This balance sheet matches our expectations but it isn't giving us much extra
@@ -238,17 +238,17 @@ Finally we have a birds eye view of all our assets's value across different
 countries, accounts, and currencies:
 
 {% highlight plaintext %}
-          € 5,124.50  Assets
-            € 561.00    Cryptocurrency:BTC wallet
-          € 3,278.50    NL
-          € 1,278.50      ASN:Savings
-          € 2,000.00      BinckBank
-          € 1,529.00        Bonds
-             € 40.60        Cash
-            € 430.40        Stocks
-          € 1,285.00    US:Interactive Brokers
-            € 339.65      Cash
-            € 945.35      Stocks
+€ 5,124.50  Assets
+  € 561.00    Cryptocurrency:BTC wallet
+€ 3,278.50    NL
+€ 1,278.50      ASN:Savings
+€ 2,000.00      BinckBank
+€ 1,529.00        Bonds
+   € 40.60        Cash
+  € 430.40        Stocks
+€ 1,285.00    US:Interactive Brokers
+  € 339.65      Cash
+  € 945.35      Stocks
 {% endhighlight %}
 
 How did Ledger convert everything to euros? Ledger keeps track of prices
@@ -298,9 +298,9 @@ Indeed, we see the gains on Apple stock reflected by our increased total US
 assets value. Apple stock got converted to US dollars got converted to euros:
 
 {% highlight plaintext %}
-          € 1,408.72  Assets:US:Interactive Brokers
-            € 339.65    Cash
-          € 1,069.07    Stocks
+€ 1,408.72  Assets:US:Interactive Brokers
+  € 339.65    Cash
+€ 1,069.07    Stocks
 {% endhighlight %}
 
 You should add a line to `prices.dat` for every price that you want to track. I
