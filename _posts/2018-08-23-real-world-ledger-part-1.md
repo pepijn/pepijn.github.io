@@ -9,7 +9,7 @@ Do you ever feel like you're losing grip on your personal finances? You deposit
 into your savings account in one currency, buy stocks and bonds in another, and
 maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
 occasionally check your assets' value, but volatile prices and exchange rates
-make it challenging. Ledger is a command line accounting tool that addresses
+make it challenging. Ledger is a command-line accounting tool that addresses
 these issues. In this post I'll introduce you to it.
 
 ## Introduction
@@ -21,16 +21,16 @@ student loan sometime in the future. It is safe to say that our economy is a
 rough sea.
 
 This post is part one in a series where I show how to map and plan your
-financial positions in Ledger so you're able to navigate those real world issues
+financial positions in Ledger so you're able to navigate those real-world issues
 with confidence. How to do that exactly isn't trivial, though. With this blog
 series I hope to fill that skills gap&#x2014;the same that I encountered when
 starting with Ledger. I found many online examples too abstract and missing
 human/societal context for someone unfamiliar with accounting.
 
-That said, I won't be explaining you the theory behind techniques like
+That said, I won't be explaining to you the theory behind techniques like
 double-entry accounting and investment portfolios in this post because I am
 neither an accountant nor am I an investment advisor. The Ledger documentation
-does a good job at explaining double-entry<sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> and Investopedia
+does a good job of explaining double-entry<sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> and Investopedia
 explains portfolios well<sup><a id="fnr.2" class="footref" href="#fn.2">2</a></sup>. I will limit myself to the
 narrative and practical examples&#x2014;those are the things I've personally
 experienced.
@@ -45,7 +45,7 @@ manager, you, to a novel risk.
 
 We get started in this post by diversifying our savings into stocks, bonds, and
 cryptocurrency. This way, we won't have all our eggs in one basket. We also
-discuss how you convert different assets to one currency so we can realiably
+discuss how you convert different assets to one currency so we can reliably
 weigh them: apples to apples. The weighing is essential when creating your
 investment portfolio **allocation**&#x2014;which we'll discuss in the next post.
 
@@ -59,7 +59,7 @@ make your workflow more pleasant by installing a Ledger mode in your text
 editor&#x2014;this gives you syntax highlighting. Sublime and other well-known
 editors (like Emacs and vim) have Ledger modes readily available online.
 
-### The basics: single currency and single asset class
+### The basics: a single currency and a single asset class
 
 #### Our first posting: adding our savings account
 
@@ -80,13 +80,13 @@ something else like `.txt`) looks like:
 
 How do we interpret these three lines? Every posting has a date (`2018-01-01`)
 and a payee (`Opening Balances`). Then, what follows directly beneath it are the
-entries belonging to that posting. In this case we move the `€ 1337` from
+entries belonging to that posting. In this case, we move the `€ 1337` from
 'opening balances' to the savings account. Most of the labels here are arbitrary
 and depend on your preference and taste. I like to structure actual bank
 accounts as follows: country, name of bank, type of account. That results in
 `Assets:NL:ASN:Savings`.
 
-Now we run our first query using the Ledger command line tool. We ask for the
+Now we run our first query using the Ledger command-line tool. We ask for the
 `balance` of accounts that match `assets` in the file `postings.dat`.
 
 {% highlight bash %}
@@ -96,7 +96,7 @@ ledger --file postings1.dat balance assets
 The result, as expected, the balance of one asset account:
 
 {% highlight plaintext %}
-€ 1,337.00  Assets:NL:ASN:Savings
+          € 1,337.00  Assets:NL:ASN:Savings
 {% endhighlight %}
 
 #### Our first mutation: interest from savings, and deposits and withdrawals
@@ -119,15 +119,15 @@ A net amount of € 3,787.50 was added to the savings account, of which € 42 w
 interest received on the principal. The rest was the result of deposits and
 withdrawals. We don't really care about tracking all those transactions in
 detail right now, so we lazily use an adjustment account. Lastly, we're able to
-omit the amount for `Equity:Adjustment` because there's only one possibility: `€
+omit the amount of `Equity:Adjustment` because there's only one possibility: `€
 -3,787.50 - € 42 = € -3,745.5`.
 
 The adjustment account resolves a common discouragement of adopting Ledger that
 I keep hearing&#x2014;people think that Ledger requires them to arduously type in all
-transactions like a monkey. You don't, and above all you can always do that
+transactions like a monkey. You don't, and above all, you can always do that
 later or build scripts to do it for you should you so desire.
 
-We now rerun the Ledger command line tool. This time, we ask for the `balance`
+We now rerun the Ledger command-line tool. This time, we ask for the `balance`
 of all accounts, not just assets:
 
 {% highlight bash %}
@@ -157,7 +157,7 @@ habitat<sup><a id="fnr.5" class="footref" href="#fn.5">5</a></sup>. But, at the 
 stocks because it's generally considered a bad idea to put all your eggs in one
 basket. That's why we diversify and buy some government bonds and cryptocurrency
 too. 'Interactive Brokers' and 'Binck Bank' in the file below are examples of
-stock/bonds brokers. `postings3.dat`:
+stock/bond brokers. `postings3.dat`:
 
 {% highlight ledger %}
 2018-07-01 Interactive Brokers
@@ -202,17 +202,17 @@ confusing when printing heterogenous commodities (such as currencies, stocks,
 etc.).
 
 {% highlight plaintext %}
-        BTC 0.1  Assets:Cryptocurrency:BTC wallet
-     € 1,278.50  Assets:NL:ASN:Savings
-1,100 NL2014-47  Assets:NL:BinckBank:Bonds
-        € 40.60  Assets:NL:BinckBank:Cash
-         5 HEIA  Assets:NL:BinckBank:Stocks
-          $ 396  Assets:US:Interactive Brokers:Cash
-         6 AAPL  Assets:US:Interactive Brokers:Stocks
+             BTC 0.1  Assets:Cryptocurrency:BTC wallet
+          € 1,278.50  Assets:NL:ASN:Savings
+     1,100 NL2014-47  Assets:NL:BinckBank:Bonds
+             € 40.60  Assets:NL:BinckBank:Cash
+              5 HEIA  Assets:NL:BinckBank:Stocks
+               $ 396  Assets:US:Interactive Brokers:Cash
+              6 AAPL  Assets:US:Interactive Brokers:Stocks
 {% endhighlight %}
 
 This balance sheet matches our expectations but it isn't giving us much extra
-information about each of the assets relative to each other&#x2014;value wise we're
+information about each of the assets relative to each other&#x2014;value-wise we're
 comparing apples to oranges. Wouldn't it be nice to have all the assets
 converted to one currency so we can compare apples to apples?
 
@@ -234,21 +234,21 @@ expressed in euros, we run the following command (adding `--exchange €`):
 ledger -f postings3.dat b Assets --exchange € --no-total
 {% endhighlight %}
 
-Finally we have a birds eye view of all our assets's value across different
+Finally, we have a birds-eye view of all our assets's value across different
 countries, accounts, and currencies:
 
 {% highlight plaintext %}
-€ 5,124.50  Assets
-  € 561.00    Cryptocurrency:BTC wallet
-€ 3,278.50    NL
-€ 1,278.50      ASN:Savings
-€ 2,000.00      BinckBank
-€ 1,529.00        Bonds
-   € 40.60        Cash
-  € 430.40        Stocks
-€ 1,285.00    US:Interactive Brokers
-  € 339.65      Cash
-  € 945.35      Stocks
+          € 5,124.50  Assets
+            € 561.00    Cryptocurrency:BTC wallet
+          € 3,278.50    NL
+          € 1,278.50      ASN:Savings
+          € 2,000.00      BinckBank
+          € 1,529.00        Bonds
+             € 40.60        Cash
+            € 430.40        Stocks
+          € 1,285.00    US:Interactive Brokers
+            € 339.65      Cash
+            € 945.35      Stocks
 {% endhighlight %}
 
 How did Ledger convert everything to euros? Ledger keeps track of prices
@@ -298,9 +298,9 @@ Indeed, we see the gains on Apple stock reflected by our increased total US
 assets value. Apple stock got converted to US dollars got converted to euros:
 
 {% highlight plaintext %}
-€ 1,408.72  Assets:US:Interactive Brokers
-  € 339.65    Cash
-€ 1,069.07    Stocks
+          € 1,408.72  Assets:US:Interactive Brokers
+            € 339.65    Cash
+          € 1,069.07    Stocks
 {% endhighlight %}
 
 You should add a line to `prices.dat` for every price that you want to track. I
@@ -317,9 +317,9 @@ along the way we were able to query our balance in two representations: in its
 original commodity and converted to one base currency.
 
 **In part 2 we'll look at how you materialize an investment portfolio strategy
-and asset allocation using Ledger.** Please leave your email adress if you want a
-notification once it's published! I'd also love to hear your feedback about this
-post and hear suggestions about topics that you'd like to see discussed in
+and asset allocation using Ledger.** Please leave your email address if you want
+a notification once it's published! I'd also love to hear your feedback about
+this post and hear suggestions about topics that you'd like to see discussed in
 depth. Reach out to me on Twitter: [@ppnlo](https://twitter.com/ppnlo). Or through email: replace the first
 dot in the domain name with an @.
 

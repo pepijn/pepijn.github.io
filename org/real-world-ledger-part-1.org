@@ -1,3 +1,4 @@
+# -*- eval: (auto-org-md-on) -*-
 #+OPTIONS: toc:nil
 #+EXCLUDE_TAGS: noexport
 #+EXPORT_FILE_NAME: ../_posts/2018-08-23-real-world-ledger-part-1.md
@@ -14,7 +15,7 @@ Do you ever feel like you're losing grip on your personal finances? You deposit
 into your savings account in one currency, buy stocks and bonds in another, and
 maybe even hodl on to some cryptocurrency. You keep a finger on the pulse and
 occasionally check your assets' value, but volatile prices and exchange rates
-make it challenging. Ledger is a command line accounting tool that addresses
+make it challenging. Ledger is a command-line accounting tool that addresses
 these issues. In this post I'll introduce you to it.
 
 * Introduction
@@ -26,16 +27,16 @@ student loan sometime in the future. It is safe to say that our economy is a
 rough sea.
 
 This post is part one in a series where I show how to map and plan your
-financial positions in Ledger so you're able to navigate those real world issues
+financial positions in Ledger so you're able to navigate those real-world issues
 with confidence. How to do that exactly isn't trivial, though. With this blog
 series I hope to fill that skills gap---the same that I encountered when
 starting with Ledger. I found many online examples too abstract and missing
 human/societal context for someone unfamiliar with accounting.
 
-That said, I won't be explaining you the theory behind techniques like
+That said, I won't be explaining to you the theory behind techniques like
 double-entry accounting and investment portfolios in this post because I am
 neither an accountant nor am I an investment advisor. The Ledger documentation
-does a good job at explaining double-entry[fn:ledger-docs] and Investopedia
+does a good job of explaining double-entry[fn:ledger-docs] and Investopedia
 explains portfolios well[fn:portfolio-investopedia]. I will limit myself to the
 narrative and practical examples---those are the things I've personally
 experienced.
@@ -53,7 +54,7 @@ manager, you, to a novel risk.
 
 We get started in this post by diversifying our savings into stocks, bonds, and
 cryptocurrency. This way, we won't have all our eggs in one basket. We also
-discuss how you convert different assets to one currency so we can realiably
+discuss how you convert different assets to one currency so we can reliably
 weigh them: apples to apples. The weighing is essential when creating your
 investment portfolio *allocation*---which we'll discuss in the next post.
 
@@ -69,7 +70,7 @@ make your workflow more pleasant by installing a Ledger mode in your text
 editor---this gives you syntax highlighting. Sublime and other well-known
 editors (like Emacs and vim) have Ledger modes readily available online.
 
-** The basics: single currency and single asset class
+** The basics: a single currency and a single asset class
 *** Our first posting: adding our savings account
 :PROPERTIES:
 :header-args: :dir /tmp
@@ -99,13 +100,13 @@ EOF
 
 How do we interpret these three lines? Every posting has a date (=2018-01-01=)
 and a payee (=Opening Balances=). Then, what follows directly beneath it are the
-entries belonging to that posting. In this case we move the =€ 1337= from
+entries belonging to that posting. In this case, we move the =€ 1337= from
 'opening balances' to the savings account. Most of the labels here are arbitrary
 and depend on your preference and taste. I like to structure actual bank
 accounts as follows: country, name of bank, type of account. That results in
 =Assets:NL:ASN:Savings=.
 
-Now we run our first query using the Ledger command line tool. We ask for the
+Now we run our first query using the Ledger command-line tool. We ask for the
 =balance= of accounts that match =assets= in the file =postings.dat=.
 
 #+NAME: opening-query
@@ -141,12 +142,12 @@ A net amount of € 3,787.50 was added to the savings account, of which € 42 w
 interest received on the principal. The rest was the result of deposits and
 withdrawals. We don't really care about tracking all those transactions in
 detail right now, so we lazily use an adjustment account. Lastly, we're able to
-omit the amount for =Equity:Adjustment= because there's only one possibility: =€
+omit the amount of =Equity:Adjustment= because there's only one possibility: =€
 -3,787.50 - € 42 = € -3,745.5=.
 
 The adjustment account resolves a common discouragement of adopting Ledger that
 I keep hearing---people think that Ledger requires them to arduously type in all
-transactions like a monkey. You don't, and above all you can always do that
+transactions like a monkey. You don't, and above all, you can always do that
 later or build scripts to do it for you should you so desire.
 
 #+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation :results none :exports none
@@ -157,7 +158,7 @@ $first_mutation
 EOF
 #+END_SRC
 
-We now rerun the Ledger command line tool. This time, we ask for the =balance=
+We now rerun the Ledger command-line tool. This time, we ask for the =balance=
 of all accounts, not just assets:
 
 #+NAME: first-mutation-query
@@ -186,7 +187,7 @@ habitat[fn:inflation]. But, at the same time, you don't want to go all-in on
 stocks because it's generally considered a bad idea to put all your eggs in one
 basket. That's why we diversify and buy some government bonds and cryptocurrency
 too. 'Interactive Brokers' and 'Binck Bank' in the file below are examples of
-stock/bonds brokers. =postings3.dat=:
+stock/bond brokers. =postings3.dat=:
 
 #+NAME: diversification
 #+BEGIN_EXAMPLE ledger
@@ -250,7 +251,7 @@ etc.).
 :               6 AAPL  Assets:US:Interactive Brokers:Stocks
 
 This balance sheet matches our expectations but it isn't giving us much extra
-information about each of the assets relative to each other---value wise we're
+information about each of the assets relative to each other---value-wise we're
 comparing apples to oranges. Wouldn't it be nice to have all the assets
 converted to one currency so we can compare apples to apples?
 
@@ -285,7 +286,7 @@ expressed in euros, we run the following command (adding =--exchange €=):
 ledger -f postings3.dat b Assets --exchange € --no-total
 #+END_SRC
 
-Finally we have a birds eye view of all our assets's value across different
+Finally, we have a birds-eye view of all our assets's value across different
 countries, accounts, and currencies:
 
 #+RESULTS: olarzinho
@@ -378,9 +379,9 @@ along the way we were able to query our balance in two representations: in its
 original commodity and converted to one base currency.
 
 *In part 2 we'll look at how you materialize an investment portfolio strategy
-and asset allocation using Ledger.* Please leave your email adress if you want a
-notification once it's published! I'd also love to hear your feedback about this
-post and hear suggestions about topics that you'd like to see discussed in
+and asset allocation using Ledger.* Please leave your email address if you want
+a notification once it's published! I'd also love to hear your feedback about
+this post and hear suggestions about topics that you'd like to see discussed in
 depth. Reach out to me on Twitter: [[https://twitter.com/ppnlo][@ppnlo]]. Or through email: replace the first
 dot in the domain name with an @.
 

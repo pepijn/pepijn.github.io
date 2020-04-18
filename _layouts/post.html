@@ -22,7 +22,7 @@ layout: default
   </span>
 </div>
 
-<article class="post-content">
+<article class="post-content"{% if jekyll.environment == "development" %} contenteditable{% endif %}>
   {{ content }}
 </article>
 
