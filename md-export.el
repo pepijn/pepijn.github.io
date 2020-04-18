@@ -77,6 +77,8 @@
 
 (find-file (car argv))
 
+(org-babel-execute-buffer)
+
 (org-md-export-as-markdown)
 
 (write-file (cadr argv))
