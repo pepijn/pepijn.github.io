@@ -12,3 +12,4 @@ _drafts/*.md
 Gemfile.lock
 
 /private/
+/_posts/*
