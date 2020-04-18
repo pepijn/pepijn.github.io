@@ -1,0 +1,5 @@
+lcd _site
+
+open personal-website
+
+mirror --reverse --continue --delete --no-perms --parallel=1 --verbose=3
