@@ -8,6 +8,7 @@ layout:     post
 title:      "Real World Ledger part 1: Weighing Eggs in Baskets"
 tags:       ledger-cli accounting
 published:  true
+permalink:  /ledger-cli/accounting/2018/08/23/real-world-ledger-part-1/
 ---
 #+END_EXPORT
 
