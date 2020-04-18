@@ -5,7 +5,7 @@ _posts/2018-08-23-real-world-ledger-part-1.md: org/real-world-ledger-part-1.org 
 
 .PHONY: build
 build: _posts/2018-08-23-real-world-ledger-part-1.md
-	bash -ic 'JEKYLL_ENV=production bundle exec jekyll build --config _config_production.yml'
+	bash -ic 'JEKYLL_ENV=production bundle exec jekyll build --config _config.yml,_config_production.yml'
 
 deploy: build
 	lftp -f deploy/upload.txt

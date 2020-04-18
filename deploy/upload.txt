@@ -1,5 +1,5 @@
-lcd _site
+lcd _production
 
 open personal-website
 
-mirror --ignore-time --reverse --continue --delete --no-perms --parallel=1 --verbose=3
+mirror --ignore-time --reverse --delete --no-perms --parallel=1 --verbose=3
