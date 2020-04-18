@@ -2,7 +2,7 @@
 
 [pixyll.com](http://www.pixyll.com)
 
-![Pixyll screenshot](https://cloud.githubusercontent.com/assets/1424573/3847467/134aa236-1e66-11e4-8421-4e8c122118dc.png)
+![Pixyll screenshot](./screenshot.png)
 
 Pixyll is a simple, beautiful theme for Jekyll that emphasizes content rather than aesthetic fluff. It's mobile _first_, fluidly responsive, and delightfully lightweight.
 
@@ -26,12 +26,12 @@ $ bundle install
 
 #### Verify your Jekyll version
 
-It's important to also check your version of Jekyll since this project uses Native Sass which
-is [only supported by 2.0+](http://jekyllrb.com/news/2014/05/06/jekyll-turns-2-0-0/).
+It's important to also check your version of Jekyll since this project uses new `baseurl` features that are [only supported in 3.3+](https://jekyllrb.com/news/2016/10/06/jekyll-3-3-is-here/).
 
 ### Fork, then clone
 
 Fork the repo, and then clone it so you've got the code locally.
+
 
 ### Modify the `_config.yml`
 
@@ -98,8 +98,8 @@ You will also need to tweak the header include `/{{ site.baseurl }}`:
 <header class="site-header px2 px-responsive">
   <div class="mt2 wrap">
     <div class="measure">
-      <a href="{{ site.url }}/{{ site.baseurl }}">{{ site.title }}</a>
-      <nav class="site-nav right">
+      <a href="{{ "/" | relative_url }}" class="site-title">{{ site.title }}</a>
+      <nav class="site-nav">
         {% include navigation.html %}
       </nav>
     </div>
@@ -119,10 +119,6 @@ More setup instructions and advanced options can be found at [http://formspree.i
 ### Disqus
 
 To configure Disqus, set up a [Disqus site](https://disqus.com/admin/create/) with the same name as your site. Then, in `_config.yml`, edit the `disqus_shortname` value to enable Disqus.
-
-### txtpen
-
-To configure txtpen, set up a [txtpen site](https://txtpen.com/go) with the same name as your site. Then, in `_config.yml`, edit the `txtpen_sitename` value to enable txtpen
 
 ### Customizing the CSS
 
@@ -179,6 +175,21 @@ If search engine optimization is your thing, you can also set up `meta_descripti
 
 And lastly - if you happen to write in language other than English be sure to change `og_locale` in `_config.yml` to reflect it.
 
+### Progressive Web App
+
+Pixyll supports features of a progressive web app (PWA).  As a PWA, your site's home page can be installed as a shortcut or an app icon on a mobile device.  Also, certain assets are cached so the site can be accessed should the device be offline from the network.
+
+Pixyll supports these features because it provides a Javascript file that acts as a *service worker* in the browser and has a JSON file with a *web manifest*.  By default, these are configured to the settings of Pixyll, but you should consider cutomizing them to your specific site:
+
+1. Provide a different version of `splash-512x512.png` which is the loading screen for your offline app.
+2. A `favicon-192x192.png` for the app icon (if you haven't already).
+3. In `sw.js`, list any other files or pages you want to add to the list of cached artifacts.
+
+For more information on PWAs:
+
+- https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+- https://web.dev/what-are-pwas/
+
 ### Enjoy
 
 I hope you enjoy using Pixyll. If you encounter any issues, please feel free to let me know by creating an [issue](https://github.com/johnotander/pixyll/issues). I'd love to help.
@@ -218,3 +229,7 @@ There may be merge conflicts, so be sure to fix the files that git lists if they
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Forking
+
+There is a [guide to forking Pixyll](http://pixyll.com/jekyll/pixyll/2019/01/26/guide-to-forking-pixyll/).
