@@ -7,9 +7,9 @@ baseurl:     ""
 url:         "https://p.epij.nl"
 
 date_format: "%b %-d, %Y"
-#header_pages:
-# - projects.md
-# - about.md
+header_pages:
+  - about.md
+  - projects.md
 
 # Google services
 google_verification:

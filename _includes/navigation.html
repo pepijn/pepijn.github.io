@@ -3,7 +3,7 @@
 
 {% for path in page_paths %}
     {% assign item = site.pages | where: "path", path | first %}
-    
+
     {% if item.title and page.title == item.title %}
         <a class="nav-active" href="{{ item.url | relative_url }}">{{ item.title }}</a>
     {% elsif item.title %}
