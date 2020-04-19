@@ -25,7 +25,7 @@ computers).
 
 This is the `exam_date` that we will be using for this visualization:
 
-{% highlight sh %}
+{% highlight plaintext %}
 2015-09-21 08:30:00 +02:00
 {% endhighlight %}
 
@@ -137,7 +137,7 @@ echo
 tail -n 3 $ANSWERS_PATH
 {% endhighlight %}
 
-{% highlight sh %}
+{% highlight plaintext %}
 1442729360|1|A|Knee joint/1/meniscus medialis/1|00FF00
 1442729371|1|A|Knee joint/1/lig. cruciatum posterior/1|00FF00
 1442729377|1|A|Knee joint/1/meniscus lateralis/1|00FF00
@@ -153,8 +153,8 @@ How many answers do we have in total?
 wc -l < $ANSWERS_PATH
 {% endhighlight %}
 
-{% highlight sh %}
-   50687
+{% highlight plaintext %}
+50687
 {% endhighlight %}
 
 ### Captions
@@ -165,7 +165,7 @@ wc -l < $ANSWERS_PATH
 tail -n 3 $CAPTIONS_PATH
 {% endhighlight %}
 
-{% highlight sh %}
+{% highlight plaintext %}
 1442809800|2 hours until exam
 1442813400|1 hour until exam
 1442817000|Exam begins at 08:30...
@@ -189,7 +189,7 @@ AND answers.created_at
 GROUP BY session_id, user_agent
 {% endhighlight %}
 
-{% highlight sh %}
+{% highlight plaintext %}
 1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12|1465360|2015-09-20 06:09:19.603637
 2|Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0|1465384|2015-09-20 06:19:55.221907
 3|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9|1465408|2015-09-20 06:28:14.890441
@@ -203,7 +203,7 @@ GROUP BY session_id, user_agent
 ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 {% endhighlight %}
 
-{% highlight sh %}
+{% highlight plaintext %}
 1.png -> /Users/pepijn/Desktop/browser_icons/Safari.png
 2.png -> /Users/pepijn/Desktop/browser_icons/Firefox.png
 3.png -> /Users/pepijn/Desktop/browser_icons/Safari.png
@@ -213,22 +213,23 @@ ls -l $USER_IMAGES_PATH/{1,2,3}.png | cut -d/ -f4-
 
 {% highlight sh %}
 time (gource -1280x720 \
-             --bloom-intensity 0.7 \
-             --caption-duration 15 \
-             --caption-file $CAPTIONS_PATH \
-             --caption-size 50 \
-             --dir-colour 00FFFF \
-             --dir-name-depth 2 \
-             --file-idle-time 10 \
-             --hide filenames \
-             --highlight-dirs \
-             --max-file-lag -1 \
-             --seconds-per-day 10000 \
-             --stop-at-end \
-             --title 'Answers from AMC/UvA (Amsterdam) 3rd year medical students revising online the day before their orthopaedics (course 3.1) anatomy exam' \
-             --user-image-dir $USER_IMAGES_PATH \
-             $ANSWERS_PATH 2>/dev/null) \
+	     --bloom-intensity 0.7 \
+	     --caption-duration 15 \
+	     --caption-file $CAPTIONS_PATH \
+	     --caption-size 50 \
+	     --dir-colour 00FFFF \
+	     --dir-name-depth 2 \
+	     --file-idle-time 10 \
+	     --hide filenames \
+	     --highlight-dirs \
+	     --max-file-lag -1 \
+	     --seconds-per-day 10000 \
+	     --stop-at-end \
+	     --title 'Answers from AMC/UvA (Amsterdam) 3rd year medical students revising online the day before their orthopaedics (course 3.1) anatomy exam' \
+	     --user-image-dir $USER_IMAGES_PATH \
+	     $ANSWERS_PATH 2>/dev/null) \
      2>&1
 {% endhighlight %}
 
 <a href="https://twitter.com/share" class="twitter-share-button" data-via="ppnlo">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+

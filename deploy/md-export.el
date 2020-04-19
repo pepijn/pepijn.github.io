@@ -2,8 +2,6 @@
 
 (require 'org)
 
-(setq org-export-babel-evaluate nil)
-
 (advice-add 'org-md-headline :override
             (lambda (headline contents info)
               (unless (org-element-property :footnote-section-p headline)

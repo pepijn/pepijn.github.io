@@ -1,3 +1,4 @@
+#+PROPERTY: header-args :eval no
 #+OPTIONS: toc:nil
 #+BEGIN_EXPORT html
 ---
@@ -184,6 +185,15 @@ echo
 tail -n 3 $ANSWERS_PATH
 #+END_SRC
 
+#+RESULTS:
+: 1442729360|1|A|Knee joint/1/meniscus medialis/1|00FF00
+: 1442729371|1|A|Knee joint/1/lig. cruciatum posterior/1|00FF00
+: 1442729377|1|A|Knee joint/1/meniscus lateralis/1|00FF00
+:
+: 1442815272|271|M|Upper leg/4/m. biceps femoris caput longum/75|32FF00
+: 1442815283|271|A|Upper leg/4/m. vastus lateralis/75|00FF00
+: 1442815322|271|M|Upper leg/4/m. peroneus longus/71|FF3200
+
 How many answers do we have in total?
 
 #+BEGIN_SRC sh :var ANSWERS_PATH=answers-path :results output :exports both
@@ -284,6 +294,11 @@ echo $DEST_PATH
 head -n 3 $SESSIONS_PATH
 #+END_SRC
 
+#+RESULTS:
+: 1|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12|1465360|2015-09-20 06:09:19.603637
+: 2|Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0|1465384|2015-09-20 06:19:55.221907
+: 3|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9|1465408|2015-09-20 06:28:14.890441
+
 *** Linking the sessions to browser icons
 
 #+BEGIN_SRC ruby :var sessions_path=sessions-path :exports none
@@ -345,6 +360,6 @@ time (gource -1280x720 \
      2>&1
 #+END_SRC
 
-#+BEGIN_HTML
+#+BEGIN_EXPORT html
 <a href="https://twitter.com/share" class="twitter-share-button" data-via="ppnlo">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-#+END_HTML
+#+END_EXPORT
