@@ -1,4 +1,3 @@
-#+PROPERTY: header-args :eval no
 #+OPTIONS: toc:nil
 #+EXCLUDE_TAGS: noexport
 #+BEGIN_EXPORT html

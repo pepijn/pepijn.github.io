@@ -133,3 +133,4 @@ exclude:
   - deploy
   - bin
   - Makefile
+  - private
