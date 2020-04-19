@@ -2,13 +2,7 @@
 
 (require 'org)
 
-(require 'ob-shell)
-
-(defun my-org-confirm-babel-evaluate (lang body)
-  "Given LANG return BODY."
-  (not (or (string= lang "bash"))))
-
-(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+(setq org-export-babel-evaluate nil)
 
 (advice-add 'org-md-headline :override
             (lambda (headline contents info)

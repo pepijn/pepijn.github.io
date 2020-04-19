@@ -1,11 +1,11 @@
 #+OPTIONS: toc:nil
-#+BEGIN_HTML
+#+BEGIN_EXPORT html
 ---
 layout:     post
 title:      Visualizing 24 hours of medical students cramming anatomy
 categories: medicine university visualization gource postgresql
 ---
-#+END_HTML
+#+END_EXPORT
 
 tl;dr: in the first year of medical school, I built an application that helps
 fellow students and myself with studying anatomy. The answers of the last exam,

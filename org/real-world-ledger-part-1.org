@@ -1,7 +1,5 @@
-# -*- org-export-babel-evaluate: nil -*-
 #+OPTIONS: toc:nil
 #+EXCLUDE_TAGS: noexport
-#+EXPORT_FILE_NAME: ../_posts/2018-08-23-real-world-ledger-part-1.md
 #+BEGIN_EXPORT html
 ---
 layout:     post
