@@ -7,10 +7,7 @@ _production
 # Ignore the config file that's used for gh-pages.
 _config.gh-pages.yml
 
-org/*.md
 _drafts/*.md
 
-Gemfile.lock
-
-/private/
+/_private/
 /_posts/*

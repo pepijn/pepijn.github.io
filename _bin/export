@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+/usr/local/bin/emacs --script _deploy/md-export.el "$1" "$2"

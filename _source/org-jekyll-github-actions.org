@@ -1,0 +1,17 @@
+#+OPTIONS: toc:nil
+#+BEGIN_EXPORT html
+---
+layout:     post
+title:      Reproducible Org-mode exports using GitHub Actions
+tags:       org-mode jekyll github-actions
+---
+#+END_EXPORT
+
+The reproducibility in my blog wasn't as good as it could be: I committed both the source files (in Org-mode) as the export (in markdown) to source control.
+Better for reproducibility is to regenerate the markdown file with every build of my blog.
+With the relatively new GitHub Actions, I figured that it should be possible to export the markdown files in a continuous delivery pipeline, after pushing to the repo.
+In this post, I'll walk you through the steps on how to do it.
+
+* Introduction
+This post is much better: https://duncan.codes/posts/2019-09-03-migrating-from-jekyll-to-org/.
+But I keep it simple, since at this moment I don't want to invest much time in learning Emacs-Lisp, because I mainly use IntelliJ at work for Scala.

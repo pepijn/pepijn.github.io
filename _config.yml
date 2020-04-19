@@ -130,7 +130,4 @@ exclude:
   - README.md
   - screenshot.png
   - vendor
-  - deploy
-  - bin
   - Makefile
-  - private
