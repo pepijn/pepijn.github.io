@@ -1,11 +1,12 @@
+#+PROPERTY: header-args :eval no
 #+OPTIONS: toc:nil
-#+BEGIN_HTML
+#+BEGIN_EXPORT html
 ---
 layout:     post
 title:      Sidestepping Heroku's limits with PostgreSQL 9.5's UPSERT
 categories: postgresql heroku
 ---
-#+END_HTML
+#+END_EXPORT
 
 My roommate needed help with building a web scraper. As a result of various
 constraints, we ended up using Heroku. There was, however, a database row limit
@@ -291,10 +292,10 @@ interest changed, leading to our high checks vs. changes ratio. Using UPSERT for
 scraping turned out to be a good fit for this website because it enables us to
 scrape for some time ahead, while logging all of the captured data.
 
-#+BEGIN_HTML
+#+BEGIN_EXPORT html
 <a href="https://twitter.com/share" class="twitter-share-button" data-via="ppnlo" data-size="large">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-#+END_HTML
+#+END_EXPORT
 
 * Acknowledgements
 

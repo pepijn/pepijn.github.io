@@ -118,8 +118,8 @@ dropdb --if-exists scraper_test
 createdb scraper_test
 
 psql scraper_test --variable body="'content'" \
-                  --variable ts='now()' \
-                  <<EOF
+		  --variable ts='now()' \
+		  <<EOF
 $QUERY
 $QUERY
 EOF
@@ -127,26 +127,27 @@ EOF
 echo \\nContent changed...\\n
 
 psql scraper_test --variable body="'changed'" \
-                  --variable ts='now()' \
-                  <<EOF
+		  --variable ts='now()' \
+		  <<EOF
 $QUERY
 EOF
+
 {% endhighlight %}
 
 {% highlight plaintext %}
 CREATE TABLE
 CREATE EXTENSION
- id |  hash  |  body   |              seen_at
-----+--------+---------+-----------------------------------
-  1 | \x0... | content | {"2016-04-20 13:40:07.638314+02"}
+ id |  hash  |  body   |             seen_at
+----+--------+---------+----------------------------------
+  1 | \x0... | content | {"2016-04-20 11:05:31.38508+02"}
 (1 row)
 
 INSERT 0 1
 CREATE TABLE
 CREATE EXTENSION
- id |  hash  |  body   |                              seen_at
-----+--------+---------+-------------------------------------------------------------------
-  1 | \x0... | content | {"2016-04-20 13:40:07.638314+02","2016-04-20 13:40:07.640239+02"}
+ id |  hash  |  body   |                             seen_at
+----+--------+---------+------------------------------------------------------------------
+  1 | \x0... | content | {"2016-04-20 11:05:31.38508+02","2016-04-20 11:05:31.386758+02"}
 (1 row)
 
 INSERT 0 1
@@ -157,7 +158,7 @@ CREATE TABLE
 CREATE EXTENSION
  id |  hash  |  body   |              seen_at
 ----+--------+---------+-----------------------------------
-  3 | \x3... | changed | {"2016-04-20 13:40:07.652258+02"}
+  3 | \x3... | changed | {"2016-04-20 11:05:31.397775+02"}
 (1 row)
 
 INSERT 0 1
@@ -173,7 +174,8 @@ SELECT count(*) FROM scraps
 {% endhighlight %}
 
 {% highlight plaintext %}
-    24
+24
+
 {% endhighlight %}
 
 After running every 10 minutes for almost two weeks, the scraper inserted just
@@ -190,7 +192,8 @@ SELECT count(*) FROM (SELECT unnest(seen_at) FROM scraps) un
 {% endhighlight %}
 
 {% highlight plaintext %}
-  2282
+2282
+
 {% endhighlight %}
 
 Let's break the 2282 rows down by date and aggregate the count of checks and
@@ -218,6 +221,7 @@ exact query that I used.
  2016-04-19 |    144 |       2
  2016-04-20 |     55 |       0
  Total:     |   2282 |      24
+
 {% endhighlight %}
 
 The sums of checks and changes match the unnested and total counts above,
@@ -284,7 +288,8 @@ psql postgres --tuples-only -c 'SELECT version()'
 {% endhighlight %}
 
 {% highlight plaintext %}
- PostgreSQL 9.5.2 on x86_64-apple-darwin15.4.0, compiled by Apple LLVM version 7.3.0 (clang-703.0.29), 64-bit
+PostgreSQL 9.5.2 on x86_64-apple-darwin15.4.0, compiled by Apple LLVM version 7.3.0 (clang-703.0.29), 64-bit
+
 {% endhighlight %}
 
 #### psql
@@ -296,3 +301,4 @@ psql --version
 {% highlight plaintext %}
 psql (PostgreSQL) 9.5.2
 {% endhighlight %}
+
