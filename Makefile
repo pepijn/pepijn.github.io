@@ -4,10 +4,14 @@ _posts/%.md: _source/%.md
 _posts/%.md: _source/%.org
 	_bin/export "$(abspath $<)" "$(abspath $@)"
 
+_drafts/%.md: _source/%.org
+	_bin/export "$(abspath $<)" "$(abspath $@)"
+
 publish: _posts/2015-10-04-building-a-geojson-travel-log-an-introduction-to-org-mode-and-babel.md \
          _posts/2016-04-20-sidestepping-heroku-limits-with-postgresql-upsert.md \
          _posts/2015-10-13-visualizing-24-hours-of-medical-students-cramming-anatomy.md \
-         _posts/2018-08-23-real-world-ledger-part-1.md
+         _posts/2018-08-23-real-world-ledger-part-1.md \
+         _drafts/org-jekyll-github-actions.md
 
 build: clean
 	$(MAKE) publish
