@@ -11,11 +11,14 @@ publish: _posts/2015-10-04-building-a-geojson-travel-log-an-introduction-to-org-
          _posts/2018-08-23-real-world-ledger-part-1.md
 
 .PHONY: build
-build: publish
+build: clean
+	$(MAKE) publish
 	bash -ic 'JEKYLL_ENV=production bundle exec jekyll build --config _config.yml,_config_production.yml'
 
 deploy: build
 	lftp -f _deploy/upload.txt
 
 clean:
-	rm _posts/*
+	rm -f _posts/*
+	rm -rf _production/*
+	rm -rf _site/*
