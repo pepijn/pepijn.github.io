@@ -81,7 +81,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler
   jekyll
   jekyll-mermaid
   jekyll-paginate
