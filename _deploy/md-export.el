@@ -2,9 +2,6 @@
 
 (require 'org)
 
-(add-to-list 'org-babel-default-header-args
-             '(:eval . "no"))
-
 (advice-add 'org-md-headline :override
             (lambda (headline contents info)
               (unless (org-element-property :footnote-section-p headline)

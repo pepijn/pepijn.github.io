@@ -2,16 +2,62 @@
 #+BEGIN_EXPORT html
 ---
 layout:     post
-title:      Reproducible Org-mode exports using GitHub Actions
+title:      Exporting Org-mode with Babel blocks from Outside Emacs
 tags:       org-mode jekyll github-actions
 ---
 #+END_EXPORT
 
-The reproducibility in my blog wasn't as good as it could be: I committed both the source files (in Org-mode) as the export (in markdown) to source control.
-Better for reproducibility is to regenerate the markdown file with every build of my blog.
-With the relatively new GitHub Actions, I figured that it should be possible to export the markdown files in a continuous delivery pipeline, after pushing to the repo.
-In this post, I'll walk you through the steps on how to do it.
+The reproducibility in my blog wasn't as good as it could be: I committed both the source files (in Org-mode) as the export (in Markdown) to source control.
+Better for reproducibility is to regenerate the Markdown file with every build of my blog.
+You need to be able to call Emacs and export Org-mode files in a script for that.
+There are some intricacies on how to achieve this related to calling Emacs from the command line and exporting Org-mode with babel source code blocks.
+This post is to inspire those who are planning on doing the same or had issues in the past trying to do it.
 
-* Introduction
-This post is much better: https://duncan.codes/posts/2019-09-03-migrating-from-jekyll-to-org/.
-But I keep it simple, since at this moment I don't want to invest much time in learning Emacs-Lisp, because I mainly use IntelliJ at work for Scala.
+* Motivation
+
+First of all, there are different approaches to this problem.
+One alternative is to generate your whole website from Org-mode, as described in [[https://duncan.codes/posts/2019-09-03-migrating-from-jekyll-to-org/][this post]].
+But I picked the approach in this post because of two reasons:
+
+- I don't want to invest much time in learning Emacs Lisp because I spend most of my time coding in IntelliJ.
+- I like to keep using [[https://jekyllrb.com/][Jekyll]] because of the plugins and themes (which requires me to export to Markdown).
+
+* Body
+
+First, we need to call Emacs from the command-line, without launching a GUI. Let's find in the manual:
+
+#+NAME: doc
+#+BEGIN_SRC bash :results verbatim :exports both
+emacs --help | grep -C 3 script
+#+END_SRC
+
+We can pass an Emacs Lisp script using =--script=:
+
+#+RESULTS: doc
+: --quick, -Q                 equivalent to:
+:                               -q --no-site-file --no-site-lisp --no-splash
+:                               --no-x-resources
+: --script FILE               run FILE as an Emacs Lisp script
+: --terminal, -t DEVICE       use DEVICE for terminal I/O
+: --user, -u USER             load ~USER/.emacs instead of your own
+: 
+
+#+NAME: path
+
+Let's write a script that prints "Hello world!" to disk.
+
+#+NAME: hello-world-code
+#+BEGIN_SRC emacs-lisp :exports both
+(with-temp-file "hello_world.el"
+                (insert (prin1-to-string '(message "Hello world!"))))
+
+#+END_SRC
+
+We write it to disk and store the path in =$HELLO_WORLD_SCRIPT=.
+
+Olar
+
+* Conclusion
+
+Being able to export the Org-mode files to Markdown opens the road to various possibilities.
+For example, with the relatively new GitHub Actions, I figured that it should be possible to export the Markdown files in a continuous delivery pipeline, after pushing to the repo.
