@@ -2,6 +2,15 @@
 
 (require 'org)
 
+(require 'ob-shell)
+
+(defun pepe/confirm-babel-evaluate (lang body)
+  "Given LANG return BODY."
+  (not (or (string= lang "emacs-lisp")
+           (string= lang "bash"))))
+
+(setq org-confirm-babel-evaluate 'pepe/confirm-babel-evaluate)
+
 (advice-add 'org-md-headline :override
             (lambda (headline contents info)
               (unless (org-element-property :footnote-section-p headline)
