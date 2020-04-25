@@ -51,17 +51,31 @@ Now, we need a file to pass to the option.
 Let's write an Emacs Lisp script that prints "Hello world!" to disk, using Emacs Lisp:
 
 #+NAME: hello-world-code
-#+BEGIN_SRC emacs-lisp :exports both :results none
-(with-temp-file
-  "hello_world.el"
-  (insert (prin1-to-string '(princ "Hello world!"))))
+#+BEGIN_SRC emacs-lisp :exports both :results code
+(let ((path   "hello_printer.el")
+      (script '(let ((greeting (car argv)))
+                 (princ (concat "Hello " greeting)))))
+  (with-temp-file path (insert (prin1-to-string script)))
+  script)
+#+END_SRC
+
+Double-nchecking the contents of the file:
+
+#+RESULTS: hello-world-code
+#+BEGIN_SRC emacs-lisp
+(let
+    ((greeting
+      (car argv)))
+  (princ
+   (concat "Hello " greeting)))
 #+END_SRC
 
 Next, we call the script with Emacs:
 
 #+NAME: print-hello-world
 #+BEGIN_SRC bash :exports both :exports both
-emacs --script hello_world.el
+                                # ↓ first argument in argv
+emacs --script hello_printer.el world!
 #+END_SRC
 
 It's working! The output is:
@@ -72,10 +86,13 @@ It's working! The output is:
 By the way, when using =--script=, Emacs doesn't load your init file.
 Fast startup and good for reproducibility!
 
-* Body
+* First Org-mode to Markdown export
 
+We are now going to export an Org-mode file to Markdown from the command-line.
 
-
+#+BEGIN_SRC org 
+Hello
+#+END_SRC
 
 * Conclusion
 
