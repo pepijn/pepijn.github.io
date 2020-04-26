@@ -24,3 +24,4 @@ clean:
 	rm -f _posts/*
 	rm -rf _production/*
 	rm -rf _site/*
+	rm -rf _drafts/*

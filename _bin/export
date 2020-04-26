@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-/usr/local/bin/emacs --script _deploy/md-export.el "$1" "$2"
+/usr/local/bin/emacs --script _deploy/md-export.el "$(realpath $1)" "$(realpath $2)"

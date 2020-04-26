@@ -72,7 +72,7 @@ Let's write an Emacs Lisp script that prints a greeting to disk, using Emacs Lis
 #+END_EXAMPLE
 
 #+NAME: save-to-disk
-#+BEGIN_SRC emacs-lisp :var f=hello-world-code :exports none :results none
+#+BEGIN_SRC emacs-lisp :var f=hello-world-code :exports results :results none
 (with-temp-buffer
   (insert f)
   (goto-char (point-min))
@@ -155,7 +155,8 @@ Here's the output:
 #+RESULTS: shexec3
 : This is an Org-mode paragraph.
 : 
-: Another paragraph with a [link](https://example.com) and text in ****bold****.
+: Another paragraph with a [link](https://example.com).
+: And text in `monospace`.
 : 
 
 
