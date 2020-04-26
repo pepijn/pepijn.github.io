@@ -14,6 +14,8 @@ You need to be able to call Emacs and export Org-mode files in a script for that
 There are some intricacies on how to achieve this related to calling Emacs from the command line and exporting Org-mode with babel source code blocks.
 This post is to inspire those who want to do the same or got stuck trying.
 
+I'll focus on how to interact with Emacs when using command-line scripting because it might not be completely obvious.
+
 * Motivation
 
 First of all, there are different approaches to this problem.
@@ -23,20 +25,31 @@ But I picked the approach in this post because of two reasons:
 - I don't want to invest much time in learning Emacs Lisp because I spend most of my time coding in IntelliJ.
 - I like to keep using [[https://jekyllrb.com/][Jekyll]] because of the plugins and themes (which requires me to export to Markdown).
 
+In the rest of the post I'll switch back and forth between Bash and Emacs Lisp code snippets.
+Bash is marked by the =$= sign at the beginning of the line.
+You can find the source code here: link to blog.
 
 * Hello, world!
 
 First, we need to call Emacs from the command-line, without launching a GUI.
 Let's find the appropriate option in the manual:
 
-#+NAME: doc
-#+BEGIN_SRC bash :results verbatim :exports both
-emacs --help | grep -C 3 script
+#+NAME: sh-help
+#+BEGIN_EXAMPLE bash
+$ emacs --help | grep -C 3 script
+#+END_EXAMPLE
+
+#+NAME: sh-help-result
+#+BEGIN_SRC emacs-lisp :var s=sh-help :exports results
+(thread-last s
+  (replace-regexp-in-string "emacs" "/usr/local/bin/emacs")
+  (replace-regexp-in-string "\\$ " "")
+  (shell-command-to-string))
 #+END_SRC
 
 It seems that we can pass an Emacs Lisp script using =--script=:
 
-#+RESULTS: doc
+#+RESULTS: sh-help-result
 : --quick, -Q                 equivalent to:
 :                               -q --no-site-file --no-site-lisp --no-splash
 :                               --no-x-resources
@@ -45,43 +58,52 @@ It seems that we can pass an Emacs Lisp script using =--script=:
 : --user, -u USER             load ~USER/.emacs instead of your own
 : 
 
-#+NAME: path
-
 Now, we need a file to pass to the option.
-Let's write an Emacs Lisp script that prints "Hello world!" to disk, using Emacs Lisp:
+Let's write an Emacs Lisp script that prints a greeting to disk, using Emacs Lisp:
 
 #+NAME: hello-world-code
 #+BEGIN_SRC emacs-lisp :exports both :results code
-(let ((path   "hello_printer.el")
-      (script '(let ((greeting (car argv)))
-                 (princ (concat "Hello " greeting)))))
+(let ((path   "greeting.el")
+      (script '(progn
+                (require 'seq)
+                (seq-let [first second] argv
+                  (princ (concat "Greet: " first " " second))))))
   (with-temp-file path (insert (prin1-to-string script)))
   script)
 #+END_SRC
 
-Double-nchecking the contents of the file:
+Making sure the contents of the file are correct:
 
 #+RESULTS: hello-world-code
 #+BEGIN_SRC emacs-lisp
-(let
-    ((greeting
-      (car argv)))
-  (princ
-   (concat "Hello " greeting)))
+(progn
+  (require 'seq)
+  (seq-let
+      [first second]
+      argv
+    (princ
+     (concat "Greeting: " first " " second))))
 #+END_SRC
 
-Next, we call the script with Emacs:
+Seems like they are. Next, we call the script with Emacs and two greetings:
 
 #+NAME: print-hello-world
-#+BEGIN_SRC bash :exports both :exports both
-                                # ↓ first argument in argv
-emacs --script hello_printer.el world!
+#+BEGIN_EXAMPLE bash
+$ emacs --script "greeting.el" "Hello" "world!"
+#+END_EXAMPLE
+
+#+NAME: sh-hello-world-result
+#+BEGIN_SRC emacs-lisp :var s=print-hello-world :exports results
+(thread-last s
+  (replace-regexp-in-string "emacs" "/usr/local/bin/emacs")
+  (replace-regexp-in-string "\\$ " "")
+  (shell-command-to-string))
 #+END_SRC
 
 It's working! The output is:
 
-#+RESULTS: print-hello-world
-: Hello world!
+#+RESULTS: sh-hello-world-result
+: Greeting: Hello world!
 
 By the way, when using =--script=, Emacs doesn't load your init file.
 Fast startup and good for reproducibility!
@@ -89,10 +111,39 @@ Fast startup and good for reproducibility!
 * First Org-mode to Markdown export
 
 We are now going to export an Org-mode file to Markdown from the command-line.
+We'll save an example file to disk:
 
-#+BEGIN_SRC org 
-Hello
+#+BEGIN_SRC bash :results none
+cat << EOF > example.org
+This is an Org-mode paragraph.
+
+Anoter paragraph with a [[https://example.com][link]] and text in **bold**.
+EOF
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+
+#+RESULTS:
+: This is an Org-mode paragraph.
+: 
+: Example [link](https://example.com) text in ****bold****.
+: 
+
+* Caveats
+
+** Don't evaluate on exporting
+
+Normally Org-mode evaluates all babel blocks on exporting.
+Should you find yourself in a situation where you don't want this anymore, then you can use a property to disable it:
+
+#+BEGIN_EXAMPLE org
+#+PROPERTY: header-args :eval no-export
+#+END_EXAMPLE
+
+** Overriding Markdow
+You can override Markdown export functions if you're unhappy with the defaults:
 
 * Conclusion
 

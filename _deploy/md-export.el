@@ -1,5 +1,7 @@
 (setq make-backup-files nil)
 
+(require 'subr-x)
+
 (require 'org)
 
 (require 'ob-shell)
