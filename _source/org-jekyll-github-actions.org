@@ -61,31 +61,21 @@ It seems that we can pass an Emacs Lisp script using =--script=:
 Now, we need a file to pass to the option.
 Let's write an Emacs Lisp script that prints a greeting to disk, using Emacs Lisp:
 
+*=greeting.el=:*
+
 #+NAME: hello-world-code
-#+BEGIN_SRC emacs-lisp :exports both :results code
-(let ((path   "greeting.el")
-      (script '(progn
-                (require 'seq)
-                (seq-let [first second] argv
-                  (princ (concat "Greet: " first " " second))))))
-  (with-temp-file path (insert (prin1-to-string script)))
-  script)
+#+BEGIN_EXAMPLE emacs-lisp
+(require 'seq)
+
+(seq-let [first second] argv
+  (princ (concat "Greeting: " first " " second)))
+#+END_EXAMPLE
+
+#+BEGIN_SRC bash :var s=hello-world-code :results none :exports none
+echo "$s" > greeting.el
 #+END_SRC
 
-Making sure the contents of the file are correct:
-
-#+RESULTS: hello-world-code
-#+BEGIN_SRC emacs-lisp
-(progn
-  (require 'seq)
-  (seq-let
-      [first second]
-      argv
-    (princ
-     (concat "Greeting: " first " " second))))
-#+END_SRC
-
-Seems like they are. Next, we call the script with Emacs and two greetings:
+Next, we call the greeting script with Emacs and two greetings:
 
 #+NAME: print-hello-world
 #+BEGIN_EXAMPLE bash
@@ -111,25 +101,69 @@ Fast startup and good for reproducibility!
 * First Org-mode to Markdown export
 
 We are now going to export an Org-mode file to Markdown from the command-line.
-We'll save an example file to disk:
+We'll save an example file to our working directory.
 
-#+BEGIN_SRC bash :results none
-cat << EOF > example.org
+*=example.org=:*
+
+#+NAME: org-example
+#+BEGIN_EXAMPLE org
+#+OPTIONS: toc:nil
+
 This is an Org-mode paragraph.
 
 Anoter paragraph with a [[https://example.com][link]] and text in **bold**.
-EOF
+#+END_EXAMPLE
+
+#+BEGIN_SRC bash :var s=org-example :results none :exports none
+echo "$s" > example.org
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+Great. The only thing we need now is a script to convert the Org-mode to Markdown.
 
+*=md-export.el=:*
+#+NAME: el2
+#+BEGIN_EXAMPLE emacs-lisp
+(require 'seq)
+(require 'org)
+
+(seq-let [input output] argv
+  (with-temp-buffer
+    (insert-file-contents input)
+    (org-md-export-as-markdown)
+    (write-file output)))
+#+END_EXAMPLE
+
+#+BEGIN_SRC bash :var s=el2 :results none :exports none
+echo "$s" > md-export.el
 #+END_SRC
 
-#+RESULTS:
+Let's run it:
+
+#+NAME: sh3
+#+BEGIN_EXAMPLE bash
+$ emacs --script "md-export.el" \
+        "example.org" \
+        "example.md"
+
+$ cat "example.md"
+#+END_EXAMPLE
+
+#+NAME: shexec3
+#+BEGIN_SRC emacs-lisp :var s=sh3 :exports results
+(thread-last s
+  (replace-regexp-in-string "emacs" "/usr/local/bin/emacs")
+  (replace-regexp-in-string "\\$ " "")
+  (shell-command-to-string))
+#+END_SRC
+
+Here's the output:
+
+#+RESULTS: shexec3
 : This is an Org-mode paragraph.
 : 
-: Example [link](https://example.com) text in ****bold****.
+: Anoter paragraph with a [link](https://example.com) and text in ****bold****.
 : 
+
 
 * Caveats
 
