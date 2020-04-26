@@ -3,10 +3,19 @@
 #+BEGIN_EXPORT html
 ---
 layout:     post
-title:      Exporting Org-mode with Babel blocks from Outside Emacs
+title:      How to Export Org-mode from the Command-Line
 tags:       org-mode jekyll github-actions
 ---
 #+END_EXPORT
+
+Reproducible Org-mode files prove to the reader of your document that the code inside it works.
+But, in order for your Org-mode file to be reproducible, the environment that it runs inside of should be as well.
+
+#+BEGIN_QUOTE
+Literate programming is what you need to rise above the ordinary level of achievement. -- [[https://www.informit.com/articles/article.aspx?p=1193856][Donald Knuth]]
+#+END_QUOTE
+
+Exporting Org-mode from the command-line enables you to integrate reproducible literal programming
 
 The reproducibility in my blog wasn't as good as it could be: I committed both the source files (in Org-mode) as the export (in Markdown) to source control.
 Better for reproducibility is to regenerate the Markdown file with every build of my blog.
@@ -26,7 +35,7 @@ But I picked the approach in this post because of two reasons:
 - I like to keep using [[https://jekyllrb.com/][Jekyll]] because of the plugins and themes (which requires me to export to Markdown).
 
 In the rest of the post I'll switch back and forth between Bash and Emacs Lisp code snippets.
-Bash is marked by the =$= sign at the beginning of the line.
+Bash is marked by the =$= at the beginning of each line.
 You can find the source code here: link to blog.
 
 * Emacs Scripting Primer: Hello World!
@@ -163,6 +172,16 @@ Here's the output---with Markdown syntax. Great success!
 * Caveats
 
 ** Tilde Files in Directory
+
+Emacs automatically creates backup files by suffixing them with a =~=, like =example.md~=.
+In our context of exporting, the files are unnecessary and distracting.
+
+In order to disable them, simply add the following to your script:
+
+#+BEGIN_EXAMPLE emacs-lisp
+(setq make-backup-files nil)
+#+END_EXAMPLE
+
 ** Giving Permission to Evaluate
 ** Exporting Irreproducible Org-mode File
 
