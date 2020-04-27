@@ -1,10 +1,10 @@
 _posts/%.md: _source/%.md
 	cp "$(abspath $<)" "$(abspath $@)"
 
-_posts/%.md: _source/%.org
+_posts/%.md: _source/%.org _deploy/md-export.el
 	_bin/export "$(abspath $<)" "$(abspath $@)"
 
-_drafts/%.md: _source/%.org
+_drafts/%.md: _source/%.org _deploy/md-export.el
 	_bin/export "$(abspath $<)" "$(abspath $@)"
 
 publish: _posts/2015-10-04-building-a-geojson-travel-log-an-introduction-to-org-mode-and-babel.md \
