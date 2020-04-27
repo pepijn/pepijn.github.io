@@ -9,36 +9,42 @@ tags:       org-mode jekyll github-actions
 #+END_EXPORT
 
 Reproducible Org-mode files prove to the reader of your document that the code inside it works.
-But, in order for your Org-mode file to be reproducible, the environment that it runs inside of should be as well.
+But, for your Org-mode file to be reproducible, the environment that it runs inside of should be as well.
+The chain is as strong as its weakest link.
 
 #+BEGIN_QUOTE
 Literate programming is what you need to rise above the ordinary level of achievement. -- [[https://www.informit.com/articles/article.aspx?p=1193856][Donald Knuth]]
 #+END_QUOTE
 
-Exporting Org-mode from the command-line enables you to integrate reproducible literal programming
+Exporting Org-mode from the command-line enables you to integrate reproducible literal programming.
 
-The reproducibility in my blog wasn't as good as it could be: I committed both the source files (in Org-mode) as the export (in Markdown) to source control.
-Better for reproducibility is to regenerate the Markdown file with every build of my blog.
+The reproducibility in my blog wasn't as good as it could be. 
+I committed both the source files (in Org-mode) as the export (in Markdown) to source control for reproducibility is to regenerate the Markdown file with every build of my blog.
 You need to be able to call Emacs and export Org-mode files in a script for that.
 There are some intricacies on how to achieve this related to calling Emacs from the command line and exporting Org-mode with babel source code blocks.
 This post is to inspire those who want to do the same or got stuck trying.
 
-I'll focus on how to interact with Emacs when using command-line scripting because it might not be completely obvious.
+I'll focus on how to interact with Emacs when using command-line scripting because it's not straightforward.
 
 * Alternative Solutions
 
-First of all, there are different approaches to this problem.
-One alternative is to generate your whole website from Org-mode, as described in [[https://duncan.codes/posts/2019-09-03-migrating-from-jekyll-to-org/][this post]].
-But I picked the approach in this post because of two reasons:
+A small disclaimer before we start: there are different approaches to this problem.
+You might prefer to generate your whole website from Org-mode, as described in [[https://duncan.codes/posts/2019-09-03-migrating-from-jekyll-to-org/][this post]].
+I'm not ready for that yet, because:
 
-- I don't want to invest much time in learning Emacs Lisp because I spend most of my time coding in IntelliJ.
+- I don't want to invest much time in learning Emacs Lisp because I spend most of my time in IntelliJ.
 - I like to keep using [[https://jekyllrb.com/][Jekyll]] because of the plugins and themes (which requires me to export to Markdown).
 
-In the rest of the post I'll switch back and forth between Bash and Emacs Lisp code snippets.
+* The Code
+
+In the rest of this post, I'll switch back and forth between Bash and Emacs Lisp code snippets.
 Bash is marked by the =$= at the beginning of each line.
+Emacs Lisp are the lispy looking code blocks.
+
+Meta alert: this post itself is subject to the exporting process described in the post.
 You can find the source code here: link to blog.
 
-* Emacs Scripting Primer: Hello World!
+** Emacs Scripting Primer: Hello World!
 
 First, we need to call Emacs from the command-line, without launching a GUI.
 Let's find the appropriate option in the manual:
@@ -67,7 +73,7 @@ It seems that we can pass an Emacs Lisp script using =--script=:
 : --user, -u USER             load ~USER/.emacs instead of your own
 : 
 
-Now, we need a file to pass to the option.
+Now, just need the ~FILE~.
 Let's write an Emacs Lisp script that prints a greeting to disk, using Emacs Lisp:
 
 #+NAME: hello-world-code
@@ -108,10 +114,10 @@ It's working! The output is:
 By the way, when using =--script=, Emacs doesn't load your init file.
 Fast startup and good for reproducibility!
 
-* Exporting Org-mode to Markdown
+** Exporting Org-mode to Markdown
 
-Now that we know the basis of Emacs scripting, we are ready to export an Org-mode file to Markdown from the command-line.
-We'll save an example file to our working directory.
+Now that we know the basis of Emacs scripting, we are ready to enter our real challenge.
+We'll be working with the following Org-mode example file:
 
 #+NAME: org-example
 #+BEGIN_EXAMPLE org
@@ -128,6 +134,7 @@ And text in =monospace=.
 #+CALL: save-to-disk(f=org-example)
 
 Great. The only thing we need now is a script to convert the Org-mode to Markdown.
+The ~org-md-export-as-markdown~ is obviously where the magic happens:
 
 #+NAME: el2
 #+BEGIN_EXAMPLE emacs-lisp
@@ -176,7 +183,7 @@ Here's the output---with Markdown syntax. Great success!
 Emacs automatically creates backup files by suffixing them with a =~=, like =example.md~=.
 In our context of exporting, the files are unnecessary and distracting.
 
-In order to disable them, simply add the following to your script:
+To disable them, simply add the following to your script:
 
 #+BEGIN_EXAMPLE emacs-lisp
 (setq make-backup-files nil)
@@ -185,7 +192,7 @@ In order to disable them, simply add the following to your script:
 ** Giving Permission to Evaluate
 ** Exporting Irreproducible Org-mode File
 
-Normally Org-mode evaluates all babel blocks on exporting.
+By default, Org-mode evaluates all babel blocks on exporting.
 Should you find yourself in a situation where you don't want this anymore, then you can use a property to disable it:
 
 #+BEGIN_EXAMPLE org
