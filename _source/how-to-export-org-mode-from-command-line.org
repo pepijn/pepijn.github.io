@@ -1,5 +1,5 @@
 #+OPTIONS: toc:nil
-#+PROPERTY: header-args :dir ../_posts
+#+PROPERTY: header-args :dir /tmp
 #+BEGIN_EXPORT html
 ---
 layout:     post
@@ -200,6 +200,12 @@ Should you find yourself in a situation where you don't want this anymore, then 
 
 ** Customizing Markdown Export
 You can override Markdown export functions if you're unhappy with the defaults:
+
+** Evaluating all Babel cells before exporting
+
+Especially with :results none :exports none.
+I'm using this 'trick': ~:exports results :results none~
+
 
 * Conclusion
 
