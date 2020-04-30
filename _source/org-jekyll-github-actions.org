@@ -206,3 +206,28 @@ You can override Markdown export functions if you're unhappy with the defaults:
 
 Being able to export the Org-mode files to Markdown opens the road to various possibilities.
 For example, with the relatively new GitHub Actions, I figured that it should be possible to export the Markdown files in a continuous delivery pipeline, after pushing to the repo.
+
+* Appendix
+
+Emacs version:
+
+#+BEGIN_SRC bash :results verbatim :exports results
+emacs --version
+#+END_SRC
+
+#+RESULTS:
+: GNU Emacs 26.2
+: Copyright (C) 2019 Free Software Foundation, Inc.
+: GNU Emacs comes with ABSOLUTELY NO WARRANTY.
+: You may redistribute copies of GNU Emacs
+: under the terms of the GNU General Public License.
+: For more information about these matters, see the file named COPYING.
+
+ Org-mode version:
+
+#+BEGIN_SRC emacs-lisp :exports results
+(org-version)
+#+END_SRC
+
+#+RESULTS:
+: 9.1.3

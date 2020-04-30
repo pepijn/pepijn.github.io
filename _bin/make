@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker run --mount src="$(pwd)",target=/p.epij.nl,type=bind pepijn/emacs:0.1 $@

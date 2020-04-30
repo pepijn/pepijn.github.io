@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-/usr/local/bin/emacs --script "$1" "$(realpath "$2")" "$(realpath "$3")"
+emacs --script "$1" "$(realpath "$2")" "$(realpath "$3")"
