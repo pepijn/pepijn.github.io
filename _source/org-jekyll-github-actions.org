@@ -57,7 +57,6 @@ $ emacs --help | grep -C 3 script
 #+NAME: run-shell
 #+BEGIN_SRC emacs-lisp :var s=sh-help :exports results
 (thread-last s
-  (replace-regexp-in-string "emacs" "/usr/local/bin/emacs")
   (replace-regexp-in-string "\\$ " "")
   (shell-command-to-string))
 #+END_SRC
