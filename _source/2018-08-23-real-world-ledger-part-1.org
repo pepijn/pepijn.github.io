@@ -91,7 +91,7 @@ something else like =.txt=) looks like:
     Equity:Opening Balances              € -1,337.00
 #+END_EXAMPLE
 
-#+BEGIN_SRC bash :var opening=opening :results none :exports none
+#+BEGIN_SRC bash :var opening=opening :exports results :results none
 cat <<-EOF > postings1.dat
 $opening
 EOF
@@ -149,7 +149,7 @@ I keep hearing---people think that Ledger requires them to arduously type in all
 transactions like a monkey. You don't, and above all, you can always do that
 later or build scripts to do it for you should you so desire.
 
-#+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation :results none :exports none
+#+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation :exports results :results none
 set -euxo pipefail
 cat <<-EOF > postings2.dat
 $opening
@@ -217,7 +217,7 @@ commodity by selling another commodity (such as stocks from US dollars and
 Bitcoin from euros). The Ledger docs explain the differences
 clearly[fn:posting-costs].
 
-#+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation diversification=diversification :results none :exports none
+#+BEGIN_SRC bash :var opening=opening first_mutation=first-mutation diversification=diversification :results none :exports results
 cat <<-EOF > postings3.dat
 $opening
 $first_mutation
@@ -339,7 +339,7 @@ was =207.99=. Let's make this file available to Ledger by specifying
 =--price-db= and querying assets in the US (in which Apple belongs) only
 (=Assets:US=):
 
-#+BEGIN_SRC bash :var prices=prices :results none :exports none
+#+BEGIN_SRC bash :var prices=prices :results none :exports results
 cat <<-EOF > prices.dat
 $prices
 EOF
