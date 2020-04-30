@@ -8,9 +8,13 @@ tags:       org-mode jekyll github-actions
 ---
 #+END_EXPORT
 
-Reproducible Org-mode files prove to the reader of your document that the code inside it works.
-But, for your Org-mode file to be reproducible, the environment that it runs inside of should be as well.
-The chain is as strong as its weakest link.
+When writing an article with source code, it's a nice service to your reader (and future you) to make sure the code actually runs and gives the results that you expect.
+Emacs' Org-mode is a system to do just that.
+But is executing the code inside your Emacs process, with lots of customizations, enough proof of being reproducible?
+It's a good step forward, that's for sure, but even better is to run it without configuration, from the command-line.
+
+Reproducible Org-mode files prove to the reader of your document (and yourself) that the code inside is correct.
+But, in order for your Org-mode file to be reproducible, the environment that it runs inside of should be as well.
 
 #+BEGIN_QUOTE
 Literate programming is what you need to rise above the ordinary level of achievement. -- [[https://www.informit.com/articles/article.aspx?p=1193856][Donald Knuth]]
@@ -199,7 +203,9 @@ Should you find yourself in a situation where you don't want this anymore, then 
 #+END_EXAMPLE
 
 ** Customizing Markdown Export
-You can override Markdown export functions if you're unhappy with the defaults:
+You can override Markdown export functions if you're unhappy with the defaults. 
+I'm currently using =advice= for that because I'm applying minimal changes.
+If If you want to do things the proper way, you can extend a language and make your changes in the new one.
 
 ** Evaluating all Babel cells before exporting
 
@@ -212,6 +218,7 @@ I'm using this 'trick': ~:exports results :results none~
 Being able to export the Org-mode files to Markdown opens the road to various possibilities.
 For example, with the relatively new GitHub Actions, I figured that it should be possible to export the Markdown files in a continuous delivery pipeline, after pushing to the repo.
 
+<<<<<<< HEAD:_source/how-to-export-org-mode-from-command-line.org
 * Appendix
 
 Emacs version:
@@ -236,3 +243,8 @@ emacs --version
 
 #+RESULTS:
 : 9.1.3
+=======
+* TODO finish post [0/1]
+
+ - [ ] Add source view
+>>>>>>> Introduction:_source/org-jekyll-github-actions.org
