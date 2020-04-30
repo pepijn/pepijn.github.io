@@ -1,5 +1,6 @@
 #+OPTIONS: toc:nil
 #+EXCLUDE_TAGS: noexport
+#+PROPERTY: header-args :dir /tmp
 #+BEGIN_EXPORT html
 ---
 layout:     post
