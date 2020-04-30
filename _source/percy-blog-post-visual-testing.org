@@ -1,0 +1,9 @@
+#+OPTIONS: toc:nil
+#+PROPERTY: header-args :dir /tmp
+#+BEGIN_EXPORT html
+---
+layout:     post
+title:      How to Use Percy.io for Visual Diffing your Blog Exports
+tags:       org-mode
+---
+#+END_EXPORT
