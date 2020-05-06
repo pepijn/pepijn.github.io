@@ -8,21 +8,15 @@ tags:       org-mode jekyll github-actions
 ---
 #+END_EXPORT
 
-When writing an article with source code, it's a nice service to your reader (and future you) to make sure the code actually runs and gives the results that you expect.
+Programmers consider running code in a reproducible environment a good practice.
+
+When reading an article with source code, you expect the code work.
+
 Emacs' Org-mode is a system to do just that.
 But is executing the code inside your Emacs process, with lots of customizations, enough proof of being reproducible?
 It's a good step forward, that's for sure, but even better is to run it without configuration, from the command-line.
+There's always the last minute changing to your article, it's easy for bugs to slip in.
 
-Reproducible Org-mode files prove to the reader of your document (and yourself) that the code inside is correct.
-But, in order for your Org-mode file to be reproducible, the environment that it runs inside of should be as well.
-
-#+BEGIN_QUOTE
-Literate programming is what you need to rise above the ordinary level of achievement. -- [[https://www.informit.com/articles/article.aspx?p=1193856][Donald Knuth]]
-#+END_QUOTE
-
-Exporting Org-mode from the command-line enables you to integrate reproducible literal programming.
-
-The reproducibility in my blog wasn't as good as it could be. 
 I committed both the source files (in Org-mode) as the export (in Markdown) to source control for reproducibility is to regenerate the Markdown file with every build of my blog.
 You need to be able to call Emacs and export Org-mode files in a script for that.
 There are some intricacies on how to achieve this related to calling Emacs from the command line and exporting Org-mode with babel source code blocks.
@@ -167,7 +161,7 @@ $ cat "example.md"
 #+END_EXAMPLE
 
 #+NAME: shexec3
-#+CALL: run-shell(s=sh3)
+#+CALL: run-shell(s=sh3) 
 
 Here's the output---with Markdown syntax. Great success!
 
@@ -209,7 +203,7 @@ If If you want to do things the proper way, you can extend a language and make y
 
 ** Evaluating all Babel cells before exporting
 
-Especially with :results none :exports none.
+Especially with ~:results none :exports none~.
 I'm using this 'trick': ~:exports results :results none~
 
 
@@ -218,22 +212,34 @@ I'm using this 'trick': ~:exports results :results none~
 Being able to export the Org-mode files to Markdown opens the road to various possibilities.
 For example, with the relatively new GitHub Actions, I figured that it should be possible to export the Markdown files in a continuous delivery pipeline, after pushing to the repo.
 
-<<<<<<< HEAD:_source/how-to-export-org-mode-from-command-line.org
 * Appendix
+
+OS:
+
+#+BEGIN_SRC bash :results verbatim :exports results
+uname -mrsv
+#+END_SRC
+
+#+RESULTS:
+: Darwin 19.3.0 Darwin Kernel Version 19.3.0: Thu Jan  9 20:58:23 PST 2020; root:xnu-6153.81.5~1/RELEASE_X86_64 x86_64
+
+Bash version:
+
+#+BEGIN_SRC bash :results verbatim :exports results
+bash --version | head -n 1
+#+END_SRC
+
+#+RESULTS:
+: GNU bash, version 3.2.57(1)-release (x86_64-apple-darwin19)
 
 Emacs version:
 
 #+BEGIN_SRC bash :results verbatim :exports results
-emacs --version
+emacs --version | head -n 1
 #+END_SRC
 
 #+RESULTS:
 : GNU Emacs 26.2
-: Copyright (C) 2019 Free Software Foundation, Inc.
-: GNU Emacs comes with ABSOLUTELY NO WARRANTY.
-: You may redistribute copies of GNU Emacs
-: under the terms of the GNU General Public License.
-: For more information about these matters, see the file named COPYING.
 
  Org-mode version:
 
@@ -243,8 +249,7 @@ emacs --version
 
 #+RESULTS:
 : 9.1.3
-=======
+
 * TODO finish post [0/1]
 
  - [ ] Add source view
->>>>>>> Introduction:_source/org-jekyll-github-actions.org
