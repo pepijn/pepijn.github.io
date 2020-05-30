@@ -8,4 +8,4 @@ cd "$dir"
 
 make publish
 
-/usr/local/opt/ruby/bin/bundle exec jekyll serve --drafts --livereload --port 1337 --open-url
+/usr/local/bin/rbenv exec bundle exec jekyll serve --drafts --livereload --port 1337 --open-url
